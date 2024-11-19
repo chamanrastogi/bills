@@ -1,0 +1,164 @@
+[
+    {
+        "category_id": 6,
+        "name": "Enterprise Software Development",
+        "parent": 0,
+        "image": "upload/services/thumbnail/1.png",
+        "small_text": "Create complex enterprise software, ensure reliable software integration, modernise your legacy system.",
+         "text": "",
+         "status": 0
+    },
+    {
+        "category_id": 6,
+        "name": "Mobile App Development",
+        "parent": 0,
+        "image": "upload/services/thumbnail/2.png",
+        "small_text": "Create an impactful mobile app that fits your brand and industry within a shorter time frame. ",
+         "text": "",
+         "status": 0
+    },
+    {
+        "category_id": 6,
+        "name": "Dedicated Development Team",
+        "parent": 0,
+        "image": "upload/services/thumbnail/3.png",
+        "small_text": "Hire a loyal software development team with niche skills and deep expertise. ",
+        "text": "",
+        "status": 0
+    },
+    {
+        "category_id": 6,
+        "name": "IT Consulting",
+        "parent": 0,
+        "image": "upload/services/thumbnail/4.png",
+        "small_text": "Trust our top minds to eliminate workflow pain points, implement new tech, and consolidate app portfolios.",
+         "text": "",
+         "status": 0
+    },
+     {
+        "category_id": 6,
+        "name": "UX / UI Design",
+        "parent": 0,
+        "image": "upload/services/thumbnail/5.png",
+        "small_text": "Build the product you need on time with an experienced team that uses a clear and effective design process.",
+         "text": "",
+         "status": 0
+    },
+    {
+        "category_id": 6,
+        "name": "QA & Testing",
+        "parent": 0,
+        "image": "upload/services/thumbnail/6.png",
+        "small_text": "Turn to our experts to perform comprehensive, multi-stage testing and auditing of your software. ",
+        "text": "",
+        "status": 0
+    },
+    {
+        "category_id": 7,
+        "name": "Cloud Computing",
+        "parent": 0,
+        "image": "upload/services/thumbnail/7.png",
+        "small_text": "Use cloud computing solutions to create a scalable, flexible, and connected enterprise environment.",
+         "text": "",
+         "status": 0
+    },
+    {
+        "category_id": 7,
+        "name": "Blockchain Development",
+        "parent": 0,
+        "image": "upload/services/thumbnail/8.png",
+        "small_text": "Introduce the highest level of security and automate your operations with our blockchain solutions.",
+         "text": "",
+         "status": 0
+    },
+    {
+        "category_id": 7,
+        "name": "Augmented Reality Solutions",
+        "parent": 0,
+        "image": "upload/services/thumbnail/9.png",
+        "small_text": "Build better prototypes, improve the user experience, and lower costs with AR solutions.",
+        "text": "",
+        "status": 0
+    },
+    {
+        "category_id": 7,
+        "name": "UX / UI Design ",
+        "parent": 0,
+        "image": "upload/services/thumbnail/10.png",
+        "small_text": "Build the product you need on time with an experienced team that uses a clear and effective design process.",
+         "text": "",
+         "status": 0
+    },
+     {
+        "category_id": 7,
+        "name": "Artificial Intelligence ",
+        "parent": 0,
+        "image": "upload/services/thumbnail/11.png",
+        "small_text": "Custom AI-based solutions like machine and deep learning will help you automate any operation.",
+         "text": "",
+         "status": 0
+    },
+    {
+        "category_id": 7,
+        "name": "Internet of Things ",
+        "parent": 0,
+        "image": "upload/services/thumbnail/12.png",
+        "small_text": "Secure IoT solutions will let you gather Big Data, optimise key processes, and improve decision-making. ",
+        "text": "",
+        "status": 0
+    },
+    {
+        "category_id": 8,
+        "name": "Construction",
+        "parent": 0,
+        "image": "upload/services/thumbnail/13.png",
+        "small_text": "Advanced software solutions that take Construction into the Digital Era. ",
+         "text": "",
+         "status": 0
+    },
+    {
+        "category_id": 8,
+        "name": "Healthcare",
+        "parent": 0,
+        "image": "upload/services/thumbnail/14.png",
+        "small_text": "Patient-friendly software that empowers healthcare industry workers.",
+         "text": "",
+         "status": 0
+    },
+    {
+        "category_id": 8,
+        "name": "Retail & eCommerce ",
+        "parent": 0,
+        "image": "upload/services/thumbnail/15.png",
+        "small_text": "Engaging and exciting software solutions for modern retail.",
+        "text": "",
+        "status": 0
+    },
+    {
+        "category_id": 8,
+        "name": "FinTech ",
+        "parent": 0,
+        "image": "upload/services/thumbnail/16.png",
+        "small_text": "Meet the demands of modern customers in speed and security with scalable financial technology. ",
+         "text": "",
+         "status": 0
+    },
+     {
+        "category_id": 8,
+        "name": "Travel & Hospitality ",
+        "parent": 0,
+        "image": "upload/services/thumbnail/17.png",
+        "small_text": "Extend the comfort of your resort with practical software solutions.",
+         "text": "",
+         "status": 0
+    },
+    {
+        "category_id": 8,
+        "name": "Insurance",
+        "parent": 0,
+        "image": "upload/services/thumbnail/18.png",
+        "small_text": "Boost the profitability and safety of your business processes through innovative insurance software solutions.",
+        "text": "",
+        "status": 0
+    }
+]

@@ -1,0 +1,32 @@
+[
+    {
+        "name": "HTML5",
+        "percentage": 100,
+        "status": 0
+    },
+    {
+        "name": "CSS3",
+        "percentage": 85,
+        "status": 0
+    },
+    {
+        "name": "jQuery",
+        "percentage": 70,
+        "status": 0
+    },
+    {
+        "name": "PHP",
+        "percentage": 85,
+        "status": 0
+    },
+    {
+        "name": "ANDROID, IOS",
+        "percentage": 80,
+        "status": 0
+    },
+    {
+        "name": "DATA ANALYSIS",
+        "percentage": 90,
+        "status": 0
+    }
+]
