@@ -73,6 +73,12 @@ class SettingController extends Controller
             'tax' => $request->tax,
             'logo' => $save_url,
             'favicon' => $save_url2,
+            'gst' => $request->gst,
+            'bank_name' => $request->bank_name,
+            'bank_account' => $request->bank_account,
+            'bank_branch' => $request->bank_branch,
+            'pan_no' => $request->pan_no,
+            'other' => $request->other
         ]);
 
         $notification = array(

@@ -21,6 +21,12 @@ return new class extends Migration
             $table->string('email', 50)->nullable();
             $table->integer('tax')->define(6);
             $table->string('address', 255)->nullable();
+            $table->string('gst', 100)->nullable();
+            $table->string('bank_name', 100)->nullable();
+            $table->string('bank_account', 100)->nullable();
+            $table->string('bank_branch', 150)->nullable();
+            $table->string('pan_no', 50)->nullable();
+            $table->string('other', 100)->nullable();
          });
     }
 

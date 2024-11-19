@@ -166,15 +166,74 @@
 
     </div>
 </div>
-<div class="row">
-    <div class="mb-3">
-        {!! Form::label('address', 'Address', ['class' => 'form-label']) !!}
-        {!! Form::textarea('address', $sitesetting->address ?? null, [
-            'class' => 'form-control',
-            'rows' => 2,
-            'placeholder' => 'Address',
-        ]) !!}
 
+
+<div class="row">
+    <div class="col-6">
+        <div class="mb-3"> {!! Form::label('gst', 'GST', ['class' => 'form-label']) !!}
+            {!! Form::textarea('gst', $sitesetting->gst ?? null, [
+                'class' => 'form-control',
+                'rows' => 2,
+                'placeholder' => 'GST',
+            ]) !!}</div>
+    </div>
+    <div class="col-6">
+        <div class="mb-3"> 
+            {!! Form::label('address', 'Address', ['class' => 'form-label']) !!}
+            {!! Form::textarea('address', $sitesetting->address ?? null, [
+                'class' => 'form-control',
+                'rows' => 2,
+                'placeholder' => 'Address',
+            ]) !!}
+    
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        <div class="mb-3"> {!! Form::label('bank_name', 'Bank Name', ['class' => 'form-label']) !!}
+            {!! Form::text('bank_name', $sitesetting->bank_name ?? null, [
+                'class' => 'form-control',
+             
+                'placeholder' => 'Bank Name',
+            ]) !!}</div>
+    </div>
+    <div class="col-6">
+        <div class="mb-3"> 
+            {!! Form::label('bank_account', 'Bank Account', ['class' => 'form-label']) !!}
+            {!! Form::text('bank_account', $sitesetting->bank_account ?? null, [
+                'class' => 'form-control',                
+                'placeholder' => 'Bank Account',
+            ]) !!}
+    
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-4">
+        <div class="mb-3"> {!! Form::label('bank_branch', 'Bank Branch', ['class' => 'form-label']) !!}
+            {!! Form::text('bank_branch', $sitesetting->bank_branch ?? null, [
+                'class' => 'form-control',             
+                'placeholder' => 'Bank Branch',
+            ]) !!}</div>
+    </div>
+    <div class="col-4">
+        <div class="mb-3"> 
+            {!! Form::label('pan_no', 'Pan No', ['class' => 'form-label']) !!}
+            {!! Form::text('pan_no', $sitesetting->pan_no ?? null, [
+                'class' => 'form-control',                
+                'placeholder' => 'Pan No',
+            ]) !!}
+    
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="mb-3"> {!! Form::label('other', 'Other', ['class' => 'form-label']) !!}
+            {!! Form::text('other', $sitesetting->other ?? null, [
+                'class' => 'form-control',             
+                'placeholder' => 'Other',
+            ]) !!}</div>
     </div>
 </div>
 
