@@ -1,25 +1,19 @@
-<p align="center"><a href="https://www.seooutofthebox.com/" target="_blank">SEO OUT THE BOX</p>
+<p align="center">Billy System</p>
 
 
-# Coach List Portal
+# Billing System
 
 Welcome to the Coach List Portal, a web application built using Laravel. This portal allows users to manage and view a list of coaches.
 
 ## Table of Contents
 
-- [Features](#features)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+
 
 ## Features
 
 - User authentication (Login, Logout, Registration)
-- CRUD operations for managing coaches
-- Search functionality to find coaches
+- CRUD operations for managing products
+- Print Bill save billing history by customer
 - Responsive design for a seamless user experience
 
 ## Requirements
