@@ -18,7 +18,7 @@
                             <table id="html5-extension" class="table dt-table-hover">
                                 <thead>
                                     <tr>
-                                        <th>-</th>
+                                        <th class="dt-no-sorting"> - </th>
                                         <th>ID</th>
                                         <th>Category Name</th>
                                         <th>Name</th>                                       
@@ -70,6 +70,12 @@
                             </table>
                             @if ($products->count() != 0)
                                 <div class="ms-3">
+                                    <div class="form-check form-check-primary form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="form-check-default">
+                                        <label class="form-check-label" for="form-check-default">
+                                            Checked All
+                                        </label>
+                                    </div>
                                     <button id="deleteall" onClick="deleteAllFunction('Product')"
                                         class="btn btn-danger mb-2 me-4">
                                         <span class="btn-text-inner">Delete Selected</span>
@@ -85,6 +91,7 @@
     </div>
     @if ($products->count() != 0)
         <script type="text/javascript">
+        
             function deleteAllFunction(table) {
                 // Get all checkboxes with the specified class name
                 var checkboxes = document.querySelectorAll('.mixed_child');
@@ -247,4 +254,16 @@
             }
         </script>
     @endif
+    @section('script')
+   <script>
+     $(document).ready(function() {
+        // When the "Select All" checkbox is clicked
+        $('#form-check-default').change(function() {
+            console.log('cj');
+            // Check or uncheck all checkboxes based on the "Select All" checkbox
+            $('.mixed_child').prop('checked', $(this).prop('checked'));
+        });
+    });
+   </script>
+    @stop
 </x-dashboard-layout>

@@ -69,6 +69,12 @@
                             </table>
                             @if ($colors->count() != 0)
                                 <div class="ms-3">
+                                    <a href="{{ route('products.edit', $product->id) }}"
+                                        class="action-btn btn-edit bs-tooltip me-2"
+                                        data-toggle="tooltip" data-placement="top" title="Edit"
+                                        data-bs-original-title="Edit">
+                                        <i data-feather="edit"></i>
+                                    </a>
                                     <button id="deleteall" onClick="deleteAllFunction('Blog')"
                                         class="btn btn-danger mb-2 me-4">
                                         <span class="btn-text-inner">Delete Selected</span>
@@ -247,4 +253,16 @@
             }
         </script>
     @endif
+    @section('script')
+    <script>
+        $(document).ready(function() {
+            // When the "Select All" checkbox is clicked
+            $('#form-check-default').change(function() {
+                console.log('cj');
+                // Check or uncheck all checkboxes based on the "Select All" checkbox
+                $('.mixed_child').prop('checked', $(this).prop('checked'));
+            });
+        });
+    </script>
+@stop
 </x-dashboard-layout>

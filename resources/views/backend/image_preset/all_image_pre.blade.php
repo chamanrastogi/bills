@@ -31,17 +31,18 @@
                                 <tbody>
                                     @foreach ($image_preset as $img)
                                         <tr class="imageset-{{ $img->id }}">
-                                          
-                                              <td style="width:1%"><span class="form-check form-check-primary"><input
-                                                    class="form-check-input mixed_child " value="{{ $img->id }}"
-                                                    type="checkbox"></span></td>
-                                                    <td>{{ $img->id }}</td>
+
+                                            <td style="width:1%"><span class="form-check form-check-primary"><input
+                                                        class="form-check-input mixed_child "
+                                                        value="{{ $img->id }}" type="checkbox"></span></td>
+                                            <td>{{ $img->id }}</td>
                                             <td>{{ ucfirst($img->name) }}</td>
                                             <td>{{ $img->width }}</td>
                                             <td>{{ $img->height }}</td>
 
                                             <td class="text-center">
-                                                <button type="button" onClick="statusFunction({{ $img->id }},'Image_preset')"
+                                                <button type="button"
+                                                    onClick="statusFunction({{ $img->id }},'Image_preset')"
                                                     class="shadow-none badge badge-light-{{ $img->status == 1 ? 'danger' : 'success' }} warning changestatus{{ $img->id }}  bs-tooltip"
                                                     data-toggle="tooltip" data-placement="top" title="Status"
                                                     data-original-title="Status">{{ $img->status == 1 ? 'Deactive' : 'Active' }}</button>
@@ -59,7 +60,7 @@
                                                     </a>
 
                                                     <a href="javascript:void(0)"
- onClick="deleteFunction({{ $img->id }},'Image_preset')"
+                                                        onClick="deleteFunction({{ $img->id }},'Image_preset')"
                                                         class="action-btn btn-edit bs-tooltip me-2 delete{{ $img->id }}"
                                                         data-toggle="tooltip" data-placement="top" title="Delete"
                                                         data-bs-original-title="Delete">
@@ -75,6 +76,12 @@
                             </table>
                             @if ($image_preset->count() != 0)
                                 <div class="ms-3">
+                                    <div class="form-check form-check-primary form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="form-check-default">
+                                        <label class="form-check-label" for="form-check-default">
+                                            Checked All
+                                        </label>
+                                    </div>
                                     <button id="deleteall" onClick="deleteAllFunction('Image_preset')"
                                         class="btn btn-danger mb-2 me-4">
                                         <span class="btn-text-inner">Delete Selected</span>
@@ -90,7 +97,7 @@
     </div>
     @if ($image_preset->count() != 0)
         <script type="text/javascript">
-           function deleteAllFunction(table)  {
+            function deleteAllFunction(table) {
                 // Get all checkboxes with the specified class name
                 var checkboxes = document.querySelectorAll('.mixed_child');
                 // Initialize an array to store checked checkbox values
@@ -121,14 +128,15 @@
                     var crf = '{{ csrf_token() }}';
                     $.post("{{ route('image_preset.delete') }}", {
                         _token: crf,
-                        id: checkedValues,table:table
+                        id: checkedValues,
+                        table: table
                     }, function(data) {
                         toastr.success("Selected Data Deleted");
                     });
                 }
             }
 
-            function statusFunction(id,table) {
+            function statusFunction(id, table) {
                 // event.preventDefault(); // prevent form submit
                 // var form = event.target.form; // storing the form
                 const swalWithBootstrapButtons = Swal.mixin({
@@ -159,7 +167,8 @@
                                 var crf = '{{ csrf_token() }}';
                                 $.post("{{ route('image_preset.status') }}", {
                                     _token: crf,
-                                    id: id,table:table,
+                                    id: id,
+                                    table: table,
                                 }, function(data) {
                                     var elems = document.querySelector('.warning.changestatus' +
                                         id);
@@ -226,7 +235,8 @@
                                 var crf = '{{ csrf_token() }}';
                                 $.post("{{ route('image_preset.delete') }}", {
                                     _token: crf,
-                                    id: id,table:table,
+                                    id: id,
+                                    table: table,
                                 }, function(data) {
                                     toastr.success("Entry no " + id + " Deleted");
                                 });
@@ -244,7 +254,19 @@
                         }
                     })
                 })
-              }
+            }
         </script>
     @endif
+    @section('script')
+        <script>
+            $(document).ready(function() {
+                // When the "Select All" checkbox is clicked
+                $('#form-check-default').change(function() {
+                    console.log('cj');
+                    // Check or uncheck all checkboxes based on the "Select All" checkbox
+                    $('.mixed_child').prop('checked', $(this).prop('checked'));
+                });
+            });
+        </script>
+    @stop
 </x-dashboard-layout>
