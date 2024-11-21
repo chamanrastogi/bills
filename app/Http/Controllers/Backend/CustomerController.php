@@ -44,7 +44,8 @@ class CustomerController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'text' => $request->text
+            'address' => $request->address,
+            'bill_address' => $request->bill_address
         ]);
 
         $notification = array(
@@ -85,7 +86,8 @@ class CustomerController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'text' => $request->text
+            'address' => $request->address,
+            'bill_address' => $request->bill_address
         ]);
 
         $notification = array(

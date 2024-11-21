@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 19, 2024 at 05:04 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.2.0
+-- Generation Time: Nov 21, 2024 at 01:24 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -430,15 +430,21 @@ CREATE TABLE `site_settings` (
   `support_phone` varchar(50) DEFAULT NULL,
   `email` varchar(50) DEFAULT NULL,
   `tax` int(11) NOT NULL,
-  `address` varchar(255) DEFAULT NULL
+  `address` varchar(255) DEFAULT NULL,
+  `gst` varchar(100) DEFAULT NULL,
+  `bank_name` varchar(100) DEFAULT NULL,
+  `bank_account` varchar(100) DEFAULT NULL,
+  `bank_branch` varchar(150) DEFAULT NULL,
+  `pan_no` varchar(50) DEFAULT NULL,
+  `other` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `site_settings`
 --
 
-INSERT INTO `site_settings` (`id`, `logo`, `favicon`, `site_title`, `app_name`, `support_phone`, `email`, `tax`, `address`) VALUES
-(1, 'upload/template/thumbnail/1809981924661515.png', 'upload/template/thumbnail/1809981924671923.png', 'TUFF TWELVE PRIVATE LIMITE', 'TUFF TWELVE PRIVATE LIMITE', '99-5846-4102', NULL, 0, NULL);
+INSERT INTO `site_settings` (`id`, `logo`, `favicon`, `site_title`, `app_name`, `support_phone`, `email`, `tax`, `address`, `gst`, `bank_name`, `bank_account`, `bank_branch`, `pan_no`, `other`) VALUES
+(1, 'upload/template/thumbnail/1809981924661515.png', 'upload/template/thumbnail/1809981924671923.png', 'TUFF TWELVE PRIVATE LIMITE', 'TUFF TWELVE PRIVATE LIMITE', '99-5846-4102', 'info@demo.com', 0, 'asdsad', 'asdsa', 'bas', 'a2343ws', '3edf', '13344s', '3223');
 
 -- --------------------------------------------------------
 

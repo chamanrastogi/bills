@@ -3,7 +3,7 @@
 
 use App\Http\Controllers\Frontend\IndexController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Backend\SettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +35,7 @@ Route::get('/route-cache', function () {
 
 Route::get('/', [IndexController::class, 'Home'])->name('home');
 
-
+Route::get('/table-structure/{table}', [SettingController::class, 'myshow']);
 
 require __DIR__ . '/admin.php';
 

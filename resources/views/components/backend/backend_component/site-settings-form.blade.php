@@ -211,14 +211,14 @@
 </div>
 
 <div class="row">
-    <div class="col-4">
+    <div class="col-6">
         <div class="mb-3"> {!! Form::label('bank_branch', 'Bank Branch', ['class' => 'form-label']) !!}
             {!! Form::text('bank_branch', $sitesetting->bank_branch ?? null, [
                 'class' => 'form-control',             
                 'placeholder' => 'Bank Branch',
             ]) !!}</div>
     </div>
-    <div class="col-4">
+    <div class="col-6">
         <div class="mb-3"> 
             {!! Form::label('pan_no', 'Pan No', ['class' => 'form-label']) !!}
             {!! Form::text('pan_no', $sitesetting->pan_no ?? null, [
@@ -228,14 +228,24 @@
     
         </div>
     </div>
-    <div class="col-4">
-        <div class="mb-3"> {!! Form::label('other', 'Other', ['class' => 'form-label']) !!}
-            {!! Form::text('other', $sitesetting->other ?? null, [
+   
+</div>
+<div class="row">
+	 <div class="col-4">
+        <div class="mb-3"> {!! Form::label('declaration', 'Declaration', ['class' => 'form-label']) !!}
+            {!! Form::text('declaration', $sitesetting->declaration ?? null, [
                 'class' => 'form-control',             
-                'placeholder' => 'Other',
+                'placeholder' => 'Declaration',
             ]) !!}</div>
     </div>
-</div>
+	<div class="col-4">
+        <div class="mb-3"> {!! Form::label('message', 'Message', ['class' => 'form-label']) !!}
+            {!! Form::text('message', $sitesetting->message ?? null, [
+                'class' => 'form-control',             
+                'placeholder' => 'Message',
+            ]) !!}</div>
+    </div>
+	</div>
 
 {!! Form::submit('Submit', ['class' => 'btn btn-primary _effect--ripple waves-effect waves-light']) !!}
 {{ Form::close() }}

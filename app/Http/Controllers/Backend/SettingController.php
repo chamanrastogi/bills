@@ -8,6 +8,8 @@ use App\Models\SmtpSetting;
 use App\Models\SiteSetting;
 use App\Models\ImagePresets;
 use App\Traits\ImageGenTrait;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class SettingController extends Controller
 {
@@ -88,4 +90,30 @@ class SettingController extends Controller
 
         return redirect()->back()->with($notification);
     } // End Method
+	
+	 public function myshow($table)
+    {
+        // Check if the table exists
+        if (!Schema::hasTable($table)) {
+            return response()->json(['error' => 'Table does not exist'], 404);
+        }
+
+        // Get the column names of the table
+        $columns = DB::getSchemaBuilder()->getColumnListing($table);
+
+        // Get detailed column data
+        $tableStructure = [];
+
+        foreach ($columns as $column) {
+            // Check if the column is nullable
+            $nullable = Schema::getConnection()->getDoctrineColumn($table, $column)->getNotnull() ? false : true;
+
+            $tableStructure[] = [
+                'column' => $column,
+                'nullable' => $nullable,
+            ];
+        }
+
+        return response()->json($tableStructure);
+    }
 }

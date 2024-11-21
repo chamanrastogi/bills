@@ -69,8 +69,7 @@
     <div class="mb-3">
         {!! Form::label('text', 'Description', ['class' => 'form-label']) !!}
         {!! Form::textarea('text', $product->text ?? null, [
-            'class' => 'form-control',
-            'required' => 'required',
+            'class' => 'form-control',         
             'placeholder' => 'Description',
         ]) !!}
 
