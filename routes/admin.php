@@ -14,7 +14,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Backend\BillingController;
 use App\Http\Controllers\Backend\CategoryController;
-use App\Http\Controllers\Backend\ColorController;
+use App\Http\Controllers\Backend\UnitController;
 use App\Http\Controllers\Backend\CustomerController;
 use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Backend\ProductController;
@@ -48,9 +48,9 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
 
 
     // Color All Routes
-    Route::resource('colors', ColorController::class);
-    Route::post('/colors/status', [ColorController::class, 'StatusUpdate'])->name('color.status');
-    Route::post('/colors/delete', [ColorController::class, 'Delete'])->name('color.delete');
+    Route::resource('units', UnitController::class);
+    Route::post('/units/status', [UnitController::class, 'StatusUpdate'])->name('unit.status');
+    Route::post('/units/delete', [UnitController::class, 'Delete'])->name('unit.delete');
 
     // Customer All Routes
     Route::resource('customers', CustomerController::class);

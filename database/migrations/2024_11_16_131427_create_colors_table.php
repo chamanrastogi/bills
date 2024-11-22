@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('colors', function (Blueprint $table) {
-
-$table->id('id');
-$table->string('name');
-$table->boolean('status')->default(0);
-});
+        Schema::create('units', function (Blueprint $table) {
+            $table->id('id');
+            $table->string('name');
+            $table->boolean('status')->default(0);
+        });
     }
 
     /**
@@ -24,6 +23,6 @@ $table->boolean('status')->default(0);
      */
     public function down(): void
     {
-        Schema::dropIfExists('colors');
+        Schema::dropIfExists('units');
     }
 };

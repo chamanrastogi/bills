@@ -80,7 +80,9 @@ class SettingController extends Controller
             'bank_account' => $request->bank_account,
             'bank_branch' => $request->bank_branch,
             'pan_no' => $request->pan_no,
-            'other' => $request->other
+            'declaration' => $request->declaration,
+			'message' => $request->message
+			
         ]);
 
         $notification = array(

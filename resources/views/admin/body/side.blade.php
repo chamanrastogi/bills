@@ -57,11 +57,11 @@
                      ['route' => 'products.create', 'label' => 'Add Product', 'permission' => 'products.create'],
                      ['route' => 'products.index', 'label' => 'Show Product', 'permission' => 'products.index'],
                  ]" :activeRoutes="['admin/products']" />
-             <x-backend.backend_component.side-menu-item permission="colors.menu" routeId="color" icon="menu"
-                 label="Color" :submenu="[
-                     ['route' => 'colors.create', 'label' => 'Add Color', 'permission' => 'colors.create'],
-                     ['route' => 'colors.index', 'label' => 'Show Color', 'permission' => 'colors.index'],
-                 ]" :activeRoutes="['admin/colors']" />
+             <x-backend.backend_component.side-menu-item permission="units.menu" routeId="color" icon="menu"
+                 label="Unit" :submenu="[
+                     ['route' => 'units.create', 'label' => 'Add Unit', 'permission' => 'units.create'],
+                     ['route' => 'units.index', 'label' => 'Show Unit', 'permission' => 'units.index'],
+                 ]" :activeRoutes="['admin/units']" />
              <x-backend.backend_component.side-menu-item permission="customers.menu" routeId="customer" icon="menu"
                  label="Customer" :submenu="[
                      ['route' => 'customers.create', 'label' => 'Add Customer', 'permission' => 'customers.create'],

@@ -69,11 +69,12 @@
                         </table>
                         @if ($categories->count() != 0)
                             <div class="ms-3">
-                                <a href="{{ route('products.edit', $product->id) }}"
-                                    class="action-btn btn-edit bs-tooltip me-2" data-toggle="tooltip"
-                                    data-placement="top" title="Edit" data-bs-original-title="Edit">
-                                    <i data-feather="edit"></i>
-                                </a>
+                               <div class="form-check form-check-primary form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="form-check-default">
+                                        <label class="form-check-label" for="form-check-default">
+                                            Checked All
+                                        </label>
+                                    </div>
                                 <button id="deleteall" onClick="deleteAllFunction('Categories')"
                                     class="btn btn-danger mb-2 me-4">
                                     <span class="btn-text-inner">Delete Selected</span>

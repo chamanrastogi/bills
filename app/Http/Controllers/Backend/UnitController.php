@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 
 use App\Traits\CommonTrait;
-use App\Models\Color;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 
-class ColorController extends Controller
+class UnitController extends Controller
 {
     use CommonTrait;
     /**
@@ -16,8 +16,8 @@ class ColorController extends Controller
      */
     public function index()
     {
-        $colors = Color::all();
-        return view('backend.color.all_color', compact('colors'));
+        $units = Unit::all();
+        return view('backend.unit.all_unit', compact('units'));
     }
 
     /**
@@ -25,7 +25,7 @@ class ColorController extends Controller
      */
     public function create()
     {
-        return view('backend.color.add_color');
+        return view('backend.unit.add_unit');
     }
 
     /**
@@ -35,16 +35,16 @@ class ColorController extends Controller
     {
         $validated = $request->validate([
 
-            'name' => 'required|unique:colors|max:200',
+            'name' => 'required|unique:units|max:200',
         ]);
 
 
-        Color::insert([
+        unit::insert([
             'name' => $request->name
         ]);
 
         $notification = array(
-            'message' => 'Color Added Successfully',
+            'message' => 'Unit Added Successfully',
             'alert-type' => 'success',
         );
         return redirect()->back()->with($notification);
@@ -53,7 +53,7 @@ class ColorController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Color $color)
+    public function show(unit $unit)
     {
         //
     }
@@ -61,29 +61,29 @@ class ColorController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Color $color)
+    public function edit(unit $unit)
     {
-        return view('backend.color.edit_color', compact('color'));
+        return view('backend.unit.edit_unit', compact('unit'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Color $color)
+    public function update(Request $request, unit $unit)
     {
         $validated = $request->validate([
             'name' =>
-            'required|max:200|unique:colors,name,' . $color->id,
+            'required|max:200|unique:units,name,' . $unit->id,
         ]);
 
 
 
-        $color->update([
+        $unit->update([
             'name' => $request->name
 
         ]);
         $notification = array(
-            'message' => 'Color Updated Successfully',
+            'message' => 'Unit Updated Successfully',
             'alert-type' => 'success',
         );
         return redirect()->back()->with($notification);
@@ -96,11 +96,11 @@ class ColorController extends Controller
 
     public function delete(Request $request)
     {
-        $cat = Color::find($request->id);
+        $cat = unit::find($request->id);
         $cat->delete($request->id);
         $notification = array(
-            'message' => 'Color Deleted successfully',
-            'alert-color_id' => 'success',
+            'message' => 'Unit Deleted successfully',
+            'alert-unit_id' => 'success',
         );
         return redirect()->back()->with($notification);
     }

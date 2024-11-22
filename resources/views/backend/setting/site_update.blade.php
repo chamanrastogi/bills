@@ -1,6 +1,6 @@
 <x-main-layout>
     @section('title', breadcrumb())
-
+   
     <div class="col-md-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
@@ -16,11 +16,11 @@
 
         <script src="{{ asset('backend/assets/src/plugins/src/input-mask/jquery.inputmask.bundle.min.js') }}"></script>
         <script src="{{ asset('backend/assets/src/plugins/src/input-mask/input-mask.js') }}"></script>
-
-
+        
+       
         <script>
             $('#static-masks').inputmask("99-9999-9999");
-
+           
             $("#emails").inputmask({
                 mask: "*{1,20}[.*{1,20}][.*{1,20}][.*{1,20}]@*{1,20}[.*{2,6}][.*{1,2}]",
                 greedy: !1,

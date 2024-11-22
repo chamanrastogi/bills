@@ -1,8 +1,8 @@
 <x-main-layout>
     @section('title', breadcrumb())
     <div class="seperator-header layout-top-spacing">
-        <a href="{{ route('colors.index') }}">
-            <h4 class="">Show Color</h4>
+        <a href="{{ route('units.index') }}">
+            <h4 class="">Show Unit</h4>
         </a>
     </div>
     <div class="page-content">
@@ -11,9 +11,9 @@
             <div class="col-md-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h6 class="card-title fw-bold">Edit Color </h6>
+                        <h6 class="card-title fw-bold">Edit Unit </h6>
                         {{-- resources/views/components/backend/backend_component/blog-color.blade.php --}}
-                        <x-backend.backend_component.color-form :$color
+                        <x-backend.backend_component.color-form :$unit
                             :isEdit="true" />
 
                         </div>

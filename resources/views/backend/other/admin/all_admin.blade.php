@@ -35,7 +35,7 @@
                                     @foreach ($alladmin as $key => $item)
                                         <tr class="admin-{{ $item->id }}">
                                             <td>{{ $key + 1 }}</td>
-                                            <td><img class="wd-100 rounded-circle"
+                                            <td><img class="w-25 rounded-circle"
                                                     src="{{ !empty($item->photo) || file_exists(asset($item->photo)) ? asset($item->photo) : url('upload/no_image.jpg') }}"
                                                     alt="profile"></td>
                                             <td>{{ $item->name }}</td>

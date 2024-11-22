@@ -13,9 +13,8 @@
                     <div class="card-body">
                         <h6 class="card-title fw-bold">Edit Product </h6>
                         {{-- resources/views/components/backend/backend_component/product-form.blade.php --}}
-                        <x-backend.backend_component.product-form :$product :$categories
-                            :isEdit="true" />
-                        
+                        <x-backend.backend_component.product-form :$product :$categories :$units
+                            :isEdit="true" />                        
                         </div>
                 </div>
             </div>

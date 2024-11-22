@@ -8,7 +8,7 @@
 ]) }}
 
 <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-4">
         {!! Form::label('category_id', 'Caregory', ['class' => 'form-label']) !!}
         {!! Form::Select('category_id', $categories, $product->category_id ?? null, [
             'class' => 'form-control',
@@ -17,7 +17,7 @@
         ]) !!}
 
     </div>
-    <div class="col-sm-6">
+    <div class="col-sm-4">
         {!! Form::label('name', 'Name', ['class' => 'form-label']) !!}
         {!! Form::text('name', $product->name ?? null, [
             'class' => 'form-control',
@@ -27,6 +27,14 @@
         @error('name')
             <span class="text-danger pt-3">{{ $message }}</span>
         @enderror
+    </div>
+    <div class="col-sm-4">
+        {!! Form::label('unit_id', 'Unit', ['class' => 'form-label']) !!}
+        {!! Form::Select('unit_id', $units, $product->unit_id ?? null, [
+            'class' => 'form-control',
+            'placeholder' => 'Select Unit',
+        ]) !!}
+
     </div>
     <div class="row pt-3">
         <div class="col-sm-10">

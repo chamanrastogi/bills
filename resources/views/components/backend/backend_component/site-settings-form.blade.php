@@ -231,14 +231,14 @@
    
 </div>
 <div class="row">
-	 <div class="col-4">
+	 <div class="col-6">
         <div class="mb-3"> {!! Form::label('declaration', 'Declaration', ['class' => 'form-label']) !!}
             {!! Form::text('declaration', $sitesetting->declaration ?? null, [
                 'class' => 'form-control',             
                 'placeholder' => 'Declaration',
             ]) !!}</div>
     </div>
-	<div class="col-4">
+	<div class="col-6">
         <div class="mb-3"> {!! Form::label('message', 'Message', ['class' => 'form-label']) !!}
             {!! Form::text('message', $sitesetting->message ?? null, [
                 'class' => 'form-control',             

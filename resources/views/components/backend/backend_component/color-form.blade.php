@@ -2,7 +2,7 @@
 
 
 {{ Form::open([
-    'route' => $isEdit ? ['colors.update', $color->id] : 'colors.store',
+    'route' => $isEdit ? ['units.update', $unit->id] : 'units.store',
     'class' => 'forms-sample needs-validation',
     'method' => $isEdit ? 'put' : 'post',
     'novalidate' => 'novalidate',
@@ -15,7 +15,7 @@
 
 <div class="mb-3">
     {!! Form::label('name', 'Name', ['class' => 'form-label']) !!}
-    {!! Form::text('name', $color->name ?? null, [
+    {!! Form::text('name', $unit->name ?? null, [
         'class' => 'form-control',
         'required' => 'required',
         'placeholder' => 'Name',

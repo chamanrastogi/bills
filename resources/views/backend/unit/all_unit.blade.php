@@ -1,8 +1,8 @@
 <x-dashboard-layout>
     @section('title', breadcrumb())
     <div class="seperator-header layout-top-spacing">
-        <a href="{{ route('colors.create') }}">
-            <h4 class="">Add Color</h4>
+        <a href="{{ route('units.create') }}">
+            <h4 class="">Add Unit</h4>
         </a>
     </div>
     <div class="page-content">
@@ -12,7 +12,7 @@
             <div class="col-md-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h6 class="card-title fw-bold">All Color</h6>
+                        <h6 class="card-title fw-bold">All Unit</h6>
 
                         <div class="table-responsive">
                             <table id="html5-extension" class="table dt-table-hover">
@@ -27,33 +27,33 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($colors as $color)
-                                        <tr class="color-{{ $color->id }}">
+                                    @foreach ($units as $unit)
+                                        <tr class="unit-{{ $unit->id }}">
                                             <td style="width:1%"><span class="form-check form-check-primary"><input
                                                         class="form-check-input mixed_child "
-                                                        value="{{ $color->id }}" type="checkbox"></span></td>
-                                            <td>{{ $color->id }}</td>
-                                            <td>{{ $color->name }}</td>
+                                                        value="{{ $unit->id }}" type="checkbox"></span></td>
+                                            <td>{{ $unit->id }}</td>
+                                            <td>{{ $unit->name }}</td>
                                             <td class="text-center">
                                                 <button type="button"
-                                                    onClick="statusFunction( {{ $color->id }} ,'blog')"
-                                                    class="shadow-none badge badge-light-{{ $color->status == 1 ? 'danger' : 'success' }} warning changestatus{{ $color->id }}  bs-tooltip"
+                                                    onClick="statusFunction( {{ $unit->id }} ,'Unit')"
+                                                    class="shadow-none badge badge-light-{{ $unit->status == 1 ? 'danger' : 'success' }} warning changestatus{{ $unit->id }}  bs-tooltip"
                                                     data-toggle="tooltip" data-placement="top" title="Status"
-                                                    data-original-title="Status">{{ $color->status == 1 ? 'Deactive' : 'Active' }}</button>
+                                                    data-original-title="Status">{{ $unit->status == 1 ? 'Deactive' : 'Active' }}</button>
 
                                             </td>
 
                                             <td class="text-center">
                                                 <div class="action-btns">
-                                                    <a href="{{ route('colors.edit', $color->id) }}"
+                                                    <a href="{{ route('units.edit', $unit->id) }}"
                                                         class="action-btn btn-edit bs-tooltip me-2"
                                                         data-toggle="tooltip" data-placement="top" title="Edit"
                                                         data-bs-original-title="Edit">
                                                         <i data-feather="edit"></i>
                                                     </a>
                                                     <a href="javascript:void(0)"
-                                                        onClick="deleteFunction({{ $color->id }},'Color')"
-                                                        class="action-btn btn-edit bs-tooltip me-2 delete{{ $color->id }}"
+                                                        onClick="deleteFunction({{ $unit->id }},'unit')"
+                                                        class="action-btn btn-edit bs-tooltip me-2 delete{{ $unit->id }}"
                                                         data-toggle="tooltip" data-placement="top" title="Delete"
                                                         data-bs-original-title="Delete">
                                                         <i data-feather="trash-2"></i>
@@ -67,14 +67,14 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            @if ($colors->count() != 0)
+                            @if ($units->count() != 0)
                                 <div class="ms-3">
-                                    <a href="{{ route('products.edit', $product->id) }}"
-                                        class="action-btn btn-edit bs-tooltip me-2"
-                                        data-toggle="tooltip" data-placement="top" title="Edit"
-                                        data-bs-original-title="Edit">
-                                        <i data-feather="edit"></i>
-                                    </a>
+                                   <div class="form-check form-check-primary form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="form-check-default">
+                                        <label class="form-check-label" for="form-check-default">
+                                            Checked All
+                                        </label>
+                                    </div>
                                     <button id="deleteall" onClick="deleteAllFunction('Blog')"
                                         class="btn btn-danger mb-2 me-4">
                                         <span class="btn-text-inner">Delete Selected</span>
@@ -88,7 +88,7 @@
         </div>
 
     </div>
-    @if ($colors->count() != 0)
+    @if ($units->count() != 0)
         <script type="text/javascript">
             function deleteAllFunction(table) {
                 // Get all checkboxes with the specified class name
@@ -119,7 +119,7 @@
                     });
                     // console.log("Checked Checkbox Values: ", checkedValues);
                     var crf = '{{ csrf_token() }}';
-                    $.post("{{ route('color.delete') }}", {
+                    $.post("{{ route('unit.delete') }}", {
                         _token: crf,
                         id: checkedValues,
                         table: table,
@@ -159,7 +159,7 @@
                             )
                             setTimeout(function() {
                                 var crf = '{{ csrf_token() }}';
-                                $.post("{{ route('color.status') }}", {
+                                $.post("{{ route('unit.status') }}", {
                                     _token: crf,
                                     id: id,
                                     table: table
@@ -225,10 +225,10 @@
                                 'success'
                             )
                             setTimeout(function() {
-                                var elems = document.querySelector('.color-' + id);
+                                var elems = document.querySelector('.unit-' + id);
                                 elems.remove();
                                 var crf = '{{ csrf_token() }}';
-                                $.post("{{ route('color.delete') }}", {
+                                $.post("{{ route('unit.delete') }}", {
                                     _token: crf,
                                     id: id,
                                     table: table,

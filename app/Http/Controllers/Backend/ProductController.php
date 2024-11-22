@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\ImagePresets;
+use App\Models\Unit;
 use App\Traits\ImageGenTrait;
 use App\Traits\CommonTrait;
 
@@ -34,7 +35,8 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::pluck('name', 'id');
-        return view('backend.product.add_product', compact('categories'));
+        $units= Unit::pluck('name', 'id');
+        return view('backend.product.add_product', compact('categories','units'));
     }
 
     /**
@@ -59,8 +61,9 @@ class ProductController extends Controller
             'name' => $request->name,
             'image' => $save_url,
             'price' => $request->price,
-            'text' => $request->text,
-            'status' => 0,
+            'unit_id' => $request->unit_id,
+            'text' => $request->text
+           
         ]);
 
         $notification = array(
@@ -85,7 +88,8 @@ class ProductController extends Controller
     {
         $products = Product::all();
         $categories = Category::pluck('name', 'id');
-        return view('backend.product.edit_product', compact('product', 'categories'));
+        $units= Unit::pluck('name', 'id');
+        return view('backend.product.edit_product', compact('product', 'categories','units'));
     }
 
     /**
@@ -119,6 +123,7 @@ class ProductController extends Controller
             'name' => $request->name,
             'image' => $save_url,
             'price' => $request->price,
+            'unit_id' => $request->unit_id,
             'text' => $request->text,
         ]);
 
