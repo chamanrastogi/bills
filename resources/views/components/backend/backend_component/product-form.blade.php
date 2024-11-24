@@ -36,7 +36,11 @@
         ]) !!}
 
     </div>
-    <div class="row pt-3">
+
+
+
+</div>
+ <div class="row pt-3">
         <div class="col-sm-10">
             @php
                 if (!empty($product->image)) {
@@ -61,8 +65,9 @@
             <img src="{{ asset($small_img) }}" class="img-thumbnail img-fluid img-responsive w-10">
         </div>
     </div>
-    <div class="row">
+<div class="row">
     <div class="col-sm-12">
+        <div class="mb-3">
         {!! Form::label('price', 'Price', ['class' => 'form-label']) !!}
         {!! Form::text('price', $product->price ?? null, [
             'class' => 'form-control',
@@ -74,16 +79,7 @@
         @enderror
     </div>
     </div>
-    <div class="mb-3">
-        {!! Form::label('text', 'Description', ['class' => 'form-label']) !!}
-        {!! Form::textarea('text', $product->text ?? null, [
-            'class' => 'form-control',         
-            'placeholder' => 'Description',
-        ]) !!}
-
     </div>
-</div>
-
 
 
 {!! Form::submit($isEdit ? 'Update' : 'Submit', [

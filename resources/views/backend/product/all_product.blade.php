@@ -21,7 +21,8 @@
                                         <th class="dt-no-sorting"> - </th>
                                         <th>ID</th>
                                         <th>Category Name</th>
-                                        <th>Name</th>                                       
+                                        <th>Name</th>
+                                        <th>Unit</th>
                                         <th>Status</th>
                                         <th>Created</th>
                                         <th class="text-center">Action</th>
@@ -36,12 +37,13 @@
                                             <td>{{ $product->id }}</td>
                                             <td>{{ $product->category?->name }}</td>
                                             <td>{{ $product->name }}</td>
+                                            <td>{{ $product->unit?->name }}</td>
                                             <td class="text-center">
                                                 <button type="button" onClick="statusFunction( {{$product->id}} ,'Product')"
                                                     class="shadow-none badge badge-light-{{ $product->status == 1 ? 'danger' : 'success' }} warning changestatus{{ $product->id }}  bs-tooltip"
                                                     data-toggle="tooltip" data-placement="top" title="Status"
                                                     data-original-title="Status">{{ $product->status == 1 ? 'Deactive' : 'Active' }}</button>
-        
+
                                             </td>
                                             <td>{{ $product->created_at->format('l d M Y') }}</td>
                                             <td class="text-center">
@@ -91,7 +93,7 @@
     </div>
     @if ($products->count() != 0)
         <script type="text/javascript">
-        
+
             function deleteAllFunction(table) {
                 // Get all checkboxes with the specified class name
                 var checkboxes = document.querySelectorAll('.mixed_child');
@@ -106,7 +108,7 @@
                     }
                 });
                 if (checkedValues.length === 0) {
-                    // Display an alert if none are checked               
+                    // Display an alert if none are checked
                     toastr.warning("Please check at least one checkbox.");
                 } else {
                     // Output the array to the console (you can do whatever you want with the array)
@@ -124,7 +126,7 @@
                     $.post("{{ route('product.delete') }}", {
                         _token: crf,
                         id: checkedValues,
-                        table: table,                       
+                        table: table,
                     }, function(data) {
                         toastr.success("Selected Data Deleted");
                     });

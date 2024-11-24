@@ -50,7 +50,7 @@
 
 </div>
 
-<div class="row">
+<div class="row mb-3">
    <div class="col-6">
         {!! Form::label('address', 'Address', ['class' => 'form-label']) !!}
         {!! Form::textarea('address', $customer->address ?? null, [

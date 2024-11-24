@@ -40,11 +40,11 @@
                                             @foreach ($cart as $item)
                                                 @php
 
-                                                    $product = App\Models\Product::select('name', 'price')->find(
+                                                    $product = App\Models\Product::with('unit')->find(
                                                         $item->productId,
                                                     );
                                                 @endphp
-                                                {{  $product->name }}<br>
+                                                {{  $product->name }} {{ ($product->unit->name) ? "-Per ". $product->unit->name : '' }}<br>
                                             @endforeach
                                         </td>
                                         <td>{{ $bill->discount }}</td>
@@ -74,11 +74,12 @@
                         </table>
                         @if ($billings->count() != 0)
                             <div class="ms-3">
-                                <a href="{{ route('products.edit', $product->id) }}"
-                                    class="action-btn btn-edit bs-tooltip me-2" data-toggle="tooltip"
-                                    data-placement="top" title="Edit" data-bs-original-title="Edit">
-                                    <i data-feather="edit"></i>
-                                </a>
+                               <div class="form-check form-check-primary form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="form-check-default">
+                                        <label class="form-check-label" for="form-check-default">
+                                            Checked All
+                                        </label>
+                                    </div>
                                 <button id="deleteall" onClick="deleteAllFunction('Billing')"
                                     class="btn btn-danger mb-2 me-4">
                                     <span class="btn-text-inner">Delete Selected</span>

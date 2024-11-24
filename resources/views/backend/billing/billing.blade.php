@@ -43,7 +43,7 @@
                                     <!-- Services, Product Selection, Quantity -->
                                     <div class="row mb-2">
 
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <label for="category" class="form-label">Category:</label>
                                             {!! Form::select('category', $categories, null, [
                                                 'class' => 'form-control categorys',
@@ -51,51 +51,45 @@
                                                 'placeholder' => 'Select Category',
                                             ]) !!}
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <label for="product" class="form-label">Product:</label>
                                             <select id="productitems" class="form-control">
                                                 <option value="" disabled selected>Select a product</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-2">
-                                            <label for="color" class="form-label">Color:</label>
-                                            {!! Form::select('color', $colors, null, [
-                                                'class' => 'form-control colors',
-                                                'placeholder' => 'Select Color',
-                                            ]) !!}
-                                        </div>
 
 
-                                        <div class="col-md-2">
+                                        <div class="col-md-2 pb-3 pb-md-0">
                                             <label for="quantity" class="form-label">Quantity:</label>
-                                            <input type="number" id="quantity" class="form-control" min="1"
-                                                value="1">
+                                            <input type="number" id="quantity" class="form-control" min="0.01"
+                                                step="0.01" value="1">
                                         </div>
-                                        <div class="col-md-2 d-flex align-items-end">
+                                        <div class="col-md-2 d-flex align-items-end ">
                                             <button class="btn btn-primary w-100" id="addProductBtn">Add
                                                 Product</button>
                                         </div>
                                     </div>
 
                                     <!-- Bill Table -->
-                                    <table class="table table-bordered">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>Id</th>
-                                                <th>Category</th>
-                                                <th>Product</th>
-                                                <th>Color</th> <!-- Added Color Column -->
-                                                <th>Price</th>
-                                                <th>Quantity</th>
-                                                <th>Total</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="billTable">
-                                            <!-- Rows will be added here -->
-                                        </tbody>
-                                    </table>
-
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Id</th>
+                                                    <th>Category</th>
+                                                    <th>Product</th>
+                                                    <th>Unit</th>
+                                                    <th>Price</th>
+                                                    <th>Quantity</th>
+                                                    <th>Total</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="billTable">
+                                                <!-- Rows will be added here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                     <!-- Grand Total and Submit Button -->
                                     <div class="text-right">
                                         <div class="form-group mb-2">
@@ -103,6 +97,13 @@
                                             <input type="number" id="discount" class="form-control" min="0"
                                                 max="100" value="0">
                                             <small id="discountAmount" class="form-text text-muted">Discount Amount:
+                                                {{ MONEY }}0</small>
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <label for="tax">Tax (%):</label>
+                                            <input type="number" id="tax" class="form-control" min="0"
+                                                max="100" value="{{ $template->tax }}">
+                                            <small id="taxAmount" class="form-text text-muted">Tax Amount:
                                                 {{ MONEY }}0</small>
                                         </div>
                                         <h3 id="grandTotal">Grand Total: {{ MONEY }}0</h3>
@@ -123,11 +124,16 @@
 
             function updateGrandTotal() {
                 const discount = parseFloat($('#discount').val()) || 0;
+                const tax = parseFloat($('#tax').val()) || 0;
+
                 const discountedTotal = grandTotal * (1 - (discount / 100));
+                const taxAmount = discountedTotal * (tax / 100);
+                const finalTotal = discountedTotal + taxAmount;
                 const discountAmount = grandTotal - discountedTotal;
 
-                $('#grandTotal').text(`Grand Total: {{ MONEY }}${discountedTotal.toFixed(2)}`);
+                $('#grandTotal').text(`Grand Total: {{ MONEY }}${finalTotal.toFixed(2)}`);
                 $('#discountAmount').text(`Discount Amount: {{ MONEY }}${discountAmount.toFixed(2)}`);
+                $('#taxAmount').text(`Tax Amount: {{ MONEY }}${taxAmount.toFixed(2)}`);
             }
             // Function to populate products based on selected category
             function datatable() {
@@ -145,7 +151,7 @@
                             if (Array.isArray(data) && data.length > 0) {
                                 $.each(data, function(index, product) {
                                     productSelect.append(
-                                        `<option value="${product.price}-${product.id}">${product.name}</option>`
+                                        `<option value="${product.price}-${product.id}">${product.name}-${product.unit.name}</option>`
                                     );
                                 });
                             } else {
@@ -168,19 +174,19 @@
                 $('#discount').on('input', function() {
                     updateGrandTotal();
                 });
+                $('#tax').on('input', function() {
+                    updateGrandTotal();
+                });
                 $(".customer").on("change", function() {
                     $('#billing_system').show();
                 });
 
                 $('#addProductBtn').on('click', function() {
-                    let colorText = $('.colors option:selected').text();
-                    if (colorText === 'Select Color') {
-                        colorText = '-';
-                    }
+
                     const categoryText = $('.categorys option:selected').text();
                     const productText = $('#productitems option:selected').text();
                     const productValue = $('#productitems').val();
-                    const quantity = parseInt($('#quantity').val());
+                    const quantity = parseFloat($('#quantity').val()); // Use parseFloat here
 
                     if (!productValue) {
                         alert('Please select a product.');
@@ -194,31 +200,34 @@
                         alert('Please select a valid product and quantity.');
                         return;
                     }
+
                     // Reset inputs
                     $('#quantity').val(1);
-                    $('.colors').val(''); // Reset color select box
-                    $('.categorys').val(''); // Reset category select box
-                    $('#productitems').html(
-                        '<option value="" disabled selected>Select a product</option>'
-                    ); // Reset product select box
+                    $('.categorys').val('');
+                    $('#productitems').html('<option value="" disabled selected>Select a product</option>');
+
+                    // Calculate total based on decimal quantity
                     const total = priceFloat * quantity;
                     grandTotal += total;
 
+                    // Extract unit name from product text (assuming format "Product Name-Per Unit")
+                    const unitName = productText.split('-Per ')[1] || '';
+
+                    // Append a new row to the bill table
                     $('#billTable').append(`
-                        <tr>
-                            <td>${productId}</td>
-                            <td>${categoryText}</td>
-                            <td>${productText}</td>
-                            <td>${colorText}</td>
-                            <td>{{ MONEY }}${priceFloat.toFixed(2)}</td>
-                            <td>${quantity}</td>
-                            <td class="rowTotal">{{ MONEY }}${total.toFixed(2)}</td>
-                            <td><button class="btn btn-danger btn-sm removeProductBtn">Remove</button></td>
-                        </tr>
-                    `);
+        <tr>
+            <td>${productId}</td>
+            <td>${categoryText}</td>
+            <td>${productText}</td>
+            <td>${unitName}</td> <!-- Add Unit here -->
+            <td>{{ MONEY }}${priceFloat.toFixed(2)}</td>
+            <td>${quantity}</td>
+            <td class="rowTotal">{{ MONEY }}${total.toFixed(2)}</td>
+            <td><button class="btn btn-danger btn-sm removeProductBtn">Remove</button></td>
+        </tr>
+    `);
 
                     $('#grandTotal').text(`Grand Total: {{ MONEY }}${grandTotal.toFixed(2)}`);
-                    $('#quantity').val(1);
                     updateGrandTotal();
                 });
 
@@ -233,18 +242,17 @@
                     row.remove();
                     updateGrandTotal();
                 });
-
                 $('#submitCartBtn').on('click', function() {
                     const discount = parseFloat($('#discount').val()) || 0;
+                    const tax = parseFloat($('#tax').val()) || 0;
                     const customerId = $('.customer').val();
 
                     const cartItems = [];
-                     $('#billTable tr').each(function () {
+                    $('#billTable tr').each(function() {
                         const row = $(this);
                         const productId = row.find('td').eq(0).text();
                         const category = row.find('td').eq(1).text();
                         const product = row.find('td').eq(2).text();
-                        const color = row.find('td').eq(3).text();
 
                         const price = parseFloat(row.find('td').eq(4).text().replace(
                             '{{ MONEY }}', '').trim());
@@ -254,16 +262,22 @@
 
                         cartItems.push({
                             productId,
-                            color,
                             quantity
                         });
                     });
 
+                    // Calculate discounted total and apply tax
                     const discountedTotal = grandTotal * (1 - (discount / 100));
+                    const taxAmount = discountedTotal * (tax / 100);
+                    const finalTotal = discountedTotal + taxAmount;
+
                     const data = {
                         cart_items: cartItems,
-                        grand_total: discountedTotal,
+                        grand_total: finalTotal, // Include tax in grand total
                         discount: discount,
+                        discount_amount: grandTotal - discountedTotal,
+                        tax: tax,
+                        tax_amount: taxAmount, // Optional: send the tax amount separately
                         customer_id: customerId
                     };
 
@@ -288,6 +302,7 @@
                     $('body').append(form);
                     form.submit();
                 });
+
             });
         </script>
     @stop

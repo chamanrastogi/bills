@@ -35,8 +35,7 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-
-            'name' => 'required|unique:customers|max:200',
+            'phone' => 'unique:customers|max:100',
         ]);
 
 
@@ -77,8 +76,7 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         $validated = $request->validate([
-            'name' => 'required|max:200|unique:customers,name,' . $customer->id,
-
+            'phone' => 'unique:customers,phone,' . $customer->id,
         ]);
 
 
@@ -106,7 +104,8 @@ class CustomerController extends Controller
     }
     public function delete(Request $request)
     {
-        $blogs = Customer::find($request->id);
+
+        $blogs =    Customer::whereIn('id', $request->id);
 
         $blogs->delete();
         $notification = array(

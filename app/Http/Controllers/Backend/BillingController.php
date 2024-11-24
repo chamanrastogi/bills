@@ -11,26 +11,32 @@ use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Type\Integer;
 
+
 class BillingController extends Controller
 {
     //
     public function index()
     {
         $categories = Category::pluck('name', 'id');
-        $colors = Color::pluck('name', 'id');
-        $customers  = Customer::pluck('name', 'id');
-        return view('backend.billing.billing', compact('categories', 'colors', 'customers'));
+
+        $customers = Customer::all()->mapWithKeys(function ($customer) {
+            return [$customer->id => $customer->name . ' (' . $customer->phone . ')'];
+        });
+        $template= SiteSetting::select('tax')->find(1);
+        return view('backend.billing.billing', compact('categories',  'customers','template'));
     }
     public function cart(Request $request)
     {
-        //dd($request);
+       // dd($request);
         // Decode the cart data sent from the frontend
         $cartData = json_decode($request->cart_data, true);
-        $template = SiteSetting::find(1);
         // Process the cart data
         $cartItems = $cartData['cart_items'];  // Array of cart items
         $grandTotal = $cartData['grand_total'];  // Grand total value
         $discount = $cartData['discount'];
+        $discount_amount = $cartData['discount_amount'];
+        $tax = $cartData['tax'];
+        $tax_amount = $cartData['tax_amount'];
         $customer_id = $cartData['customer_id'];
         // Example: Save the cart items in the database, or process the order
 
@@ -40,7 +46,9 @@ class BillingController extends Controller
             'customer_id' => $customer_id,
             'cart' => json_encode($cartItems),
             'discount' => $discount,
-            'tax' => $template->tax,
+            'discount_amount' => $discount_amount,
+            'tax' => $tax,
+            'tax_amount' => $tax_amount,
             'grand_total' => $grandTotal
         ]);
         $customer = Customer::find($customer_id);
@@ -65,6 +73,14 @@ class BillingController extends Controller
             'message' => 'Cart Saved Successfully',
             'alert-type' => 'success',
         );
+        if(!$billing)
+        {
+            $notification = array(
+                'message' => 'Billing Not Found',
+                'alert-type' => 'error',
+            );
+             return redirect()->route('billing.show')->with($notification);
+        }
         return view('backend.billing.cart', compact('billing','id', 'template'))->with($notification);
     }
     public function showbilling()

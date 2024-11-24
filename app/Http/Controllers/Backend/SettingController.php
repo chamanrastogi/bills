@@ -58,13 +58,13 @@ class SettingController extends Controller
         }
 
 
-        if ($request->file('map')) {
-            $image = $request->file('map');
+        if ($request->file('bank_qr_code')) {
+            $image = $request->file('bank_qr_code');
             $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
-            $image = $request->file('map');
+            $image = $request->file('bank_qr_code');
             $save_url_map = $this->imageGenrator($image, $this->image_preset_main, $this->image_preset, $this->path);
         } else {
-            $save_url_map = SiteSetting::find($site_id)->map;
+            $save_url_map = SiteSetting::find($site_id)->bank_qr_code;
         }
         SiteSetting::findOrFail($site_id)->update([
             'site_title' => $request->site_title,
@@ -78,11 +78,14 @@ class SettingController extends Controller
             'gst' => $request->gst,
             'bank_name' => $request->bank_name,
             'bank_account' => $request->bank_account,
+            'bank_ifsc' => $request->bank_ifsc,
+            'bank_holder_name' => $request->bank_holder_name,
             'bank_branch' => $request->bank_branch,
             'pan_no' => $request->pan_no,
             'declaration' => $request->declaration,
-			'message' => $request->message
-			
+			'message' => $request->message,
+            'bank_qr_code'=> $save_url_map
+
         ]);
 
         $notification = array(
@@ -92,7 +95,7 @@ class SettingController extends Controller
 
         return redirect()->back()->with($notification);
     } // End Method
-	
+
 	 public function myshow($table)
     {
         // Check if the table exists

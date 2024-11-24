@@ -174,7 +174,7 @@ body.dark .invoice .content-section .inv--product-table-section th {
   color: #bfc9d4 !important;
 }
 body.dark .invoice .content-section .inv--product-table-section th:first-child {
-  padding-left: 35px;
+  padding-left: 15px;
   border-radius: 0;
 }
 body.dark .invoice .content-section .inv--product-table-section th:last-child {
@@ -190,9 +190,9 @@ body.dark .invoice .content-section .inv--product-table-section tr td:last-child
 body.dark .invoice .content-section .inv--product-table-section td {
   color: #888ea8;
   border: none;
-  padding: 10px 25px;
+  padding: 10px 15px;
   vertical-align: top !important;
-  font-size: 15px;
+  font-size: 12px;
 }
 body.dark .invoice .content-section .inv--product-table-section tbody tr {
   border-bottom: 1px solid #191e3a;

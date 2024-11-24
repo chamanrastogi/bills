@@ -14,9 +14,9 @@
                 <div class="card">
                     <div class="card-body">
                         <h6 class="card-title fw-bold">Add Product</h6>
-                        
+
                           {{-- resources/views/components/backend/backend_component/product-form.blade.php --}}
-                          <x-backend.backend_component.product-form  :$categories
+                          <x-backend.backend_component.product-form  :$categories :$units
                           :isEdit="false" />
 
                     </div>

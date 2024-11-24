@@ -1,36 +1,21 @@
-<x-front-layout>
+<x-error-layout>
     @php
     $template = App\Models\SiteSetting::select('site_title')->find(1);
-   @endphp
+    @endphp
     @section('main')
     @section('title', '500 - Internal Server Error')
 
-    @section('style')
-    <link rel="stylesheet" href="{{ asset('frontend/assets/css/bootstrap.min.css') }}">
 
-    @stop
 
-    <div class="contactCntr">
-        <div class="contactCntr">
-            <div class="bannerimg"> </div>
-            <!-- error area start -->
-            <div class="wrapper">
-                <div class="contact_details">
-                    <div id="notfound">
-                        <div class="notfound">
-                            <div class="notfound-page">
-                                <h1>500</h1>
-                            </div>
-                            <h2>Internal Server</h2>
-                            <p>The page you are looking for doesn't exist</p>
-                            <a href="{{ url('/') }}">Go to Home</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- error area end -->
+    <div class="container-fluid error-content">
+        <div class="">
+            <h1 class="error-number">500</h1>
+            <p class="mini-text">Internal Server</p>
+            <p class="error-text mb-5 mt-1">The page you are looking for doesn't exist</p>
+            <img src="{{asset('backend/assets/src/assets/img/error.svg')}}" alt="cork-admin-404" class="error-img">
+            <a href="{{ url('/') }}" class="btn btn-dark mt-5">Go Back</a>
         </div>
     </div>
 
 
-</x-front-layout>
+</x-error-layout>

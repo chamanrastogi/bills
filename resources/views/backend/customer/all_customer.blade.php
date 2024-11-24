@@ -81,7 +81,7 @@
                                             Checked All
                                         </label>
                                     </div>
-                                    <button id="deleteall" onClick="deleteAllFunction('Blog')"
+                                    <button id="deleteall" onClick="deleteAllFunction('Customer')"
                                         class="btn btn-danger mb-2 me-4">
                                         <span class="btn-text-inner">Delete Selected</span>
                                     </button>
@@ -96,7 +96,7 @@
     </div>
     @if ($customers->count() != 0)
         <script type="text/javascript">
-          
+
 
             function deleteAllFunction(table) {
                 // Get all checkboxes with the specified class name
@@ -131,7 +131,6 @@
                         _token: crf,
                         id: checkedValues,
                         table: table,
-                        table: table
                     }, function(data) {
                         toastr.success("Selected Data Deleted");
                     });
@@ -239,7 +238,6 @@
                                 $.post("{{ route('customer.delete') }}", {
                                     _token: crf,
                                     id: id,
-                                    table: table,
                                     table: table
                                 }, function(data) {
                                     toastr.success("Entry no " + id + " Deleted");

@@ -1,78 +1,96 @@
 <!DOCTYPE html>
-<html class="no-js" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    @php
-        $template = App\Models\SiteSetting::find(1);
-
-        $style = STYLES[$template->style] . '.css';
-    @endphp
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>@yield('title') </title>
-    <meta name="description" content="@yield('meta_description')" />
-    <meta name="keywords" content="@yield('meta_keywords')" />
-
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset($template->favicon) }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <!-- All plugins -->
-    <link href="{{ asset('frontend/assets/plugins/css/plugins.css') }}" rel="stylesheet">
+    <title>{{ config('app.name', 'Admin') }} - @yield('title') </title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('backend/assets/layouts/src/assets/img/favicon.ico') }}" />
+    <link href="{{ asset('backend/assets/layouts/vertical-light-menu/css/light/loader.css') }}" rel="stylesheet"
+        type="text/css" />
+    <link href="{{ asset('backend/assets/layouts/vertical-light-menu/css/dark/loader.css') }}" rel="stylesheet"
+        type="text/css" />
+    <script src="{{ asset('backend/assets/layouts/vertical-light-menu/loader.js') }}"></script>
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700" rel="stylesheet">
+    <link href="{{ asset('backend/assets/src/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
 
-    <!-- Custom style -->
-    <link href="{{ asset('frontend/assets/css/style.css') }}" rel="stylesheet">
-    <link href="{{ asset('frontend/assets/css/responsiveness.css') }}" rel="stylesheet">
+    <link href="{{ asset('backend/assets/layouts/vertical-light-menu/css/light/plugins.css') }}" rel="stylesheet"
+        type="text/css" />
+    <link href="{{ asset('backend/assets/src/assets/css/light/pages/error/error.css') }}" rel="stylesheet"
+        type="text/css" />
 
-    <link type="text/css" rel="stylesheet" id="jssDefault"
-        href="{{ asset('frontend/assets/css/colors/' . $style . '') }}">
+    <link href="{{ asset('backend/assets/layouts/vertical-light-menu/css/dark/plugins.css') }}" rel="stylesheet"
+        type="text/css" />
+    <link href="{{ asset('backend/assets/src/assets/css/dark/pages/error/error.css') }}" rel="stylesheet"
+        type="text/css" />
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="{{ asset('frontend/js/html5shiv.min.js') }}"></script>
-      <script src="{{ asset('frontend/js/respond.min.js') }}"></script>
-    <![endif]-->
+
+    <!-- END GLOBAL MANDATORY STYLES -->
+    <!-- Toastr styles -->
 
 </head>
 
-<body class="home-2">
-    <div class="wrapper">
+<body class="error text-center">
 
-        <div class="clearfix"></div>
-        {{ $slot }}
-
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+        <div class="loader">
+            <div class="loader-content">
+                <div class="spinner-grow align-self-center"></div>
+            </div>
+        </div>
     </div>
-    <!-- /Switcher -->
-    <a id="back2Top" class="theme-bg" title="Back to top" href="#"><i class="ti-arrow-up"></i></a>
+    <!--  END LOADER -->
 
 
-    <!-- START JAVASCRIPT -->
-    <script src="{{ asset('frontend/assets/js/jquery.min.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/bootsnav.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/bootstrap-select.min.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/bootstrap-touch-slider-min.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/jquery.touchSwipe.min.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/chosen.jquery.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/datedropper.min.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/dropzone.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/jquery.counterup.min.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/jquery.fancybox.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/jquery.nice-select.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/jqueryadd-count.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/jquery-rating.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/slick.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/timedropper.js') }}"></script>
-    <script src="{{ asset('frontend/assets/plugins/js/waypoints.min.js') }}"></script>
+                {{ $slot }}
 
 
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="{{ asset('backend/assets/src/plugins/src/global/vendors.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/src/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        @if (Session::has('message'))
+            var type = "{{ Session::get('alert-type', 'info') }}"
+            switch (type) {
+                case 'info':
+                    toastr.info(" {{ Session::get('message') }} ");
+                    break;
 
-    <!-- Custom Js -->
-    <script src="{{ asset('frontend/assets/js/custom.js') }}"></script>
+                case 'success':
+                    toastr.success(" {{ Session::get('message') }} ");
+                    break;
 
+                case 'warning':
+                    toastr.warning(" {{ Session::get('message') }} ");
+                    break;
 
-    </div>
+                case 'error':
+                    toastr.error(" {{ Session::get('message') }} ");
+                    break;
+            }
+        @endif
+    </script>
+    <!-- END GLOBAL MANDATORY SCRIPTS -->
+    <script src="{{ asset('backend/assets/src/assets/js/forms/bootstrap_validation/bs_validation_script.js') }}"></script>
+    <script src="{{ asset('backend/assets/js/authentication/form-1.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.loginButton').on('click', function() {
+                // Show loading spinner
+
+                $('#loginSpinner').removeClass('d-none');
+
+                // You may also want to disable the button to prevent multiple clicks
+                // $('#loginButton').prop('disabled', true);
+            });
+        });
+    </script>
 </body>
 
 </html>

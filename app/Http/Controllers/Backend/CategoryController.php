@@ -92,7 +92,7 @@ class CategoryController extends Controller
 
     public function delete(Request $request)
     {
-        $cat = Category::find($request->id);
+        $cat = Category::whereIn('id', $request->id);
         $cat->delete($request->id);
         $notification = array(
             'message' => 'Service Deleted successfully',

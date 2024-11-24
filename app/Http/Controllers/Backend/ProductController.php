@@ -34,8 +34,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $categories = Category::pluck('name', 'id');
-        $units= Unit::pluck('name', 'id');
+        $categories = Category::where('status', 0)->pluck('name', 'id');
+        $units= Unit::where('status', 0)->pluck('name', 'id');
         return view('backend.product.add_product', compact('categories','units'));
     }
 
@@ -62,8 +62,8 @@ class ProductController extends Controller
             'image' => $save_url,
             'price' => $request->price,
             'unit_id' => $request->unit_id,
-            'text' => $request->text
-           
+            'text' => ''
+
         ]);
 
         $notification = array(
@@ -87,8 +87,8 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $products = Product::all();
-        $categories = Category::pluck('name', 'id');
-        $units= Unit::pluck('name', 'id');
+        $categories = Category::where('status', 0)->pluck('name', 'id');
+        $units= Unit::where('status', 0)->pluck('name', 'id');
         return view('backend.product.edit_product', compact('product', 'categories','units'));
     }
 
@@ -124,7 +124,7 @@ class ProductController extends Controller
             'image' => $save_url,
             'price' => $request->price,
             'unit_id' => $request->unit_id,
-            'text' => $request->text,
+            'text' => '',
         ]);
 
         $notification = array(
@@ -173,7 +173,7 @@ class ProductController extends Controller
 
     public function GetProducts(string $category)
     {
-        $products = Product::where('category_id', $category)->get();
+        $products = Product::where('category_id', $category)->with('unit')->get();
         return $products;
     }
 }
