@@ -39,16 +39,26 @@
 
 
 
-
-<div class="mb-3">
-    {!! Form::label('phone', 'Phone', ['class' => 'form-label']) !!}
-    {!! Form::text('phone', $customer->phone ?? null, [
-        'class' => 'form-control',
-        'required' => 'required',
-        'placeholder' => 'Phone',
-    ]) !!}
-
+<div class="row">
+    <div class="col-6"><div class="mb-3">
+        {!! Form::label('phone', 'Phone', ['class' => 'form-label']) !!}
+        {!! Form::text('phone', $customer->phone ?? null, [
+            'class' => 'form-control',
+            'required' => 'required',
+            'placeholder' => 'Phone',
+        ]) !!}
+    
+    </div></div>
+    <div class="col-6"><div class="mb-3">
+        {!! Form::label('phone', 'Opening Balance', ['class' => 'form-label']) !!}
+        {!! Form::text('opening_balance', $customer->opening_balance ?? null, [
+            'class' => 'form-control',           
+            'placeholder' => 'Opening Balance',
+        ]) !!}
+    
+    </div></div>
 </div>
+
 
 <div class="row mb-3">
    <div class="col-6">

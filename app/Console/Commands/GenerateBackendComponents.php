@@ -18,9 +18,11 @@ class GenerateBackendComponents extends Command
 
         // Define the models and their fields with types and options
         $models = [
-            'color' => [
+            'payment' => [
                 'id' => ['type' => 'id', 'options' => []],
-                'name' => ['type' => 'string', 'options' => ['nullable' => false, 'length' => 255]],
+                'customer_id' => ['type' => 'integer', 'options' => []],
+                'amount' => ['type' => 'integer', 'options' => []],
+                'payment_mode' => ['type' => 'integer', 'options' => []],
                 'status' => ['type' => 'boolean', 'options' => ['default' => 0]]
             ],
         ];
