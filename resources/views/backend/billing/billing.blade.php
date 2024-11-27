@@ -59,12 +59,12 @@
                                         </div>
 
 
-                                        <div class="col-md-2 pb-3 pb-md-0">
+                                        <div class="col-md-2">
                                             <label for="quantity" class="form-label">Quantity:</label>
                                             <input type="number" id="quantity" class="form-control" min="0.01"
                                                 step="0.01" value="1">
                                         </div>
-                                        <div class="col-md-2 d-flex align-items-end ">
+                                        <div class="col-md-2 d-flex align-items-end pb-3 pb-md-0">
                                             <button class="btn btn-primary w-100" id="addProductBtn">Add
                                                 Product</button>
                                         </div>
@@ -72,23 +72,23 @@
 
                                     <!-- Bill Table -->
                                     <div class="table-responsive">
-                                        <table class="table table-bordered">
-                                            <thead class="thead-light">
-                                                <tr>
-                                                    <th>Id</th>
-                                                    <th>Category</th>
-                                                    <th>Product</th>
-                                                    <th>Unit</th>
-                                                    <th>Price</th>
-                                                    <th>Quantity</th>
-                                                    <th>Total</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="billTable">
-                                                <!-- Rows will be added here -->
-                                            </tbody>
-                                        </table>
+                                    <table class="table table-bordered">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Id</th>
+                                                <th>Category</th>
+                                                <th>Product</th>
+                                                <th>Unit</th>
+                                                <th>Price</th>
+                                                <th>Quantity</th>
+                                                <th>Total</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="billTable">
+                                            <!-- Rows will be added here -->
+                                        </tbody>
+                                    </table>
                                     </div>
                                     <!-- Grand Total and Submit Button -->
                                     <div class="text-right">
@@ -151,7 +151,7 @@
                             if (Array.isArray(data) && data.length > 0) {
                                 $.each(data, function(index, product) {
                                     productSelect.append(
-                                        `<option value="${product.price}-${product.id}">${product.name}-${product.unit.name}</option>`
+                                        `<option value="${product.price}-${product.id}">${product.name} ${product.unit.name}</option>`
                                     );
                                 });
                             } else {
@@ -275,7 +275,7 @@
                         cart_items: cartItems,
                         grand_total: finalTotal, // Include tax in grand total
                         discount: discount,
-                        discount_amount: grandTotal - discountedTotal,
+                        discount_amount: grandTotal-discountedTotal,
                         tax: tax,
                         tax_amount: taxAmount, // Optional: send the tax amount separately
                         customer_id: customerId

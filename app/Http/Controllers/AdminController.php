@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
 
 use DataTables;
@@ -67,7 +68,12 @@ class AdminController extends Controller
 
     public function StoreAdmin(Request $request)
     {
-
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'regex:/^([a-z])+?([a-z])+$/i', 'unique:' . User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required',  'confirmed', Rules\Password::defaults()],
+        ]);
 
         if ($request->roles == 4) {
             $role = 'user';
@@ -153,10 +159,7 @@ class AdminController extends Controller
         $user->save();
 
         if ($user->id != 1) {
-            $user->roles()->detach();
-            if ($request->roles) {
-                $user->assignRole($request->roles);
-            }
+           
             $notification = array(
                 'message' => 'Admin User Updated Successfully',
                 'alert-type' => 'success'
@@ -203,9 +206,7 @@ class AdminController extends Controller
                                                     src="' . $img . '"
                                                     alt="profile">';
             })
-            ->addColumn('top', function (User $user) {
-                return    '<span class="shadow-none badge badge-'. (($user->top == 0) ? 'danger' : 'success').'">'.(($user->top==0)? 'No' : 'Yes' ).'</span>';
-            })
+          
             ->addColumn('name', function (User $user) {
                 return   $user->name;
             })

@@ -7,6 +7,7 @@ use App\Models\Billing;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\Customer;
+use App\Models\Product;
 use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Type\Integer;
@@ -27,11 +28,21 @@ class BillingController extends Controller
     }
     public function cart(Request $request)
     {
+        $items=[];
        // dd($request);
         // Decode the cart data sent from the frontend
         $cartData = json_decode($request->cart_data, true);
         // Process the cart data
         $cartItems = $cartData['cart_items'];  // Array of cart items
+       // dd($cartItems);
+        foreach ($cartItems as $item)
+        {
+
+        $pro= Product::select('price')->find($item['productId']);
+        $item['price']=$pro->price;
+        $items[]=$item;
+        }
+        //dd($items);
         $grandTotal = $cartData['grand_total'];  // Grand total value
         $discount = $cartData['discount'];
         $discount_amount = $cartData['discount_amount'];
@@ -44,7 +55,7 @@ class BillingController extends Controller
         //dd($cartItems);
         $bill = Billing::insertGetId([
             'customer_id' => $customer_id,
-            'cart' => json_encode($cartItems),
+            'cart' => json_encode($items),
             'discount' => $discount,
             'discount_amount' => $discount_amount,
             'tax' => $tax,

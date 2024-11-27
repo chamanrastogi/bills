@@ -1,14 +1,4 @@
 <x-dashboard-layout>
-    @section('title', breadcrumb())
-
-    <!-- Include jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
-    @section('style')
-        <link rel="stylesheet" href="{{ asset('backend/assets/src/assets/css/light/apps/invoice-preview.css') }}">
-        <link rel="stylesheet" href="{{ asset('backend/assets/src/assets/css/dark/apps/invoice-preview.css') }}">
-    @stop
-
-
     @php
 
         $cart = json_decode($billing['cart']);
@@ -18,6 +8,17 @@
         $subtotal = 0;
 
     @endphp
+    @section('title', "Invoice Bill - #000".$billing['id'])
+
+    <!-- Include jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    @section('style')
+        <link rel="stylesheet" href="{{ asset('backend/assets/src/assets/css/light/apps/invoice-preview.css') }}">
+        <link rel="stylesheet" href="{{ asset('backend/assets/src/assets/css/dark/apps/invoice-preview.css') }}">
+    @stop
+
+
+
 
     {{-- {{ dd($id) }} --}}
     <div class="seperator-header layout-top-spacing">
@@ -170,10 +171,11 @@
                                                                     <tbody>
                                                                         @foreach ($cart as $item)
                                                                             @php
-                                                                                $product = App\Models\Product::with(                                                                                  'unit',
+                                                                                $product = App\Models\Product::with(
+                                                                                    'unit',
                                                                                 )->find($item->productId);
                                                                                 $productPrice = floatval(
-                                                                                    $item->price,
+                                                                                    $product->price,
                                                                                 );
                                                                                 $quantity = intval($item->quantity);
                                                                                 $totalAmount =
@@ -182,7 +184,7 @@
                                                                             @endphp
                                                                             <tr>
                                                                                 <td>{{ $i++ }}</td>
-                                                                                <td>{{ $product->category->name }}</td>
+                                                                                <td>{{ $product->name }}</td>
                                                                                 <td>{{ $product->name }}</td>
                                                                                 <td>{{ $product->unit->name }}</td>
                                                                                 <td>{{ $quantity }}</td>

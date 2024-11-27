@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Admin - @yield('title') </title>
+    <title> @yield('title') </title>
     <link rel="icon" type="image/x-icon" href="{{ asset('backend/assets/src/assets/img/favicon.ico') }}" />
     <link href="{{ asset('backend/assets/layouts/vertical-light-menu/css/light/loader.css') }}" rel="stylesheet"
         type="text/css" />
@@ -66,7 +66,7 @@
     <link href="{{ asset('backend/assets/src/plugins/src/font-icons/fontawesome/css/fontawesome.css') }}"
         rel="stylesheet" type="text/css">
     <!-- Scripts -->
-    @yield('style') 
+    @yield('style')
     @vite(['resources/js/app.js'])
 </head>
 
@@ -178,7 +178,7 @@
     <script src="{{ asset('backend/assets/src/plugins/src/table/datatable/button-ext/buttons.print.min.js') }}"></script>
     <script src="{{ asset('backend/assets/src/plugins/src/table/datatable/custom_miscellaneous.js') }}"></script>
 
-@yield('script') 
+@yield('script')
     <!-- END PAGE LEVEL SCRIPTS -->
 
 </body>
