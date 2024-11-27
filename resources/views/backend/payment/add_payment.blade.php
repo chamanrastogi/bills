@@ -3,9 +3,7 @@
 
 
     <div class="seperator-header layout-top-spacing">
-        <a href="{{ route('blog.index') }}">
-            <h4 class="">Show Blog</h4>
-        </a>
+       
     </div>
     <div class="page-content">
 
@@ -13,10 +11,10 @@
             <div class="col-md-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h6 class="card-title fw-bold">Add Post</h6>
-                        
-                        {{-- resources/views/components/backend/backend_component/blog-form.blade.php --}}
-                        <x-backend.backend_component.blog-form :$blogCategories :$postTags  :isEdit="false" />
+                        <h6 class="card-title fw-bold">Add Payment</h6>
+                        {{dd($customer_id)}}
+                        {{-- resources/views/components/backend/backend_component/payment-form.blade.php --}}
+                        <x-backend.backend_component.payment-form :$payment_modes :$customer_id  :isEdit="false" />
 
                     </div>
                 </div>

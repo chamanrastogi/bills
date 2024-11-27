@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('declaration', 255)->nullable(); // Declaration column (required)
             $table->string('message', 255)->nullable();  // Message column (required)
             $table->string('bank_qr_code', 255)->nullable();  // Bank QR Code column
+            $table->string('payment_mode', 255)->nullable();  // Bank QR Code column
          });
     }
 

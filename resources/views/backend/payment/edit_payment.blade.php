@@ -12,8 +12,8 @@
                 <div class="card">
                     <div class="card-body">
                         <h6 class="card-title fw-bold">Edit Blog </h6>
-                        {{-- resources/views/components/backend/backend_component/blog-form.blade.php --}}
-                        <x-backend.backend_component.blog-form :$blogCategories :$postTags :$blog
+                        {{-- resources/views/components/backend/backend_component/payment-form.blade.php --}}
+                        <x-backend.backend_component.payment-form :$payment_mode  :$payment
                             :isEdit="true" />
                         
                         </div>

@@ -3,7 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
-use App\Http\Controllers\Backend\UserRoleController;
+use App\Http\Controllers\Backend\PaymentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\RedirectIfAuthenticated;
@@ -56,7 +56,8 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::resource('customers', CustomerController::class);
     Route::post('/customers/status', [CustomerController::class, 'StatusUpdate'])->name('customer.status');
     Route::post('/customers/delete', [CustomerController::class, 'Delete'])->name('customer.delete');
-
+    Route::get('/customers/payment/{customer}', [PaymentController::class, 'Addpayment'])->name('payment.add');
+    Route::post('/customers/payment/{customer}', [PaymentController::class, 'Addpayment'])->name('payment.store');
      // SMTP and Site Setting  All Route
     Route::controller(SettingController::class)->group(function () {
         Route::get('/site/setting', 'SiteSetting')->name('site.setting');

@@ -298,5 +298,14 @@
         </div>
     </div>
 </div>
+<div class="row mb-2">
+    <div class="col-12">
+        <div class="mb-3"> {!! Form::label('payment_mode', 'Payment Mode', ['class' => 'form-label']) !!}
+            {!! Form::text('payment_mode', $sitesetting->payment_mode ?? null, [
+                'class' => 'form-control',
+                'placeholder' => 'Payment Mode',
+            ]) !!}</div>
+    </div>
+</div>
 {!! Form::submit('Submit', ['class' => 'btn btn-primary _effect--ripple waves-effect waves-light']) !!}
 {{ Form::close() }}

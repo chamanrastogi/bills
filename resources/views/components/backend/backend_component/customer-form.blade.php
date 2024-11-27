@@ -50,8 +50,8 @@
     
     </div></div>
     <div class="col-6"><div class="mb-3">
-        {!! Form::label('phone', 'Opening Balance', ['class' => 'form-label']) !!}
-        {!! Form::text('opening_balance', $customer->opening_balance ?? null, [
+        {!! Form::label('phone', 'Opening Balance -('. MONEY.')', ['class' => 'form-label']) !!}
+        {!! Form::number('opening_balance', $customer->opening_balance ?? null, [
             'class' => 'form-control',           
             'placeholder' => 'Opening Balance',
         ]) !!}

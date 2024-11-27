@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Backend;
 
+use App\Http\Controllers\Controller;
+use App\Models\SiteSetting;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 
@@ -18,9 +20,12 @@ class PaymentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function Addpayment($customer)
     {
-        //
+        $payment_modes = SiteSetting::select('payment_mode')->find(1);
+        $payment_modes =explode(",", $payment_modes);
+        $customer_id=$customer;
+        return view('backend.payment.add_payment', compact('payment_modes','customer_id'));
     }
 
     /**
