@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('phone');
             $table->string('address')->nullable();
             $table->string('bill_address')->nullable();
+            $table->integer('opening_balance')->default(0);
             $table->boolean('status')->default(0);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();

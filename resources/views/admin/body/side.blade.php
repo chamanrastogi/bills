@@ -45,45 +45,47 @@
                  </div>
              </li>
 
+             @if (Auth::id() === 1)
+                 <x-backend.backend_component.side-menu-item permission="category.menu" routeId="category"
+                     icon="menu" label="Category" :submenu="[
+                         ['route' => 'category.create', 'label' => 'Add Category', 'permission' => 'category.create'],
+                         ['route' => 'category.index', 'label' => 'Show Category', 'permission' => 'category.index'],
+                     ]" :activeRoutes="['admin/category']" />
 
-             <x-backend.backend_component.side-menu-item permission="category.menu" routeId="category" icon="menu"
-                 label="Category" :submenu="[
-                     ['route' => 'category.create', 'label' => 'Add Category', 'permission' => 'category.create'],
-                     ['route' => 'category.index', 'label' => 'Show Category', 'permission' => 'category.index'],
-                 ]" :activeRoutes="['admin/category']" />
-
-             <x-backend.backend_component.side-menu-item permission="products.menu" routeId="product" icon="menu"
-                 label="Product" :submenu="[
-                     ['route' => 'products.create', 'label' => 'Add Product', 'permission' => 'products.create'],
-                     ['route' => 'products.index', 'label' => 'Show Product', 'permission' => 'products.index'],
-                 ]" :activeRoutes="['admin/products']" />
-             <x-backend.backend_component.side-menu-item permission="units.menu" routeId="color" icon="menu"
-                 label="Unit" :submenu="[
-                     ['route' => 'units.create', 'label' => 'Add Unit', 'permission' => 'units.create'],
-                     ['route' => 'units.index', 'label' => 'Show Unit', 'permission' => 'units.index'],
-                 ]" :activeRoutes="['admin/units']" />
+                 <x-backend.backend_component.side-menu-item permission="products.menu" routeId="product" icon="menu"
+                     label="Product" :submenu="[
+                         ['route' => 'products.create', 'label' => 'Add Product', 'permission' => 'products.create'],
+                         ['route' => 'products.index', 'label' => 'Show Product', 'permission' => 'products.index'],
+                     ]" :activeRoutes="['admin/products']" />
+                 <x-backend.backend_component.side-menu-item permission="units.menu" routeId="color" icon="menu"
+                     label="Unit" :submenu="[
+                         ['route' => 'units.create', 'label' => 'Add Unit', 'permission' => 'units.create'],
+                         ['route' => 'units.index', 'label' => 'Show Unit', 'permission' => 'units.index'],
+                     ]" :activeRoutes="['admin/units']" />
+             @endif
              <x-backend.backend_component.side-menu-item permission="customers.menu" routeId="customer" icon="menu"
                  label="Customer" :submenu="[
                      ['route' => 'customers.create', 'label' => 'Add Customer', 'permission' => 'customers.create'],
                      ['route' => 'customers.index', 'label' => 'Show Customer', 'permission' => 'customers.index'],
                  ]" :activeRoutes="['admin/customers']" />
-
-             <x-backend.backend_component.side-menu-item permission="admin.menu" routeId="admin" icon="menu"
-                 label="Manage Users" :submenu="[
-                     ['route' => 'add.admin', 'label' => 'Add User', 'permission' => 'add.admin'],
-                     ['route' => 'all.admin', 'label' => 'Show Admin Users', 'permission' => 'all.admin'],
-                     //  ['route' => 'all.users', 'label' => 'Show Users', 'permission' => 'all.users'],
-                 ]" :activeRoutes="['admin/add/admin', 'admin/all/admin', 'admin/users']" :expandedRoutes="['admin/add/admin']" />
-
+             @if (Auth::id() === 1)
+                 <x-backend.backend_component.side-menu-item permission="admin.menu" routeId="admin" icon="menu"
+                     label="Manage Users" :submenu="[
+                         ['route' => 'add.admin', 'label' => 'Add User', 'permission' => 'add.admin'],
+                         ['route' => 'all.admin', 'label' => 'Show Admin Users', 'permission' => 'all.admin'],
+                         //  ['route' => 'all.users', 'label' => 'Show Users', 'permission' => 'all.users'],
+                     ]" :activeRoutes="['admin/add/admin', 'admin/all/admin', 'admin/users']" :expandedRoutes="['admin/add/admin']" />
+             @endif
 
              <x-backend.backend_component.side-menu-item permission="site.menu" routeId="site.setting" icon="settings"
                  label="Settings" :submenu="[]" :activeRoutes="[]" :expandedRoutes="[]" />
+             @if (Auth::id() === 1)
+                 <x-backend.backend_component.side-menu-item permission="bill.menu" routeId="billing.index"
+                     icon="book" label="Genrate Bill" :submenu="[]" :activeRoutes="[]" :expandedRoutes="[]" />
 
-             <x-backend.backend_component.side-menu-item permission="bill.menu" routeId="billing.index" icon="book"
-                 label="Genrate Bill" :submenu="[]" :activeRoutes="[]" :expandedRoutes="[]" />
-
-             <x-backend.backend_component.side-menu-item permission="bill.menu" routeId="billing.show" icon="book"
-                 label="All Billing" :submenu="[]" :activeRoutes="[]" :expandedRoutes="[]" />
+                 <x-backend.backend_component.side-menu-item permission="bill.menu" routeId="billing.show"
+                     icon="book" label="All Billing" :submenu="[]" :activeRoutes="[]" :expandedRoutes="[]" />
+             @endif
          </ul>
 
      </nav>
