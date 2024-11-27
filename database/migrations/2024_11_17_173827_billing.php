@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id('id');
             $table->string('cart',500);
             $table->integer('discount');
+            $table->string('discount_amount',100);            
             $table->integer('tax');
+            $table->string('tax_amount',100);
             $table->integer('grand_total');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();

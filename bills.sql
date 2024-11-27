@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 24, 2024 at 06:24 PM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.2.0
+-- Generation Time: Nov 27, 2024 at 10:20 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -29,16 +29,23 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `billing` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `cart` varchar(500) NOT NULL,
-  `discount` int(11) NOT NULL,
-  `discount_amount` varchar(50) NOT NULL,
-  `tax` int(11) NOT NULL,
-  `tax_amount` varchar(50) NOT NULL,
-  `grand_total` varchar(50) NOT NULL,
   `customer_id` int(11) NOT NULL,
+  `cart` varchar(1000) NOT NULL,
+  `discount` int(11) NOT NULL,
+  `discount_amount` varchar(100) NOT NULL,
+  `tax` int(11) NOT NULL,
+  `tax_amount` varchar(100) NOT NULL,
+  `grand_total` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `billing`
+--
+
+INSERT INTO `billing` (`id`, `customer_id`, `cart`, `discount`, `discount_amount`, `tax`, `tax_amount`, `grand_total`, `created_at`, `updated_at`) VALUES
+(2, 1, '[{\"productId\":\"14\",\"quantity\":23,\"price\":4},{\"productId\":\"17\",\"quantity\":14,\"price\":56},{\"productId\":\"17\",\"quantity\":12,\"price\":56}]', 0, '0', 0, '0', 1548, '2024-11-27 09:01:16', '2024-11-27 09:01:16');
 
 -- --------------------------------------------------------
 
@@ -49,7 +56,7 @@ CREATE TABLE `billing` (
 CREATE TABLE `categories` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(100) NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT 0
+  `status` varchar(255) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -57,8 +64,13 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`, `status`) VALUES
-(1, 'Hardware', 0),
-(2, 'Aluminium', 0);
+(1, 'Upvc Windows & Door Manufacturer', '0'),
+(2, 'Aluminium Partition & Window Elevation', '0'),
+(3, 'Aluminium Powder Coating Section', '0'),
+(4, 'Exclusive Hardware & Aluminium', '0'),
+(5, 'Acp Composite Panel', '0'),
+(6, 'Hpl Composite Panel', '0'),
+(7, 'Technologiesa', '0');
 
 -- --------------------------------------------------------
 
@@ -83,72 +95,7 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `name`, `email`, `phone`, `address`, `bill_address`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'AK ENTERPRISES ', '', '7999512063', 'NAGOD ', 'NAGOD ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(2, 'AKRITI OFSET ', '', '9425144921', 'CHHATARPUR', 'CHHATARPUR', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(3, 'ALI GLASS ', '', '7007058472', 'MAHOBA ', 'MAHOBA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(4, 'ALISHA TRADERS ', '', '9369456803', 'MAURANIPUR ', 'MAURANIPUR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(5, 'ANIL STEEL ', '', '8354842092', 'BANDA', 'BANDA', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(6, 'ARUN PRAJAPATI  ', '', '9131704618', 'BIJAWAR ', 'BIJAWAR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(7, 'ARVINDRA VISHWAKARMA ', '', '8839028462', 'BIJAWAR ', 'BIJAWAR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(8, 'ARVINDRA VISHWAKARMA ', '', '7989203088', 'SATAI ROAD ', 'SATAI ROAD ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(9, 'ASHISH SAHU BIJAWAR', '', '6266612032', 'BIJAWAR ', 'BIJAWAR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(10, 'BAHUBALI ALUMINIUM ', '', '7000344109', 'CHHATARPUR ', 'CHHATARPUR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(11, 'BHARGAV GLASS ', '', '9826226264', 'BUS STAND', 'BUS STAND', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(12, 'CAHNDU SONI ', '', '9893869764', 'BUS STAND', 'BUS STAND', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(13, 'CHHATRAPAL ', '', '8359039884', 'NOWGONG ', 'NOWGONG ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(14, 'CHHOTU VISHWAKARMA ', '', '8076729942', 'PALERA ', 'PALERA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(15, 'DEVENDRA VISHWAKARMA', '', '9752523161', 'SAGAR ROAD ', 'SAGAR ROAD ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(16, 'GAYTRI GLASS ', '', '8871512405', 'KHAJURAHO ', 'KHAJURAHO ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(17, 'GOVINDRA VISHWAKARMA ', '', '9131418738', 'PATHAPUR ', 'PATHAPUR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(18, 'GUPTA ALUMINIUM ', '', '7999753076', 'BIJAWAR ', 'BIJAWAR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(19, 'GUPTA TRADERS ', '', '7000483128', 'PANNA ', 'PANNA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(20, 'HARI OM ARJARIYA  ', '', '9179447950', 'SATAI ROAD ', 'SATAI ROAD ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(21, 'HARSHITA ALUMINIUM', '', '7860690111', 'MAURANIPUR ', 'MAURANIPUR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(22, 'HRADESH SHRIWAS ', '', '9098169503', 'HARPALPUR ', 'HARPALPUR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(23, 'JAAKIR KHAN', '', '9981429529', 'KHARGAPUR ', 'KHARGAPUR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(24, 'JAGDISH PATEL ', '', '9993048218', 'SARBAI', 'SARBAI', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(25, 'KAILASH YADAV ', '', '9826309351', 'SAGAR ROAD ', 'SAGAR ROAD ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(26, 'KALPNA ALUMINIUMM ', '', '8699152657', 'ATARRA ', 'ATARRA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(27, 'KAVYA GLASS ', '', '7900051351', 'NARAINI', 'NARAINI', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(28, 'LOKESH PANCHAL ', '', '9621262656', 'RATH', 'RATH', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(29, 'LOVKUSH FURNITURE ', '', '7879794051', 'DEVENDRANAGAR ', 'DEVENDRANAGAR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(30, 'M K FURNITURE ', '', '9935576860', 'PANWARI', 'PANWARI', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(31, 'MAA GAURI ', '', '8871191500', 'NOWGONG ', 'NOWGONG ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(32, 'MAANAK LAL VISHWAKARMA ', '', '9109596259', 'BADA MALHARA ', 'BADA MALHARA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(33, 'MAHAKAL HARDWARE', '', '8827010029', 'KHARGAPUR ', 'KHARGAPUR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(34, 'MAHESH PATHAK ', '', '9993862418', 'CHANDNAGAR ', 'CHANDNAGAR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(35, 'MAHESH VISHWAKARMA ', '', '8517087472', 'PANNA ', 'PANNA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(36, 'MAKHAN ', '', '9757937253', 'NAGOD ', 'NAGOD ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(37, 'MANISH SAHU ', '', '9131615422', 'BIJAWAR ', 'BIJAWAR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(38, 'MANSOORI ', '', '9111877698', 'HARPALPUR ', 'HARPALPUR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(39, 'MODI TRADERS ', '', '9425877981', 'PANNA ', 'PANNA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(40, 'MOH. NADIM', '', '9795697803', 'MAHOBA ', 'MAHOBA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(41, 'MUKESH VISHWAKARMA ', '', '9893061213', 'KHAJURAHO ', 'KHAJURAHO ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(42, 'NANDINI ASSOCIATE ', '', '8319630743', 'SATNA ', 'SATNA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(43, 'NARSINGH ALUMINIUM ', '', '9425880395', 'CHHATARPUR ', 'CHHATARPUR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(44, 'NEERAJ VISHWAKARMA ', '', '8770618106', 'NOWGONG ', 'NOWGONG ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(45, 'NIKHIL FEBRICATION ', '', '7000401141', 'SAGAR ROAD ', 'SAGAR ROAD ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(46, 'NISHAR BHAI ', '', '7566095551', 'NOWGONG ', 'NOWGONG ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(47, 'OM FURNITURE', '', '8787075341', 'MAHOBA ', 'MAHOBA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(48, 'PATHAK TRADERS ', '', '9827848892', 'NAGOD ', 'NAGOD ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(49, 'PURAN KUSHWAHA ', '', '9399617312', 'BUS STAND ', 'BUS STAND ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(50, 'RACHNA GLASS ', '', '9993262261', 'NOWGONG ', 'NOWGONG ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(51, 'RAHUL PANCHAL ', '', '7697862529', 'SAGAR ROAD ', 'SAGAR ROAD ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(52, 'RAJ SHREE ', '', '8962287033', 'HARPALPUR ', 'HARPALPUR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(53, 'RAMSHARAN VISHWAKARMA', '', '6264271625', 'BADA MALHARA ', 'BADA MALHARA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(54, 'RATNA VISHWAKARMA  ', '', '7869573493', 'BADA MALHARA ', 'BADA MALHARA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(55, 'RINKU VISHWAKARMA ', '', '9501662774', 'SATAI ROAD ', 'SATAI ROAD ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(56, 'SANJAY SHARMA ', '', '9893900660', 'CHHATARPUR ', 'CHHATARPUR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(57, 'SANTOSH KUMAR SAHU ', '', '9685896757', 'SAGAR ROAD ', 'SAGAR ROAD ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(58, 'SANTOSH KUSHWAHA ', '', '8305767398', 'PANNA ', 'PANNA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(59, 'SANTOSH MAHARAJ ', '', '9131635643', 'BUS STAND ', 'BUS STAND ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(60, 'SHIDDHI VINAYAK  ', '', '8602364854', 'SASGAR ROAD ', 'SASGAR ROAD ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(61, 'SHIV KRIPA ALUMINIUM  ', '', '7241154950', 'BRAHMAKUMARI AASHRAM ', 'BRAHMAKUMARI AASHRAM ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(62, 'SUNIL PATEL ', '', '8120764891', 'CHANDLA ', 'CHANDLA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(63, 'SURESH VISHWAKARMA ', '', '9165018821', 'AJAYGARH', 'AJAYGARH', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(64, 'TEJ KUMAR ', '', '9575233134', 'SAGAR ROAD ', 'SAGAR ROAD ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(65, 'VISHWAKARMA ENTERPRISES ', '', '9993909891', 'PANNA ', 'PANNA ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(66, 'YASH ALUMINIUM ', '', '7067333166', 'CHHATARPUR ', 'CHHATARPUR ', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00');
+(1, 'Mohan', 'kumar', '2233333333', 'asdasd', NULL, 0, '2024-11-12 04:55:04', '2024-11-12 04:57:44');
 
 -- --------------------------------------------------------
 
@@ -221,12 +168,12 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (2, '2014_10_12_100000_create_password_reset_tokens_table', 1),
 (3, '2019_08_19_000000_create_failed_jobs_table', 1),
 (4, '2019_12_14_000001_create_personal_access_tokens_table', 1),
-(5, '2023_11_28_131149_create_site_settings_table', 1),
-(6, '2024_09_13_153402_create_categories_table', 1),
-(7, '2024_11_11_112538_create_products_table', 1),
-(8, '2024_11_12_093838_create_customers_table', 1),
-(9, '2024_11_16_131427_create_colors_table', 1),
-(10, '2024_11_17_173827_billing', 1);
+(5, '2024_09_13_153402_create_categories_table', 14),
+(84, '2023_11_28_131149_create_site_settings_table', 15),
+(85, '2024_11_11_112538_create_products_table', 15),
+(86, '2024_11_12_093838_create_customers_table', 16),
+(87, '2024_11_16_131427_create_colors_table', 17),
+(88, '2024_11_17_173827_billing', 18);
 
 -- --------------------------------------------------------
 
@@ -239,6 +186,125 @@ CREATE TABLE `password_reset_tokens` (
   `token` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `permissions`
+--
+
+CREATE TABLE `permissions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `guard_name` varchar(255) NOT NULL,
+  `group_name` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `permissions`
+--
+
+INSERT INTO `permissions` (`id`, `name`, `guard_name`, `group_name`, `created_at`, `updated_at`) VALUES
+(1, 'smtp.menu', 'web', 'smtp', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(2, 'smtp.setting', 'web', 'smtp', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(3, 'site.menu', 'web', 'site', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(4, 'site.setting', 'web', 'site', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(5, 'role.menu', 'web', 'role', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(6, 'role.index', 'web', 'role', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(7, 'role.create', 'web', 'role', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(8, 'role.edit', 'web', 'role', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(9, 'role.delete', 'web', 'role', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(10, 'permission.index', 'web', 'role', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(11, 'permission.create', 'web', 'role', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(12, 'permission.edit', 'web', 'role', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(13, 'permission.delete', 'web', 'role', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(14, 'add.roles.permission', 'web', 'role', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(15, 'all.roles.permission', 'web', 'role', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(16, 'admin.menu', 'web', 'admin', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(17, 'all.admin', 'web', 'admin', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(18, 'add.admin', 'web', 'admin', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(19, 'image_preset.menu', 'web', 'image_preset', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(20, 'image_preset.index', 'web', 'image_preset', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(21, 'image_preset.create', 'web', 'image_preset', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(22, 'image_preset.edit', 'web', 'image_preset', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(23, 'image_preset.status', 'web', 'image_preset', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(24, 'image_preset.delete', 'web', 'image_preset', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(25, 'module.menu', 'web', 'module', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(26, 'module.index', 'web', 'module', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(27, 'module.create', 'web', 'module', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(28, 'module.delete', 'web', 'module', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(29, 'pages.menu', 'web', 'pages', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(30, 'pages.create', 'web', 'pages', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(31, 'pages.index', 'web', 'pages', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(32, 'pages.edit', 'web', 'pages', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(33, 'pages.status', 'web', 'pages', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(34, 'pages.delete', 'web', 'pages', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(35, 'blog.menu', 'web', 'post', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(36, 'blog.index', 'web', 'post', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(37, 'blog.create', 'web', 'post', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(38, 'blog.edit', 'web', 'post', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(39, 'blog.delete', 'web', 'post', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(40, 'tag.menu', 'web', 'tag', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(41, 'tag.index', 'web', 'tag', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(42, 'tag.create', 'web', 'tag', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(43, 'tag.edit', 'web', 'tag', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(44, 'tag.delete', 'web', 'tag', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(45, 'menus.menu', 'web', 'menus', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(46, 'menus.index', 'web', 'menus', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(47, 'menus.create', 'web', 'menus', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(48, 'menus.edit', 'web', 'menus', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(49, 'menus.delete', 'web', 'menus', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(50, 'menus.status', 'web', 'menus', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(51, 'menugroup.menu', 'web', 'menugroup', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(52, 'menugroup.index', 'web', 'menugroup', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(53, 'menugroup.create', 'web', 'menugroup', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(54, 'menugroup.edit', 'web', 'menugroup', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(55, 'menugroup.delete', 'web', 'menugroup', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(56, 'testimonials.menu', 'web', 'testimonials', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(57, 'testimonials.create', 'web', 'testimonials', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(58, 'testimonials.index', 'web', 'testimonials', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(59, 'testimonials.edit', 'web', 'testimonials', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(60, 'testimonials.delete', 'web', 'testimonials', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(61, 'testimonials.status', 'web', 'testimonials', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(62, 'all.users', 'web', 'admin', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(63, 'blogcategory.menu', 'web', 'blogcategory', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(64, 'blogcategory.create', 'web', 'blogcategory', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(65, 'blogcategory.index', 'web', 'blogcategory', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(66, 'blogcategory.edit', 'web', 'blogcategory', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(67, 'blogcategory.delete', 'web', 'blogcategory', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(68, 'blogcategory.status', 'web', 'blogcategory', '2024-09-12 09:00:44', '2024-09-12 09:00:44'),
+(69, 'category.menu', 'web', 'post', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(70, 'category.index', 'web', 'post', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(71, 'category.create', 'web', 'post', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(72, 'category.edit', 'web', 'post', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(73, 'category.delete', 'web', 'post', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(74, 'portfolio.menu', 'web', 'portfolio', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(75, 'portfolio.index', 'web', 'portfolio', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(76, 'portfolio.create', 'web', 'portfolio', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(77, 'portfolio.edit', 'web', 'portfolio', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(78, 'portfolio.delete', 'web', 'portfolio', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(79, 'services.menu', 'web', 'services', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(80, 'services.index', 'web', 'services', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(81, 'services.create', 'web', 'services', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(82, 'services.edit', 'web', 'services', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(83, 'services.delete', 'web', 'services', '2024-09-13 10:41:45', '2024-09-13 10:41:45'),
+(84, 'category.status', 'web', 'category', '2024-09-13 10:58:36', '2024-09-13 10:58:36'),
+(85, 'portfolio.status', 'web', 'portfolio', '2024-09-13 10:58:48', '2024-09-13 10:58:48'),
+(86, 'services.status', 'web', 'serviecs', '2024-09-13 10:59:00', '2024-09-13 10:59:00'),
+(87, 'skill.menu', 'web', 'skill', '2024-09-14 11:47:03', '2024-09-14 11:47:03'),
+(88, 'skill.create', 'web', 'skill', '2024-09-14 11:47:04', '2024-09-14 11:47:04'),
+(89, 'skill.index', 'web', 'skill', '2024-09-14 11:47:04', '2024-09-14 11:47:04'),
+(90, 'skill.edit', 'web', 'skill', '2024-09-14 11:47:04', '2024-09-14 11:47:04'),
+(91, 'skill.delete', 'web', 'skill', '2024-09-14 11:47:04', '2024-09-14 11:47:04'),
+(92, 'skill.status', 'web', 'skill', '2024-09-14 11:47:04', '2024-09-14 11:47:04'),
+(93, 'whychoose.menu', 'web', 'whychoose', '2024-09-14 11:47:04', '2024-09-14 11:47:04'),
+(94, 'whychoose.create', 'web', 'whychoose', '2024-09-14 11:47:04', '2024-09-14 11:47:04'),
+(95, 'whychoose.index', 'web', 'whychoose', '2024-09-14 11:47:04', '2024-09-14 11:47:04'),
+(96, 'whychoose.edit', 'web', 'whychoose', '2024-09-14 11:47:04', '2024-09-14 11:47:04'),
+(97, 'whychoose.delete', 'web', 'whychoose', '2024-09-14 11:47:04', '2024-09-14 11:47:04'),
+(98, 'whychoose.status', 'web', 'whychoose', '2024-09-14 11:47:04', '2024-09-14 11:47:04');
 
 -- --------------------------------------------------------
 
@@ -283,109 +349,31 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `category_id`, `name`, `image`, `price`, `unit_id`, `text`, `status`, `created_at`, `updated_at`) VALUES
-(2, 1, 'SCREW 19X8 STAR ', '', 230, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(3, 1, 'SCREW 13X6 STAR ', '', 160, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(4, 1, 'SCREW  60X6 STAR ', '', 170, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(5, 1, 'SCREW 75X8 STAR ', '', 280, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(6, 1, 'SCREW 75x10 STAR ', '', 300, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(7, 1, 'SCREW 75X10 WOODEN', '', 200, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(8, 1, 'SCREW 60X10 STAR ', '', 180, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(9, 1, 'SCREW 19X8 SELF ', '', 320, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(10, 1, 'SCREW 13X8 SELF  ', '', 300, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(11, 1, 'SCREW 60X8 STAR ', '', 300, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(12, 1, 'SCREW 2\" BLACK  ', '', 380, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(13, 1, 'SCREW 1.50\" DIRECT ', '', 380, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(14, 1, 'SCREW 25X6 STAR  ', '', 260, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(15, 1, 'GULLI ', '', 35, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(16, 1, '4\" TOWER BOLT BROWN', '', 30, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(17, 1, '4\" TOWER BOLT BROWN', '', 300, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(18, 1, '4\" TOWER BOLT SILVER', '', 30, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(19, 1, '4\" TOWER BOLT SILVER', '', 300, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(20, 1, '4\" HANDLE BROWN ', '', 15, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(21, 1, '4\" HANDLE BROWN ', '', 150, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(22, 1, '4\" HANDLE SILVER ', '', 15, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(23, 1, '4\" HANDLE SILVER ', '', 150, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(24, 1, '6\" TOWER BOLT SILVER ', '', 30, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(25, 1, '6\" TOWER BOLT SILVER ', '', 350, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(26, 1, '6\" TOWER BOLT BROWN', '', 30, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(27, 1, '6\" TOWER BOLT BROWN', '', 350, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(28, 1, '6\" TOWER BOLT LIGHT SILVER ', '', 30, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(29, 1, '6\" TOWER BOLT LIGHT SILVER ', '', 300, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(30, 1, '6\" TOWER BOLT LIGHT BROWN', '', 30, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(31, 1, '6\" TOWER BOLT LIGHT BROWN', '', 300, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(32, 1, 'G WEARING SET ', '', 200, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(33, 1, 'DEN GARARI', '', 8, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(34, 1, 'DEN GARARI', '', 550, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(35, 1, 'TPI GARARI', '', 10, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(36, 1, 'TPI GARARI', '', 100, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(37, 1, 'PVC STAR LOCK', '', 20, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(38, 1, 'PVC STAR LOCK', '', 380, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(39, 1, 'STAR LOCK ALBOSS', '', 40, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(40, 1, 'STAR LOCK ALBOSS', '', 750, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(41, 1, 'SADA LOCK', '', 100, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(42, 1, 'SADA LOCK', '', 480, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(43, 1, 'AKADI LOCK', '', 100, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(44, 1, 'AKADI LOCK', '', 720, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(45, 1, 'AC RUBBER ', '', 200, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(46, 1, 'MOSQUITO JAALI ', '', 15, 4, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(47, 1, 'RUBBER ', '', 110, 2, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(48, 1, 'SADA AKADI', '', 15, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(49, 1, 'SADA AKADI', '', 160, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(50, 1, 'BROWN AKADI ', '', 15, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(51, 1, 'BROWN AKADI ', '', 160, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(52, 1, 'IVORY AKADI', '', 15, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(53, 1, 'IVORY AKADI', '', 160, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(54, 1, 'SILVER STOPER ', '', 50, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(55, 1, 'SILVER STOPER ', '', 500, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(56, 1, 'BROWN STOPER ', '', 50, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(57, 1, 'BROWN STOPER ', '', 500, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(58, 1, 'CHAMPION STOPER ', '', 60, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(59, 1, 'CHAMPION STOPER ', '', 550, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(60, 1, '3\" STEEL KABJAA ', '', 8, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(61, 1, '3\" STEEL KABJAA ', '', 190, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(62, 1, '4\" SILVER KABJAA ', '', 30, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(63, 1, '4\" SILVER KABJAA ', '', 360, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(64, 1, '4\" BROWN KABJAA ', '', 30, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(65, 1, '4\" BROWN KABJAA ', '', 400, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(66, 1, '4\" IVORY KABJAA ', '', 30, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(67, 1, '4\" IVORY KABJAA ', '', 400, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(68, 1, '4\" CHAMPION KABJAA ', '', 35, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(69, 1, '4\" CHAMPION KABJAA ', '', 450, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(70, 1, '6\" ALDROP SILVER', '', 50, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(71, 1, '6\" ALDROP SILVER', '', 500, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(72, 1, '6\" ALDROP BROWN', '', 55, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(73, 1, '6\" ALDROP BROWN', '', 550, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(74, 1, '6\" ALDROP IVORY', '', 55, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(75, 1, '6\" ALDROP IVORY', '', 550, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(76, 1, '8\" ALDROP SILVER', '', 70, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(77, 1, '8\" ALDROP SILVER', '', 0, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(78, 1, '8\" ALDROP BROWN', '', 80, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(79, 1, '8\" ALDROP BROWN', '', 0, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(80, 1, '8\" ALDROP IVORY', '', 80, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(81, 1, '8\" ALDROP IVORY', '', 0, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(82, 1, '10\" ALDROP SILVER', '', 140, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(83, 1, '10\" ALDROP SILVER', '', 0, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(84, 1, '10\" ALDROP BROWN', '', 140, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(85, 1, '10\" ALDROP BROWN', '', 0, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(86, 1, '10\" ALDROP IVORY', '', 140, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(87, 1, '10\" ALDROP IVORY', '', 0, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(88, 1, '12\" ALDROP SILVER', '', 160, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(89, 1, '12\" ALDROP SILVER', '', 0, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(90, 1, '12\" ALDROP BROWN', '', 160, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(91, 1, '12\" ALDROP BROWN', '', 0, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(92, 1, '12\" ALDROP IVORY', '', 160, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(93, 1, '12\" ALDROP IVORY', '', 0, 1, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(94, 1, 'E-CHANNEL SILVER', '', 180, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(95, 1, 'E-CHANNEL BROWN', '', 200, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(96, 1, 'E-CHANNEL INORY', '', 200, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(97, 1, 'E-CHANNEL CHAMPION', '', 220, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(98, 1, 'U- CHANNEL SILVER', '', 60, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(99, 1, 'U- CHANNEL BROWN', '', 70, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(100, 1, 'U- CHANNEL IVORY', '', 70, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(101, 1, 'U- CHANNEL CHAMPION', '', 80, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(102, 1, 'SILVER SPRAY ', '', 150, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(103, 1, 'BRWON SPRAY', '', 150, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(104, 1, 'IVORY SPRAY ', '', 150, 3, '', 11, '0000-00-00 00:00:00', '0000-00-00 00:00:00');
+(1, 1, 'SILVER ANODIDES 1 KG', '', 52, 0, 'Rem et deleniti et consequatur porro et deserunt sit. Quia est ducimus et aut cum illum. Odio modi mollitia et possimus sit pariatur.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(2, 4, 'Product 13', '', 89, 0, 'Rerum eos voluptates et quam ut consequatur sunt rerum. Qui tempora dignissimos sit in accusamus eveniet. Quod illum consequuntur ut quasi sunt dolorum. Ut nam ut architecto sed non ipsum.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(3, 3, 'Product 8', '', 21, 0, 'Nihil doloremque delectus voluptatem beatae reiciendis dolorem dicta laudantium. Culpa rem omnis expedita et necessitatibus eius. Illo aliquid in repellendus inventore ipsam fugit.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(4, 5, 'Product 29', '', 36, 0, 'Omnis sequi aut minima excepturi odio eum ipsam. Ex dicta voluptatem iusto exercitationem placeat et. Temporibus nemo unde quidem esse voluptate.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(5, 1, 'Product 39', '', 99, 0, 'Nisi sed eveniet ut ut aut quod voluptatem. Et recusandae illo et voluptates inventore. Non sed et dolorum aut distinctio fuga occaecati. Non expedita cumque laudantium recusandae.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(6, 1, 'Product 84', '', 28, 0, 'Id corrupti minus quia. Et nulla tenetur et. Minus impedit praesentium officiis dicta sunt.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(7, 6, 'Product 99', '', 16, 0, 'Temporibus voluptas eos suscipit hic nihil pariatur vero. Magni adipisci sed accusantium dolorem. Enim tenetur ut accusantium iusto officia.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(8, 3, 'Product 100', '', 51, 0, 'Qui id rerum et. Blanditiis ut et non suscipit sapiente sed vel. Quibusdam id et et consequuntur et id.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(9, 1, 'Product 69', '', 62, 0, 'Voluptas perspiciatis suscipit velit doloribus aut facere possimus. Corporis sed quae sapiente consequatur accusantium voluptatem. Fugiat et perspiciatis quam culpa.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(10, 3, 'Product 73', '', 32, 0, 'Nihil quia fuga dicta aut. Consequuntur doloremque deserunt aliquid qui perspiciatis tempora. Quasi voluptas aliquam quaerat culpa commodi. Porro inventore maxime quas vel.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(11, 3, 'Product 66', '', 99, 0, 'Qui quibusdam nesciunt sapiente aut tempore voluptas consequuntur est. Occaecati ipsum nihil eius ducimus. Qui cum est ex dolor sunt nisi. Voluptatem voluptatem consequatur necessitatibus delectus.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(12, 3, 'Product 49', '', 59, 0, 'Error aliquam quis nam qui temporibus ut. Nam iusto ea voluptatem in accusamus. Vitae assumenda temporibus a est libero dolore quo.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(13, 2, 'Product 72', '', 45, 0, 'Non sunt est ullam laudantium laborum non et. Eius eum minus sit nihil eum. Iste quibusdam saepe non ad.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(14, 5, 'Product 42', '', 4, 0, 'Magnam autem eius accusamus. Rerum dolor maxime vero possimus blanditiis est. Beatae aspernatur est hic quis dolor.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(15, 3, 'Product 94', '', 97, 0, 'Quas culpa cum non minima. Quia animi aut et. Dolore provident qui et. Delectus nihil tempore sequi ea. Nostrum dignissimos perspiciatis voluptatem sed. Quo dolores qui deleniti quibusdam quos aut.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(16, 1, 'Product 27', '', 52, 0, 'Ut aut dolores eum consectetur. Nemo et facilis explicabo sint modi mollitia. Expedita aut inventore sint magni ut quis dignissimos.', 0, '2024-11-12 14:14:59', '2024-11-22 07:57:46'),
+(17, 4, 'Product 57', '', 56, 0, 'Dignissimos facilis sint sint est. Recusandae perferendis nobis ducimus officia alias voluptatum illum eaque. Ea aut aliquam voluptate qui ipsum. Rerum numquam ut hic optio dolorem et.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(18, 1, 'Product 80', '', 75, 0, 'Provident earum iste in doloremque atque. Et eligendi reprehenderit et veniam. Ut nobis est quia autem sunt incidunt. Enim hic tenetur saepe iusto ducimus necessitatibus dolores.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(19, 6, 'Product 54', '', 34, 0, 'Tempora aut facere ut velit impedit. Earum possimus est dolorem sint sed hic eaque. Sit eum architecto qui tenetur sunt quisquam et. Reiciendis rerum iste illum culpa nemo quae rerum aperiam.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(20, 7, 'Product 68', '', 25, 0, 'Magnam voluptas amet eum sed dolore qui voluptatem. Aut vitae laudantium neque et quibusdam. Odio quasi veniam perspiciatis iure optio. Cumque autem deserunt eum doloremque ut minima accusamus.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(21, 1, 'Product 67', '', 28, 0, 'Eum veritatis tempore iste eum. Suscipit a est et aut. Corporis placeat consequuntur veniam.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(22, 1, 'Product 35', '', 15, 0, 'Aperiam soluta sapiente quo ratione quos in. Et eius dolores cum ipsum consectetur quis magni.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(23, 1, 'Product 98', '', 75, 0, 'Nulla ipsum eveniet et laudantium optio. Dolores quae sed rem aut. Assumenda voluptatum id ex.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(24, 5, 'Product 33', '', 48, 0, 'Sit omnis perspiciatis saepe quae est. Minus esse ipsum aspernatur ut. Voluptates eligendi beatae illum officiis explicabo qui ea. Maxime ut sint architecto non molestias.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
+(25, 4, 'Product 28', '', 60, 1, 'Dolor sed maiores minima beatae delectus quis sit. Sunt laudantium nihil enim libero sapiente aperiam. Earum inventore iste rerum sint et tenetur. Eveniet hic consequatur ullam sint qui.', 0, '2024-11-12 14:14:59', '2024-11-22 08:28:59');
 
 -- --------------------------------------------------------
 
@@ -400,27 +388,24 @@ CREATE TABLE `site_settings` (
   `site_title` varchar(100) NOT NULL,
   `app_name` varchar(100) DEFAULT NULL,
   `support_phone` varchar(50) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `tax` int(11) DEFAULT NULL,
+  `email` varchar(50) DEFAULT NULL,
+  `tax` int(11) NOT NULL,
   `address` varchar(255) DEFAULT NULL,
-  `gst` varchar(255) DEFAULT NULL,
+  `gst` varchar(100) DEFAULT NULL,
   `bank_name` varchar(100) DEFAULT NULL,
-  `bank_holder_name` varchar(100) DEFAULT NULL,
-  `bank_ifsc` varchar(50) DEFAULT NULL,
   `bank_account` varchar(100) DEFAULT NULL,
-  `bank_branch` varchar(100) DEFAULT NULL,
-  `pan_no` varchar(100) DEFAULT NULL,
-  `declaration` varchar(255) DEFAULT NULL,
-  `message` varchar(255) DEFAULT NULL,
-  `bank_qr_code` varchar(255) DEFAULT NULL
+  `bank_branch` varchar(150) DEFAULT NULL,
+  `pan_no` varchar(50) DEFAULT NULL,
+  `declaration` varchar(100) DEFAULT NULL,
+  `message` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `site_settings`
 --
 
-INSERT INTO `site_settings` (`id`, `logo`, `favicon`, `site_title`, `app_name`, `support_phone`, `email`, `tax`, `address`, `gst`, `bank_name`, `bank_holder_name`, `bank_ifsc`, `bank_account`, `bank_branch`, `pan_no`, `declaration`, `message`, `bank_qr_code`) VALUES
-(1, 'upload/template/thumbnail/1816024053765469.png', 'upload/template/thumbnail/1816024053787384.png', 'Hema Aluminium & Ply', 'Hema Aluminium & Ply', '94-2514-3331', 'hemaaluminiumchh31@gmail.com', 18, 'Sheikh Ki Bagia, Police Line Road, Chhatarpur HO, Chhatarpur - 471001 (Behind Saffron Lodge)', '23AFPPV1843J1Z1', 'ICICI Bank', 'Hema Aluminium & Ply', 'ICIC0000426', '042605001873', 'Chhatarpur', 'ICIC0000426', 'We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.', 'This is Computer Generated Invoice', 'upload/template/thumbnail/1816510426446627.jpeg');
+INSERT INTO `site_settings` (`id`, `logo`, `favicon`, `site_title`, `app_name`, `support_phone`, `email`, `tax`, `address`, `gst`, `bank_name`, `bank_account`, `bank_branch`, `pan_no`, `declaration`, `message`) VALUES
+(1, 'upload/template/thumbnail/1809981924661515.png', 'upload/template/thumbnail/1809981924671923.png', 'TUFF TWELVE PRIVATE LIMITE', 'TUFF TWELVE PRIVATE LIMITE', '99-5846-4102', 'info@demo.com', 0, 'asdsad', 'asdsa', 'bas', 'a2343ws', '3edf', '13344s', '3223', '');
 
 -- --------------------------------------------------------
 
@@ -439,10 +424,11 @@ CREATE TABLE `units` (
 --
 
 INSERT INTO `units` (`id`, `name`, `status`) VALUES
-(1, 'Box', 0),
-(2, 'KGS', 0),
-(3, 'Pcs', 0),
-(4, 'Sqf', 0);
+(1, 'Brown', 0),
+(2, 'Sliver', 0),
+(3, 'Ivory', 0),
+(4, 'Marvel', 0),
+(5, 'Wooden', 0);
 
 -- --------------------------------------------------------
 
@@ -473,7 +459,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `username`, `email`, `email_verified_at`, `password`, `photo`, `phone`, `top`, `about`, `role`, `status`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'admin', 'admin', 'hemaaluminiumchh31@gmail.com', NULL, '$2y$12$A1kHOF7jk/LhKheG1ns80uKXy2.2056AhIu2gES9b3ch/pBQVfcBS', 'upload/user/thumbnail/1815982330376496.png', '9425143331', 0, NULL, 'admin', 0, 'PcLMbcStvtgOg4eJwp0zh7caYN3Hh2ZBo2RGsxa7xZC6pVhPXGoLDgADSQfL', '2023-11-27 18:15:04', '2024-11-18 02:18:57');
+(1, 'admin', 'admin', 'admin@gmail.com', NULL, '$2y$12$dQN5u.bXyxKOIrdCUy1qrOhXDp8ZiqKXf7EJknImBkSfz5LTKLB/K', 'upload/user/thumbnail/1798391573232030.jpg', NULL, 0, NULL, 'admin', 0, 'WtrHtTCxjNCRyxZqmi6lkm9CI1F6rFHXACnbkCBagBvjAWrALLBxgDPNpAuw', '2023-11-27 23:45:04', '2024-05-07 11:04:17'),
+(2, 'hajari', 'admin2', 'test@gmail.com', NULL, '$2y$12$Yl/BCf6okAdG0BhmIOfzAeEiwS7jaQg8DRK7blpPloITzBhy/z76u', '', NULL, 0, NULL, 'admin', 0, NULL, '2024-11-27 03:36:13', '2024-11-27 03:39:49');
 
 --
 -- Indexes for dumped tables
@@ -490,7 +477,7 @@ ALTER TABLE `billing`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `categories_name_unique` (`name`);
+  ADD UNIQUE KEY `name` (`name`);
 
 --
 -- Indexes for table `customers`
@@ -524,6 +511,13 @@ ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`email`);
 
 --
+-- Indexes for table `permissions`
+--
+ALTER TABLE `permissions`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`);
+
+--
 -- Indexes for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
@@ -554,7 +548,9 @@ ALTER TABLE `units`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `users_email_unique` (`email`);
+  ADD UNIQUE KEY `users_email_unique` (`email`),
+  ADD UNIQUE KEY `username` (`username`),
+  ADD UNIQUE KEY `phone` (`phone`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -564,19 +560,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `billing`
 --
 ALTER TABLE `billing`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -594,7 +590,13 @@ ALTER TABLE `image_presets`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
+
+--
+-- AUTO_INCREMENT for table `permissions`
+--
+ALTER TABLE `permissions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -606,7 +608,7 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT for table `site_settings`
@@ -618,13 +620,13 @@ ALTER TABLE `site_settings`
 -- AUTO_INCREMENT for table `units`
 --
 ALTER TABLE `units`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
