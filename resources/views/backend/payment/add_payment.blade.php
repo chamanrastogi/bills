@@ -12,9 +12,9 @@
                 <div class="card">
                     <div class="card-body">
                         <h6 class="card-title fw-bold">Add Payment</h6>
-                        {{dd($customer_id)}}
+                     
                         {{-- resources/views/components/backend/backend_component/payment-form.blade.php --}}
-                        <x-backend.backend_component.payment-form :$payment_modes :$customer_id  :isEdit="false" />
+                        <x-backend.backend_component.payment-form :modes=$payment_modes :id=$customer_id  :isEdit="false" />
 
                     </div>
                 </div>

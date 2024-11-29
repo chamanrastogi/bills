@@ -1,13 +1,15 @@
 <?php
 
 use App\Http\Middleware\Role;
+use App\Models\Customer;
 use App\Models\Menu;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 
-const MONEY ='Rs.';
+const MONEY = 'Rs.';
+const MODE = 'Cash,Upi,Check';
 const BADGE = ['success', 'secondary', 'warning', 'primary'];
 const MENUTYPE = ['Page', 'Url', 'External Page', 'Category'];
 const LOADER = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-loader spin ms-2">
@@ -39,29 +41,29 @@ const CATEGORY = [
   3 => 'Category'
 ];
 const PERMISSIONS = [
-        "enquiry" => "Contact Enquiry",
-        "careerenquiry" => "Career Enquiry",
-        "menus" => "Menu",
-        "menugroup" => "Menu Group",
-        "serviecs" => "Serviecs",
-        "category" => "Category",
-        "portfolio" => "Portfolio",
-        "product" => "product",
-        "skill" => "Skill",
-        "whychoose" => "Whychoose",
-        "job_positions" => "Job Postions", // Corrected from duplicate
-        "pages" => "Pages",
-        "pagebanner" => "Page Banner",
-        "module" => "Module",
-        "testimonial" => "Testimonials",
-        "blogcategory" => "Blog Category",
-        "blog" => "Blog Post",
-        "tag" => "Blog Tag",
-        "admin" => "Admin",
-        "image_preset" => "Image Preset",
-        "smtp" => "SMTP Setting",
-        "site" => "Site Setting",
-        "role" => "Role & Permission"
+  "enquiry" => "Contact Enquiry",
+  "careerenquiry" => "Career Enquiry",
+  "menus" => "Menu",
+  "menugroup" => "Menu Group",
+  "serviecs" => "Serviecs",
+  "category" => "Category",
+  "portfolio" => "Portfolio",
+  "product" => "product",
+  "skill" => "Skill",
+  "whychoose" => "Whychoose",
+  "job_positions" => "Job Postions", // Corrected from duplicate
+  "pages" => "Pages",
+  "pagebanner" => "Page Banner",
+  "module" => "Module",
+  "testimonial" => "Testimonials",
+  "blogcategory" => "Blog Category",
+  "blog" => "Blog Post",
+  "tag" => "Blog Tag",
+  "admin" => "Admin",
+  "image_preset" => "Image Preset",
+  "smtp" => "SMTP Setting",
+  "site" => "Site Setting",
+  "role" => "Role & Permission"
 ];
 const GENDER = [
   1 => 'Male',
@@ -115,22 +117,18 @@ function active_class($path)
   $currentRoute = Route::getCurrentRoute();
 
   if ($currentRoute) {
-      return ($currentRoute->uri == $path) ? 'active' : '';
+    return ($currentRoute->uri == $path) ? 'active' : '';
   } else {
-
   }
-
 }
 function active_class_menu($path)
 {
   $currentRoute = Route::getCurrentRoute();
 
   if ($currentRoute) {
-      return ($currentRoute->uri == $path) ? 'mm-selected' : '';
+    return ($currentRoute->uri == $path) ? 'mm-selected' : '';
   } else {
-
   }
-
 }
 
 function is_active_route($path)
@@ -145,20 +143,18 @@ function show_class($path)
 }
 function rolecheck($id)
 {
-  $i=0;
+  $i = 0;
   $result = DB::table('roles')
-        ->selectRaw('ROW_NUMBER() OVER (ORDER BY id) AS rid,id')
-        ->get();
-        #dd($result);
-        while($i !=count($result))
-        {
-          if($result[$i]->id==$id)
-          {
-            $re=$result[$i]->rid;
-          }
-          $i++;
-        }
-        #dd($result[0]->rid);
+    ->selectRaw('ROW_NUMBER() OVER (ORDER BY id) AS rid,id')
+    ->get();
+  #dd($result);
+  while ($i != count($result)) {
+    if ($result[$i]->id == $id) {
+      $re = $result[$i]->rid;
+    }
+    $i++;
+  }
+  #dd($result[0]->rid);
   $roles = ['bg-info', 'bg-danger', 'bg-warning', 'bg-info', 'bg-primary'];
   //echo $id;
   return $roles[$re];
@@ -170,20 +166,25 @@ function breadcrumb()
     $url = 'Home';
   } else {
     $n = explode('/', Route::getCurrentRoute()->uri);
-    #dd($n );
+    //dd($n);
     if (count($n) == 2) {
+      
       $url = "Show " . ucfirst(Str::headline(ucfirst($n[1])));
     } elseif (count($n) == 3 || count($n) == 5) {
-       if($n[2]=='{id}')
-       {
-                $url=ucfirst(Str::headline(ucfirst($n[1])));
-       }else{
-                $url = ucfirst($n[2]) . " " . ucfirst(Str::headline(ucfirst($n[1])));
-       }
-
-    }  else {
+    
+      if ($n[2] == '{id}') {
+        $url = ucfirst(Str::headline(ucfirst($n[1])));
+      }  else {
+        $url = ucfirst($n[2]) . " " . ucfirst(Str::headline(ucfirst($n[1])));
+      }
+    } else {
+     
       if ($n[2] === 'admin') {
         $url = ucfirst($n[1]) . " " . ucfirst(Str::headline(ucfirst($n[2])));
+      }elseif ($n[3] == '{customer}') {
+        dd($customer);
+       // Customer::select('name')->find();
+        $url =  "Payment / " . ucfirst(Str::headline(ucfirst($n[1])));
       } else {
         $url = ucfirst($n[3]) . " " . ucfirst(Str::headline(ucfirst($n[1])));
       }
@@ -197,22 +198,22 @@ function urlgen($id)
 {
   $x = Menu::select('id', 'type', 'url')->find($id);
   return  $x->url;
-
 }
 
-function checkarr($id,$array)
+function checkarr($id, $array)
 {
   return in_array($id, $array) ? 'checked' : '';
 }
 
-function pagebanner($image){
+function pagebanner($image)
+{
 
   echo  "<style>
    .bannerimg {
     float: left;
     width: 100%;
     height: 400px;
-    background: url(".$image. ") no-repeat center 0;
+    background: url(" . $image . ") no-repeat center 0;
     background-size: cover;
     display: flex; /* Enables flexbox */
     justify-content: center; /* Centers horizontally */

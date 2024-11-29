@@ -37,7 +37,9 @@ class SettingController extends Controller
 
         $validated = $request->validate([
             'site_title' => 'required',
-            'app_name' => 'required'
+            'app_name' => 'required',
+            'declaration' => 'required',
+            'message' => 'required',            
         ]);
         if ($request->file('logo')) {
             $image = $request->file('logo');
@@ -84,8 +86,7 @@ class SettingController extends Controller
             'pan_no' => $request->pan_no,
             'declaration' => $request->declaration,
 			'message' => $request->message,
-            'bank_qr_code'=> $save_url_map
-
+            'bank_qr_code'=> $save_url_map               
         ]);
 
         $notification = array(

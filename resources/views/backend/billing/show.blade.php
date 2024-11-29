@@ -1,7 +1,6 @@
 <x-dashboard-layout>
     @section('title', breadcrumb())
 
-
     <div class="page-content">
         <div class="row">
             <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">

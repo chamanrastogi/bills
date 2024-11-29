@@ -12,7 +12,7 @@
     <div class="col-sm-6">
         <div class="row">
             <?php
-
+            
             if ($sitesetting->logo != null) {
                 $wsize = 10;
                 $small_img = $sitesetting->logo;
@@ -49,7 +49,7 @@
     <div class="col-sm-6">
         <div class="row">
             <?php
-
+            
             if ($sitesetting->favicon != null) {
                 $wsize = 10;
                 $small_img = $sitesetting->favicon;
@@ -194,7 +194,7 @@
         <div class="mb-3"> {!! Form::label('bank_name', 'Bank Name', ['class' => 'form-label']) !!}
             {!! Form::text('bank_name', $sitesetting->bank_name ?? null, [
                 'class' => 'form-control',
-
+                'required' => 'required',
                 'placeholder' => 'Bank Name',
             ]) !!}</div>
     </div>
@@ -202,6 +202,7 @@
         <div class="mb-3"> {!! Form::label('bank_holder_name', 'Bank Holder Name', ['class' => 'form-label']) !!}
             {!! Form::text('bank_holder_name', $sitesetting->bank_holder_name ?? null, [
                 'class' => 'form-control',
+                'required' => 'required',
                 'placeholder' => 'Bank Holder Name',
             ]) !!}</div>
     </div>
@@ -210,6 +211,7 @@
             {!! Form::label('bank_account', 'Bank Account', ['class' => 'form-label']) !!}
             {!! Form::text('bank_account', $sitesetting->bank_account ?? null, [
                 'class' => 'form-control',
+                'required' => 'required',
                 'placeholder' => 'Bank Account',
             ]) !!}
 
@@ -222,6 +224,7 @@
         <div class="mb-3"> {!! Form::label('bank_branch', 'Bank Branch', ['class' => 'form-label']) !!}
             {!! Form::text('bank_branch', $sitesetting->bank_branch ?? null, [
                 'class' => 'form-control',
+                'required' => 'required',
                 'placeholder' => 'Bank Branch',
             ]) !!}</div>
     </div>
@@ -229,83 +232,90 @@
         <div class="mb-3"> {!! Form::label('bank_ifsc', 'Bank IFSC Code', ['class' => 'form-label']) !!}
             {!! Form::text('bank_ifsc', $sitesetting->bank_ifsc ?? null, [
                 'class' => 'form-control',
+                'required' => 'required',
                 'placeholder' => 'Bank IFSC Code',
-            ]) !!}</div>
+            ]) !!}@error('bank_ifsc')
+            <span class="text-danger pt-3">{{ $message }}</span>
+        @enderror
     </div>
-    <div class="col-4">
-        <div class="mb-3">
-            {!! Form::label('pan_no', 'Pan No', ['class' => 'form-label']) !!}
-            {!! Form::text('pan_no', $sitesetting->pan_no ?? null, [
-                'class' => 'form-control',
-                'placeholder' => 'Pan No',
-            ]) !!}
-
-        </div>
+</div>
+<div class="col-4">
+    <div class="mb-3">
+        {!! Form::label('pan_no', 'Pan No', ['class' => 'form-label']) !!}
+        {!! Form::text('pan_no', $sitesetting->pan_no ?? null, [
+            'class' => 'form-control',
+            'required' => 'required',
+            'placeholder' => 'Pan No',
+        ]) !!}
+        @error('pan_no')
+            <span class="text-danger pt-3">{{ $message }}</span>
+        @enderror
     </div>
+</div>
 
 </div>
 <div class="row">
-	 <div class="col-12">
-        <div class="mb-3"> {!! Form::label('declaration', 'Declaration', ['class' => 'form-label']) !!}
-            {!! Form::textarea('declaration', $sitesetting->declaration ?? null, [
-                'class' => 'form-control',
-                'rows' =>2,
-                'placeholder' => 'Declaration',
-            ]) !!}</div>
+<div class="col-12">
+    <div class="mb-3"> {!! Form::label('declaration', 'Declaration', ['class' => 'form-label']) !!}
+        {!! Form::textarea('declaration', $sitesetting->declaration ?? null, [
+            'class' => 'form-control',
+            'rows' => 2,
+            'placeholder' => 'Declaration',
+        ]) !!} @error('declaration')
+            <span class="text-danger pt-3">{{ $message }}</span>
+        @enderror
     </div>
-	<div class="col-12">
-        <div class="mb-3"> {!! Form::label('message', 'Message', ['class' => 'form-label']) !!}
-            {!! Form::text('message', $sitesetting->message ?? null, [
-                'class' => 'form-control',
-                'placeholder' => 'Message',
-            ]) !!}</div>
+</div>
+<div class="col-12">
+    <div class="mb-3"> {!! Form::label('message', 'Message', ['class' => 'form-label']) !!}
+        {!! Form::text('message', $sitesetting->message ?? null, [
+            'class' => 'form-control',
+            'required' => 'required',
+            'placeholder' => 'Message',
+        ]) !!}
+        @error('message')
+            <span class="text-danger pt-3">{{ $message }}</span>
+        @enderror
     </div>
-	</div>
+</div>
+</div>
 <div class="row mb-2">
-     <div class="col-sm-12">
-        <div class="row">
-            <?php
+<div class="col-sm-12">
+    <div class="row">
+        <?php
+        
+        if ($sitesetting->bank_qr_code != null) {
+            $wsize = 10;
+            $small_img = $sitesetting->bank_qr_code;
+        } else {
+            $small_img = '';
+            $wsize = 12;
+        }
+        ?>
+        <div class="col-sm-{{ $wsize }}">
+            <div class="mb-3">
 
-            if ($sitesetting->bank_qr_code != null) {
-                $wsize = 10;
-                $small_img = $sitesetting->bank_qr_code;
-            } else {
-                $small_img = '';
-                $wsize = 12;
-            }
-            ?>
-            <div class="col-sm-{{ $wsize }}">
-                <div class="mb-3">
+                {!! Form::label('bank_qr_code', 'Qr Code Image', ['class' => 'form-label']) !!}
 
-                    {!! Form::label('bank_qr_code', 'Qr Code Image', ['class' => 'form-label']) !!}
+                {!! Form::file('bank_qr_code', [
+                    'class' => 'form-control',
+                    'placeholder' => 'Main Thumbnail',
+                    'onchange' => 'mainThamUrl(this)',
+                ]) !!}
 
-                    {!! Form::file('bank_qr_code', [
-                        'class' => 'form-control',
-                        'placeholder' => 'Main Thumbnail',
-                        'onchange' => 'mainThamUrl(this)',
-                    ]) !!}
-
-                    <div class="mt-3">
-                        <img src="" id="mainThmb" class="img-responsive border border-1">
-                    </div>
+                <div class="mt-3">
+                    <img src="" id="mainThmb" class="img-responsive border border-1">
                 </div>
             </div>
-            @if ($sitesetting->bank_qr_code != null)
-                <div class="mt-3 col-sm-2"><img src="{{ asset($small_img) }}"
-                        class="img-thumbnail img-fluid img-responsive w-10">
-                </div>
-            @endif
         </div>
+        @if ($sitesetting->bank_qr_code != null)
+            <div class="mt-3 col-sm-2"><img src="{{ asset($small_img) }}"
+                    class="img-thumbnail img-fluid img-responsive w-10">
+            </div>
+        @endif
     </div>
 </div>
-<div class="row mb-2">
-    <div class="col-12">
-        <div class="mb-3"> {!! Form::label('payment_mode', 'Payment Mode', ['class' => 'form-label']) !!}
-            {!! Form::text('payment_mode', $sitesetting->payment_mode ?? null, [
-                'class' => 'form-control',
-                'placeholder' => 'Payment Mode',
-            ]) !!}</div>
-    </div>
 </div>
+
 {!! Form::submit('Submit', ['class' => 'btn btn-primary _effect--ripple waves-effect waves-light']) !!}
 {{ Form::close() }}

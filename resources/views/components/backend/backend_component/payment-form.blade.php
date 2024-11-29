@@ -1,8 +1,7 @@
-{{-- resources/views/components/backend/backend_component/customer-form.blade.php --}}
-
+{{-- resources/views/components/backend/backend_component/payment-form.blade.php --}}
 
 {{ Form::open([
-    'route' => $isEdit ? ['payment.update', $payment->id] : ['payment.store', $customer_id],
+    'route' => $isEdit ? ['payment.update', $payment->id] : ['payment.store', $id],
     'class' => 'forms-sample needs-validation',
     'method' => $isEdit ? 'put' : 'post',
     'novalidate' => 'novalidate',
@@ -11,10 +10,23 @@
 
 <div class="mb-3">
     {!! Form::label('payment_mode', 'Payment Mode', ['class' => 'form-label']) !!}
-    {!! Form::select('payment_mode', $payment_modes, $payment->payment_mode ?? null, [
+    {!! Form::select('payment_mode', $modes, $payment->payment_mode ?? null, [
         'class' => 'form-control',
         'placeholder' => 'Select Payment Mode',
     ]) !!}
+</div>
+<div class="col-sm-12">
+    <div class="mb-3">
+    {!! Form::label('amount', 'Amount', ['class' => 'form-label']) !!}
+    {!! Form::text('amount', $product->amount ?? null, [
+        'class' => 'form-control',
+        'required' => 'required',
+        'placeholder' => 'Amount',
+    ]) !!}
+    @error('amount')
+        <span class="text-danger pt-3">{{ $message }}</span>
+    @enderror
+</div>
 </div>
 
 
