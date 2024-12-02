@@ -237,6 +237,16 @@
                                                                                     </p>
                                                                                 </div>
                                                                             @endif
+                                                                             <!-- Tax Calculation -->
+                                                                            @if (floatval($billing['freight_charges']) > 0)
+                                                                                <div class="col-sm-8 col-7">
+                                                                                    <p>Freight Charges :</p>
+                                                                                </div>
+                                                                                <div class="col-sm-4 col-5">
+                                                                                    <p>{{ MONEY }}{{ number_format($billing['freight_charges'], 2) }}
+                                                                                    </p>
+                                                                                </div>
+                                                                            @endif
 
                                                                             <!-- Grand Total Calculation with Discount and Tax -->
 

@@ -22,10 +22,8 @@
                                         <th>ID</th>
                                         <th>Name</th>
                                         <th>Email/Phone</th>
-                                      
-                                        <th>Balance({{MONEY}})</th>
+                                        <th>Balance({{ MONEY }})</th>
                                         <th>Status</th>
-                                        <th>Pay</th>
                                         <th>Created</th>
                                         <th class="text-center">Action</th>
                                     </tr>
@@ -41,14 +39,19 @@
 
                                             <td>{{ $customer->name }}</td>
                                             <td>{{ $customer->email }}<br>{{ $customer->phone }}</td>
-                                            
-                                            <td>@if($customer->opening_balance)
-                                                {!! "<span class='fw-bold text-danger'>Op: </span>" . $customer->opening_balance ."<br>" !!}
-                                                @endif
-                                                {!! "<span class='fw-bold text-danger'>Dr: </span>" . $customer->bills()->sum('grand_total') . "<br><span class='fw-bold text-danger'>Cr:</span> " . $customer->payments()->sum('amount') . "<br><span class='fw-bold text-danger'>Bal: </span> " . $customer->balance() !!}
 
+                                            <td>
+                                                @if ($customer->opening_balance)
+                                                    {!! "<span class='fw-bold text-danger'>Op: </span>" . $customer->opening_balance . '<br>' !!}
+                                                @endif
+                                                {!! "<span class='fw-bold text-danger'>Dr: </span>" .
+                                                    $customer->bills()->sum('grand_total') .
+                                                    "<br><span class='fw-bold text-danger'>Cr:</span> " .
+                                                    $customer->payments()->sum('amount') .
+                                                    "<br><span class='fw-bold text-danger'>Bal: </span> " .
+                                                    $customer->balance() !!}
                                             </td>
-                                           
+
                                             <td class="text-center">
                                                 <button type="button"
                                                     onClick="statusFunction( {{ $customer->id }} ,'Customer')"
@@ -57,11 +60,29 @@
                                                     data-original-title="Status">{{ $customer->status == 1 ? 'Deactive' : 'Active' }}</button>
 
                                             </td>
-                                            <td><a href="{{route('payment.add', $customer->id)}}"  class="shadow-none badge badge-light-danger warning pb-1  bs-tooltip" data-toggle="tooltip" data-placement="top" title="" data-original-title="Pay" data-bs-original-title="Pay">Add Payment</button><br>
-                                                <a href="#"  class="shadow-none badge badge-light-warning warning  bs-tooltip" data-toggle="tooltip" data-placement="top" title="" data-original-title="Show Payment" data-bs-original-title="Show Payment">Show Payment</button></td>
+
                                             <td>{{ $customer->created_at->format('l d M Y') }}</td>
                                             <td class="text-center">
                                                 <div class="action-btns">
+                                                    <a  href="{{ route('payment.add', $customer->id) }}"
+                                                    class="shadow-none badge badge-light-warning warning pb-1  bs-tooltip"
+                                                    data-toggle="tooltip" data-placement="top" title=""
+                                                    data-original-title="Pay" data-bs-original-title="Pay">
+                                                        <i data-feather="user-plus"></i>
+                                                    </a>
+                                                    <a href="{{ route('payment.show', $customer) }}"
+                                                        class="shadow-none badge badge-light-info warning pb-1  bs-tooltip"
+                                                        data-toggle="tooltip" data-placement="top" title="Show Bills"
+                                                        data-original-title="Show Payment"
+                                                        data-bs-original-title="Show Payment">
+                                                        <i data-feather="users"></i>
+                                                    </a>
+                                                     <a  href="{{ route('payment.add', $customer->id) }}"
+                                                    class="shadow-none badge badge-light-default warning pb-1  bs-tooltip"
+                                                    data-toggle="tooltip" data-placement="top" title="Show Bills"
+                                                    data-original-title="Show Bills" data-bs-original-title="Show Bills">
+                                                        <i data-feather="briefcase"></i>
+                                                    </a>
                                                     <a href="{{ route('customers.edit', $customer->id) }}"
                                                         class="action-btn btn-edit bs-tooltip me-2"
                                                         data-toggle="tooltip" data-placement="top" title="Edit"
@@ -75,7 +96,7 @@
                                                         data-bs-original-title="Delete">
                                                         <i data-feather="trash-2"></i>
                                                     </a>
-                                                    </form>
+
                                                 </div>
                                             </td>
 

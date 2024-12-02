@@ -168,23 +168,21 @@ function breadcrumb()
     $n = explode('/', Route::getCurrentRoute()->uri);
     //dd($n);
     if (count($n) == 2) {
-      
+
       $url = "Show " . ucfirst(Str::headline(ucfirst($n[1])));
     } elseif (count($n) == 3 || count($n) == 5) {
-    
+
       if ($n[2] == '{id}') {
         $url = ucfirst(Str::headline(ucfirst($n[1])));
       }  else {
         $url = ucfirst($n[2]) . " " . ucfirst(Str::headline(ucfirst($n[1])));
       }
     } else {
-     
+
       if ($n[2] === 'admin') {
         $url = ucfirst($n[1]) . " " . ucfirst(Str::headline(ucfirst($n[2])));
       }elseif ($n[3] == '{customer}') {
-        dd($customer);
-       // Customer::select('name')->find();
-        $url =  "Payment / " . ucfirst(Str::headline(ucfirst($n[1])));
+        $url =  "Payment / Customer" ;
       } else {
         $url = ucfirst($n[3]) . " " . ucfirst(Str::headline(ucfirst($n[1])));
       }

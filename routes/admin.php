@@ -57,8 +57,14 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::post('/customers/status', [CustomerController::class, 'StatusUpdate'])->name('customer.status');
     Route::post('/customers/delete', [CustomerController::class, 'Delete'])->name('customer.delete');
     Route::get('/customers/payment/{customer}', [PaymentController::class, 'Addpayment'])->name('payment.add');
-    Route::post('/customers/payment/{customer}', [PaymentController::class, 'Addpayment'])->name('payment.store');
-     // SMTP and Site Setting  All Route
+    Route::post('/customers/payment/{customer}', [PaymentController::class, 'store'])->name('payment.store');
+    Route::get('/customers/payment/show/{customer}', [PaymentController::class, 'show'])->name('payment.show');
+    Route::get('/customers/bills/show/{customer}', [BillingController::class, 'showbills'])->name('billing.all');
+    Route::get('/payment/edit/{payment}/{id}', [PaymentController::class, 'edit'])->name('payment.edit');
+    Route::patch('/payment/update/{payment}', [PaymentController::class, 'update'])->name('payment.update');
+    Route::post('/payment/delete', [PaymentController::class, 'Delete'])->name('payment.delete.one');
+
+    // SMTP and Site Setting  All Route
     Route::controller(SettingController::class)->group(function () {
         Route::get('/site/setting', 'SiteSetting')->name('site.setting');
         Route::patch('/update/site/setting/{id}', 'UpdateSiteSetting')->name('update.site.setting');

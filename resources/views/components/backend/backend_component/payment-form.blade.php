@@ -3,9 +3,9 @@
 {{ Form::open([
     'route' => $isEdit ? ['payment.update', $payment->id] : ['payment.store', $id],
     'class' => 'forms-sample needs-validation',
-    'method' => $isEdit ? 'put' : 'post',
+    'method' => $isEdit ? 'patch' : 'post',
     'novalidate' => 'novalidate',
-    'files' => true,    
+    'files' => true,
 ]) }}
 
 <div class="mb-3">
@@ -18,7 +18,7 @@
 <div class="col-sm-12">
     <div class="mb-3">
     {!! Form::label('amount', 'Amount', ['class' => 'form-label']) !!}
-    {!! Form::text('amount', $product->amount ?? null, [
+    {!! Form::number('amount', $payment->amount ?? null, [
         'class' => 'form-control',
         'required' => 'required',
         'placeholder' => 'Amount',

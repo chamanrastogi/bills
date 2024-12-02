@@ -5,12 +5,11 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Billing;
 use App\Models\Category;
-use App\Models\Color;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\SiteSetting;
 use Illuminate\Http\Request;
-use Ramsey\Uuid\Type\Integer;
+
 
 
 class BillingController extends Controller
@@ -108,5 +107,9 @@ class BillingController extends Controller
             'alert-category_id' => 'success',
         );
         return redirect()->back()->with($notification);
+    }
+    public function showbills(Customer $customer) {
+        $billings = Billing::latest()->where('customer_id', $customer->id)->with(['customer:id,name'])->get();
+        return view('backend.payment.all_payment', compact('billings'));
     }
 }

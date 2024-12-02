@@ -107,7 +107,7 @@ class CustomerController extends Controller
     public function delete(Request $request)
     {
 
-        $blogs =    Customer::whereIn('id', $request->id);
+        $blogs =Customer::whereIn('id', $request->id);
 
         $blogs->delete();
         $notification = array(

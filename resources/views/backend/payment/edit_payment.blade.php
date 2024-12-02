@@ -1,8 +1,8 @@
 <x-main-layout>
     @section('title', breadcrumb())
     <div class="seperator-header layout-top-spacing">
-        <a href="{{ route('blog.index') }}">
-            <h4 class="">Show Blog</h4>
+         <a href="{{ route('customers.index') }}">
+            <h4 class="">Show Customers</h4>
         </a>
     </div>
     <div class="page-content">
@@ -11,11 +11,11 @@
             <div class="col-md-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h6 class="card-title fw-bold">Edit Blog </h6>
+                        <h6 class="card-title fw-bold">Edit Payment </h6>
                         {{-- resources/views/components/backend/backend_component/payment-form.blade.php --}}
-                        <x-backend.backend_component.payment-form :$payment_mode  :$payment
+                        <x-backend.backend_component.payment-form :modes=$payment_modes :$payment
                             :isEdit="true" />
-                        
+
                         </div>
                 </div>
             </div>

@@ -72,23 +72,23 @@
 
                                     <!-- Bill Table -->
                                     <div class="table-responsive">
-                                    <table class="table table-bordered">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>Id</th>
-                                                <th>Category</th>
-                                                <th>Product</th>
-                                                <th>Unit</th>
-                                                <th>Price</th>
-                                                <th>Quantity</th>
-                                                <th>Total</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="billTable">
-                                            <!-- Rows will be added here -->
-                                        </tbody>
-                                    </table>
+                                        <table class="table table-bordered">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Id</th>
+                                                    <th>Category</th>
+                                                    <th>Product</th>
+                                                    <th>Unit</th>
+                                                    <th>Price</th>
+                                                    <th>Quantity</th>
+                                                    <th>Total</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="billTable">
+                                                <!-- Rows will be added here -->
+                                            </tbody>
+                                        </table>
                                     </div>
                                     <!-- Grand Total and Submit Button -->
                                     <div class="text-right">
@@ -106,6 +106,16 @@
                                             <small id="taxAmount" class="form-text text-muted">Tax Amount:
                                                 {{ MONEY }}0</small>
                                         </div>
+                                        <!-- Add Freight Charges Input -->
+                                        <div class="form-group mb-2">
+                                            <label for="freightCharges">Freight Charges ({{ MONEY }}):</label>
+                                            <input type="number" id="freightCharges" class="form-control"
+                                                min="0" step="0.01" value="0">
+                                            <small id="freightChargesAmount" class="form-text text-muted">Freight
+                                                Charges Added:
+                                                {{ MONEY }}0</small>
+                                        </div>
+                                        <!-- Update Grand Total and Submit Button Section -->
                                         <h3 id="grandTotal">Grand Total: {{ MONEY }}0</h3>
                                         <button class="btn btn-success" id="submitCartBtn">Add to Cart</button>
                                     </div>
@@ -125,15 +135,18 @@
             function updateGrandTotal() {
                 const discount = parseFloat($('#discount').val()) || 0;
                 const tax = parseFloat($('#tax').val()) || 0;
+                const freightCharges = parseFloat($('#freightCharges').val()) || 0;
 
                 const discountedTotal = grandTotal * (1 - (discount / 100));
                 const taxAmount = discountedTotal * (tax / 100);
-                const finalTotal = discountedTotal + taxAmount;
+                const finalTotal = discountedTotal + taxAmount + freightCharges; // Add freight charges
                 const discountAmount = grandTotal - discountedTotal;
 
                 $('#grandTotal').text(`Grand Total: {{ MONEY }}${finalTotal.toFixed(2)}`);
                 $('#discountAmount').text(`Discount Amount: {{ MONEY }}${discountAmount.toFixed(2)}`);
                 $('#taxAmount').text(`Tax Amount: {{ MONEY }}${taxAmount.toFixed(2)}`);
+                $('#freightChargesAmount').text(`Freight Charges Added: {{ MONEY }}${freightCharges.toFixed(2)}`);
+
             }
             // Function to populate products based on selected category
             function datatable() {
@@ -167,6 +180,9 @@
             }
 
             $(document).ready(function() {
+                $('#freightCharges').on('input', function() {
+                    updateGrandTotal();
+                });
                 $('#billing_system').hide();
                 $(".categorys").on("change", function() {
                     datatable();
@@ -245,58 +261,52 @@
                 $('#submitCartBtn').on('click', function() {
                     const discount = parseFloat($('#discount').val()) || 0;
                     const tax = parseFloat($('#tax').val()) || 0;
+                    const freightCharges = parseFloat($('#freightCharges').val()) || 0;
                     const customerId = $('.customer').val();
-
                     const cartItems = [];
                     $('#billTable tr').each(function() {
                         const row = $(this);
                         const productId = row.find('td').eq(0).text();
-                        const category = row.find('td').eq(1).text();
-                        const product = row.find('td').eq(2).text();
-
-                        const price = parseFloat(row.find('td').eq(4).text().replace(
-                            '{{ MONEY }}', '').trim());
                         const quantity = parseInt(row.find('td').eq(5).text());
-                        const total = parseFloat(row.find('.rowTotal').text().replace(
-                            '{{ MONEY }}', '').trim());
 
                         cartItems.push({
                             productId,
-                            quantity
+                            quantity,
                         });
                     });
 
                     // Calculate discounted total and apply tax
                     const discountedTotal = grandTotal * (1 - (discount / 100));
                     const taxAmount = discountedTotal * (tax / 100);
-                    const finalTotal = discountedTotal + taxAmount;
+                    const finalTotal = discountedTotal + taxAmount + freightCharges;
 
                     const data = {
                         cart_items: cartItems,
-                        grand_total: finalTotal, // Include tax in grand total
-                        discount: discount,
-                        discount_amount: grandTotal-discountedTotal,
-                        tax: tax,
-                        tax_amount: taxAmount, // Optional: send the tax amount separately
-                        customer_id: customerId
+                        grand_total: finalTotal,
+                        discount,
+                        discount_amount: grandTotal - discountedTotal,
+                        tax,
+                        tax_amount: taxAmount,
+                        freight_charges: freightCharges,
+                        customer_id: customerId,
                     };
 
                     const form = $('<form>', {
                         action: '{{ route('cart.submit') }}',
                         method: 'POST',
-                        style: 'display: none'
+                        style: 'display: none',
                     });
 
                     form.append($('<input>', {
                         type: 'hidden',
                         name: '_token',
-                        value: '{{ csrf_token() }}'
+                        value: '{{ csrf_token() }}',
                     }));
 
                     form.append($('<input>', {
                         type: 'hidden',
                         name: 'cart_data',
-                        value: JSON.stringify(data)
+                        value: JSON.stringify(data),
                     }));
 
                     $('body').append(form);
