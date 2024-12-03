@@ -14,18 +14,18 @@ class ServiceSeeder extends Seeder
      */
     public function run(): void
     {
-        $json = File::get('database/json/services.json');
-        $schools = collect(json_decode($json));
-        $schools->each(function ($s) {
-            \App\Models\Service::create([
-                "category_id" => $s->category_id,
-                "name" => $s->name,
-                "parent" =>  $s->parent,
-                "image" =>  $s->image,
-                "small_text" => $s->small_text,
-                "text" => $s->text,
-                "status" =>  $s->status,
-            ]);
-        });
+        // $json = File::get('database/json/services.json');
+        // $schools = collect(json_decode($json));
+        // $schools->each(function ($s) {
+        //     \App\Models\Service::create([
+        //         "category_id" => $s->category_id,
+        //         "name" => $s->name,
+        //         "parent" =>  $s->parent,
+        //         "image" =>  $s->image,
+        //         "small_text" => $s->small_text,
+        //         "text" => $s->text,
+        //         "status" =>  $s->status,
+        //     ]);
+        // });
     }
 }
