@@ -67,22 +67,24 @@
                                                     <a  href="{{ route('payment.add', $customer->id) }}"
                                                     class="shadow-none badge badge-light-warning warning pb-1  bs-tooltip"
                                                     data-toggle="tooltip" data-placement="top" title=""
-                                                    data-original-title="Pay" data-bs-original-title="Pay">
+                                                    data-original-title="Add Payment" data-bs-original-title="Pay">
                                                         <i data-feather="user-plus"></i>
                                                     </a>
                                                     <a href="{{ route('payment.show', $customer) }}"
                                                         class="shadow-none badge badge-light-info warning pb-1  bs-tooltip"
+                                                        data-toggle="tooltip" data-placement="top" title="Show Payment"
+                                                        data-original-title="Show Payment"
+                                                        data-bs-original-title="Show Payment">
+                                                        <i data-feather="briefcase"></i>
+                                                    </a>
+                                                    <a href="{{ route('billing.all', $customer) }}"
+                                                        class="shadow-none badge badge-light-info warning pb-1  bs-tooltip"
                                                         data-toggle="tooltip" data-placement="top" title="Show Bills"
                                                         data-original-title="Show Payment"
                                                         data-bs-original-title="Show Payment">
-                                                        <i data-feather="users"></i>
+                                                        <i data-feather="book"></i>
                                                     </a>
-                                                     <a  href="{{ route('payment.add', $customer->id) }}"
-                                                    class="shadow-none badge badge-light-default warning pb-1  bs-tooltip"
-                                                    data-toggle="tooltip" data-placement="top" title="Show Bills"
-                                                    data-original-title="Show Bills" data-bs-original-title="Show Bills">
-                                                        <i data-feather="briefcase"></i>
-                                                    </a>
+                                                   
                                                     <a href="{{ route('customers.edit', $customer->id) }}"
                                                         class="action-btn btn-edit bs-tooltip me-2"
                                                         data-toggle="tooltip" data-placement="top" title="Edit"

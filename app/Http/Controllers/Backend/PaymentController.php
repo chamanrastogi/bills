@@ -25,8 +25,10 @@ class PaymentController extends Controller
 
         $payment_modes =explode(",", MODE);
         $customer_id=$customer;
-        //dd($customer);
-        return view('backend.payment.add_payment', compact('payment_modes','customer_id'));
+       // dd($customer->balance());
+        $balance=$customer->balance();
+        $customer_name=$customer->name;
+        return view('backend.payment.add_payment', compact('payment_modes','customer_id','balance','customer_name'));
     }
 
     /**

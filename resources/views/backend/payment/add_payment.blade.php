@@ -13,8 +13,10 @@
             <div class="col-md-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
+                       <p> <span class="h5 fw-bold">{{$customer_name}} 's Balance:</span>:  {{$balance}}</p>
+                       <hr>
                         <h6 class="card-title fw-bold">Add Payment</h6>
-
+                         
                         {{-- resources/views/components/backend/backend_component/payment-form.blade.php --}}
                         <x-backend.backend_component.payment-form :modes=$payment_modes :id=$customer_id  :isEdit="false" />
 
