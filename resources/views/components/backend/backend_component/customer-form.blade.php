@@ -28,8 +28,7 @@
         <div class="mb-3">
             {!! Form::label('email', 'Email', ['class' => 'form-label']) !!}
             {!! Form::text('email', $customer->email ?? null, [
-                'class' => 'form-control',
-                'required' => 'required',
+                'class' => 'form-control',                
                 'placeholder' => 'Email',
             ]) !!}
 

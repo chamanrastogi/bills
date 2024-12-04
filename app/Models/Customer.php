@@ -25,7 +25,7 @@ class Customer extends Model
     {
         $totalBills = $this->bills()->sum('grand_total');
         $opening_balance = $this->opening_balance;
-        $totalPayments = $this->payments()->sum('amount');
+        $totalPayments = $this->bills()->sum('payment');
         return $totalBills - $totalPayments-$opening_balance;
     }
 }

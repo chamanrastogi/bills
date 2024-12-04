@@ -12,7 +12,7 @@
             <div class="col-md-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h6 class="card-title fw-bold">All Payments</h6>
+                        <h6 class="card-title fw-bold">All {{$customer_name}} Payments  -Total: {{MONEY}}{{$totalpayment}}</h6>
 
                         <div class="table-responsive">
                             <table id="html5-extension" class="table dt-table-hover">
@@ -20,7 +20,7 @@
                                     <tr>
                                         <th>-</th>
                                         <th>ID</th>
-                                        <th>Customer</th>
+                                       
                                         <th>Payment Mode</th>
                                         <th>Amount</th>
 
@@ -29,28 +29,31 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                    $pay=1;
+                                    @endphp
                                     @foreach ($payments as $payment)
                                     @php
-                                    $i=1;
+                                    
                                         $modes =explode(",",MODE);
-
+                                           
                                     @endphp
                                         <tr class="payment-{{ $payment->id }}">
                                             <td style="width:1%"><span class="form-check form-check-primary"><input
                                                         class="form-check-input mixed_child "
                                                         value="{{ $payment->id }}" type="checkbox"></span></td>
-                                            <td>{{ $i++ }}</td>
+                                            <td>{{ $pay++ }}</td>
 
 
-                                            <td>{{ $payment->customer->name }}</td>
+                                            
                                             <td>{{ $modes[$payment->payment_mode] }}</td>
-                                            <td>{{ $payment->amount }}</td>
+                                            <td>{{ $payment->payment }}</td>
 
                                             <td>{{ $payment->created_at->format('l d M Y') }}<br>
                                             {{ $payment->updated_at->format('l d M Y') }}</td>
                                             <td class="text-center">
                                                 <div class="action-btns">
-                                                    <a href="{{ route('payment.edit', ['payment' => $payment->id, 'id' => $payment->customer->id]) }}"
+                                                    <a href="{{ route('payment.edit', ['billing' => $payment->id, 'id' => $payment->customer->id]) }}"
                                                         class="action-btn btn-edit bs-tooltip me-2"
                                                         data-toggle="tooltip" data-placement="top" title="Edit"
                                                         data-bs-original-title="Edit">

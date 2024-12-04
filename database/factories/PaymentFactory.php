@@ -16,10 +16,17 @@ class PaymentFactory extends Factory
      */
     public function definition(): array
     {        
+        $startDate = '2023-01-01';
+        $endDate = '2024-12-01';
+
+        // Generate a random date between these two dates
+        $randomDate = fake()->dateTimeBetween($startDate, $endDate)->format('Y-m-d');
         return [
             'customer_id' => 1,
             'amount' => rand(100, 10000),
-            'payment_mode' => 1 // Use phoneNumber for realistic phone values            
+            'payment_mode' => 1,
+            'created_at' =>$randomDate,
+            'updated_at' =>$randomDate           
         ];
     }
 }

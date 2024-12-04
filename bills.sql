@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 27, 2024 at 10:20 AM
+-- Generation Time: Dec 04, 2024 at 11:12 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -35,7 +35,10 @@ CREATE TABLE `billing` (
   `discount_amount` varchar(100) NOT NULL,
   `tax` int(11) NOT NULL,
   `tax_amount` varchar(100) NOT NULL,
-  `grand_total` int(11) NOT NULL,
+  `freight_charges` int(11) DEFAULT NULL,
+  `grand_total` int(11) DEFAULT NULL,
+  `payment` int(11) DEFAULT 0,
+  `payment_mode` int(11) DEFAULT 1,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -44,8 +47,17 @@ CREATE TABLE `billing` (
 -- Dumping data for table `billing`
 --
 
-INSERT INTO `billing` (`id`, `customer_id`, `cart`, `discount`, `discount_amount`, `tax`, `tax_amount`, `grand_total`, `created_at`, `updated_at`) VALUES
-(2, 1, '[{\"productId\":\"14\",\"quantity\":23,\"price\":4},{\"productId\":\"17\",\"quantity\":14,\"price\":56},{\"productId\":\"17\",\"quantity\":12,\"price\":56}]', 0, '0', 0, '0', 1548, '2024-11-27 09:01:16', '2024-11-27 09:01:16');
+INSERT INTO `billing` (`id`, `customer_id`, `cart`, `discount`, `discount_amount`, `tax`, `tax_amount`, `freight_charges`, `grand_total`, `payment`, `payment_mode`, `created_at`, `updated_at`) VALUES
+(1, 1, '[{\"productId\":2,\"quantity\":26,\"price\":89},{\"productId\":15,\"quantity\":18,\"price\":97},{\"productId\":19,\"quantity\":6,\"price\":34}]', 0, '0', 0, '0', 0, 4264, 0, 0, '2024-11-18 18:30:00', '2024-11-18 18:30:00'),
+(2, 1, '[{\"productId\":16,\"quantity\":30,\"price\":52}]', 0, '0', 0, '0', 0, 1560, 0, 0, '2024-11-17 18:30:00', '2024-11-17 18:30:00'),
+(3, 1, '', 0, '0', 0, '0', 0, 0, 1000, 1, '2024-11-17 18:30:00', '2023-09-11 18:30:00'),
+(4, 1, '', 0, '0', 0, '0', 0, 0, 2295, 1, '2024-11-14 18:30:00', '2024-03-02 18:30:00'),
+(5, 1, '[{\"productId\":3,\"quantity\":28,\"price\":21},{\"productId\":21,\"quantity\":17,\"price\":28},{\"productId\":11,\"quantity\":18,\"price\":99}]', 0, '0', 0, '0', 0, 2846, 0, 0, '2024-11-13 18:30:00', '2024-11-13 18:30:00'),
+(6, 1, '', 0, '0', 0, '0', 0, 0, 2000, 1, '2024-11-11 18:30:00', '2024-08-10 18:30:00'),
+(7, 1, '[{\"productId\":5,\"quantity\":15,\"price\":99},{\"productId\":11,\"quantity\":18,\"price\":99},{\"productId\":25,\"quantity\":10,\"price\":60},{\"productId\":22,\"quantity\":11,\"price\":15},{\"productId\":14,\"quantity\":4,\"price\":4}]', 0, '0', 0, '0', 0, 4048, 0, 0, '2024-11-10 18:30:00', '2024-11-10 18:30:00'),
+(8, 1, '', 0, '0', 0, '0', 0, 0, 2285, 1, '2024-11-10 18:30:00', '2024-09-10 18:30:00'),
+(9, 1, '[{\"productId\":22,\"quantity\":20,\"price\":15}]', 0, '0', 0, '0', 0, 300, 0, 0, '2024-11-09 18:30:00', '2024-11-09 18:30:00'),
+(10, 1, '', 0, '0', 0, '0', 0, 0, 800, 1, '2024-11-08 18:30:00', '2024-12-04 04:21:20');
 
 -- --------------------------------------------------------
 
@@ -85,6 +97,7 @@ CREATE TABLE `customers` (
   `phone` varchar(255) NOT NULL,
   `address` varchar(255) DEFAULT NULL,
   `bill_address` varchar(255) DEFAULT NULL,
+  `opening_balance` int(11) NOT NULL DEFAULT 0,
   `status` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -94,8 +107,9 @@ CREATE TABLE `customers` (
 -- Dumping data for table `customers`
 --
 
-INSERT INTO `customers` (`id`, `name`, `email`, `phone`, `address`, `bill_address`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Mohan', 'kumar', '2233333333', 'asdasd', NULL, 0, '2024-11-12 04:55:04', '2024-11-12 04:57:44');
+INSERT INTO `customers` (`id`, `name`, `email`, `phone`, `address`, `bill_address`, `opening_balance`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Mohan', 'kumar', '2233333333', 'asdasd', NULL, 0, 0, '2024-11-12 04:55:04', '2024-11-27 07:57:31'),
+(2, 'chaman', 'krish@gmail.com', '34324', 'fdsfds', 'dfdsff', 0, 0, '2024-12-04 07:08:43', '2024-12-04 03:35:58');
 
 -- --------------------------------------------------------
 
@@ -173,7 +187,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (85, '2024_11_11_112538_create_products_table', 15),
 (86, '2024_11_12_093838_create_customers_table', 16),
 (87, '2024_11_16_131427_create_colors_table', 17),
-(88, '2024_11_17_173827_billing', 18);
+(88, '2024_11_17_173827_billing', 18),
+(90, '2024_11_27_094333_create_payments_table', 19);
 
 -- --------------------------------------------------------
 
@@ -185,6 +200,22 @@ CREATE TABLE `password_reset_tokens` (
   `email` varchar(255) NOT NULL,
   `token` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payments`
+--
+
+CREATE TABLE `payments` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `payment_mode` int(11) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -393,19 +424,22 @@ CREATE TABLE `site_settings` (
   `address` varchar(255) DEFAULT NULL,
   `gst` varchar(100) DEFAULT NULL,
   `bank_name` varchar(100) DEFAULT NULL,
+  `bank_holder_name` varchar(255) DEFAULT NULL,
+  `bank_ifsc` varchar(255) DEFAULT NULL,
   `bank_account` varchar(100) DEFAULT NULL,
   `bank_branch` varchar(150) DEFAULT NULL,
   `pan_no` varchar(50) DEFAULT NULL,
   `declaration` varchar(100) DEFAULT NULL,
-  `message` varchar(100) NOT NULL
+  `message` varchar(100) DEFAULT NULL,
+  `bank_qr_code` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `site_settings`
 --
 
-INSERT INTO `site_settings` (`id`, `logo`, `favicon`, `site_title`, `app_name`, `support_phone`, `email`, `tax`, `address`, `gst`, `bank_name`, `bank_account`, `bank_branch`, `pan_no`, `declaration`, `message`) VALUES
-(1, 'upload/template/thumbnail/1809981924661515.png', 'upload/template/thumbnail/1809981924671923.png', 'TUFF TWELVE PRIVATE LIMITE', 'TUFF TWELVE PRIVATE LIMITE', '99-5846-4102', 'info@demo.com', 0, 'asdsad', 'asdsa', 'bas', 'a2343ws', '3edf', '13344s', '3223', '');
+INSERT INTO `site_settings` (`id`, `logo`, `favicon`, `site_title`, `app_name`, `support_phone`, `email`, `tax`, `address`, `gst`, `bank_name`, `bank_holder_name`, `bank_ifsc`, `bank_account`, `bank_branch`, `pan_no`, `declaration`, `message`, `bank_qr_code`) VALUES
+(1, 'upload/template/thumbnail/1809981924661515.png', 'upload/template/thumbnail/1809981924671923.png', 'TUFF TWELVE PRIVATE LIMITE', 'TUFF TWELVE PRIVATE LIMITE', '99-5846-4102', 'info@demo.com', 0, 'asdsad', 'asdsa', 'bas', 'Mohan', '324324', 'a2343ws', '3edf', '13344s', '3223', 'hgfhdsaas', '');
 
 -- --------------------------------------------------------
 
@@ -511,6 +545,12 @@ ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`email`);
 
 --
+-- Indexes for table `payments`
+--
+ALTER TABLE `payments`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `permissions`
 --
 ALTER TABLE `permissions`
@@ -560,7 +600,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `billing`
 --
 ALTER TABLE `billing`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -572,7 +612,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -590,7 +630,13 @@ ALTER TABLE `image_presets`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
+
+--
+-- AUTO_INCREMENT for table `payments`
+--
+ALTER TABLE `payments`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `permissions`

@@ -47,7 +47,7 @@
                                                 {!! "<span class='fw-bold text-danger'>Dr: </span>" .
                                                     $customer->bills()->sum('grand_total') .
                                                     "<br><span class='fw-bold text-danger'>Cr:</span> " .
-                                                    $customer->payments()->sum('amount') .
+                                                    $customer->bills()->sum('payment') .
                                                     "<br><span class='fw-bold text-danger'>Bal: </span> " .
                                                     $customer->balance() !!}
                                             </td>
@@ -70,14 +70,14 @@
                                                     data-original-title="Add Payment" data-bs-original-title="Pay">
                                                         <i data-feather="user-plus"></i>
                                                     </a>
-                                                    <a href="{{ route('payment.show', $customer) }}"
+                                                    <a href="{{($customer->bills()->sum('grand_total')==0) ? '#' :route('payment.show', $customer)}}"
                                                         class="shadow-none badge badge-light-info warning pb-1  bs-tooltip"
                                                         data-toggle="tooltip" data-placement="top" title="Show Payment"
                                                         data-original-title="Show Payment"
                                                         data-bs-original-title="Show Payment">
                                                         <i data-feather="briefcase"></i>
                                                     </a>
-                                                    <a href="{{ route('billing.all', $customer) }}"
+                                                    <a href="{{($customer->bills()->sum('grand_total')==0) ? '#' :route('billing.all', $customer)}}"
                                                         class="shadow-none badge badge-light-info warning pb-1  bs-tooltip"
                                                         data-toggle="tooltip" data-placement="top" title="Show Bills"
                                                         data-original-title="Show Payment"

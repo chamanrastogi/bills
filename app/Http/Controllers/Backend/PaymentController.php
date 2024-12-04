@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Billing;
 use App\Models\Customer;
 use App\Models\Payment;
 use Illuminate\Http\Request;
@@ -37,17 +38,24 @@ class PaymentController extends Controller
     public function store(Request $request,Customer $customer)
     {
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:1'
+            'payment' => 'required|numeric|min:1'
 
         ]);
 
         //dd($customer);
-        Payment::insert([
+       
+         Billing::insertGetId([
             'customer_id' => $customer->id,
-            'amount' => $request->amount,
-            'payment_mode' => $request->payment_mode
+            'cart' => '',
+            'discount' => 0,
+            'discount_amount' => 0,
+            'tax' => 0,
+            'tax_amount' => 0,
+            'grand_total' => 0,
+            'freight_charges'=>0,
+            'payment'=> $request->payment,
+            'payment_mode'=>$request->payment_mode
         ]);
-
         $notification = array(
             'message' => 'Payment Added Successfully',
             'alert-type' => 'success',
@@ -61,34 +69,40 @@ class PaymentController extends Controller
      */
     public function show(Customer $customer)
     {
-        $payments = Payment::latest()->where('customer_id', $customer->id)->with(['customer:id,name'])->get();
-        return view('backend.payment.all_payment', compact('payments'));
+        $payments = Billing::latest()->where('payment','!=',0)->where('customer_id', $customer->id)->with(['customer:id,name'])->get();
+        $customer=Customer::select('name','id')->find($customer->id);
+        $customer_name=$customer->name;
+        $totalpayment= $customer->bills()->sum('payment');
+        //dd($totalpayment);
+        return view('backend.payment.all_payment', compact('payments','customer_name','totalpayment'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Payment $payment, Request $request)
+    public function edit(Billing $billing, Request $request)
     {
+       // dd($billing);
         $payment_modes = explode(",", MODE);
         $customer_id= $request->id;
-        return view('backend.payment.edit_payment', compact('payment', 'payment_modes', 'customer_id'));
+        return view('backend.payment.edit_payment', compact('billing', 'payment_modes', 'customer_id'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Payment $payment)
+    public function update(Request $request, Billing $billing)
     {
         //dd($request);
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:1'
+            'payment' => 'required|numeric|min:1'
         ]);
 
-        //dd($customer);
-        $payment->update([
-            'amount' => $request->amount,
-            'payment_mode' => $request->payment_mode
+       // dd($billing);
+        
+        $billing->update([           
+            'payment'=> $request->payment,
+            'payment_mode'=>$request->payment_mode
         ]);
 
         $notification = array(
@@ -107,9 +121,9 @@ class PaymentController extends Controller
         // dd($request);
         if (is_array($request->id)) {
 
-            $pay = Payment::whereIn('id', $request->id);
+            $pay = Billing::whereIn('id', $request->id);
         } else {
-            $pay = Payment::find($request->id);
+            $pay = Billing::find($request->id);
         }
 
         $pay->delete($request->id);

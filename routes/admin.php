@@ -60,9 +60,10 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::post('/customers/payment/{customer}', [PaymentController::class, 'store'])->name('payment.store');
     Route::get('/customers/payment/show/{customer}', [PaymentController::class, 'show'])->name('payment.show');
     Route::get('/customers/bills/show/{customer}', [BillingController::class, 'showbills'])->name('billing.all');
-    Route::get('/payment/edit/{payment}/{id}', [PaymentController::class, 'edit'])->name('payment.edit');
-    Route::patch('/payment/update/{payment}', [PaymentController::class, 'update'])->name('payment.update');
+    Route::get('/payment/edit/{billing}/{id}', [PaymentController::class, 'edit'])->name('payment.edit');
+    Route::patch('/payment/update/{billing}', [PaymentController::class, 'update'])->name('payment.update');
     Route::post('/payment/delete', [PaymentController::class, 'Delete'])->name('payment.delete.one');
+  
 
     // SMTP and Site Setting  All Route
     Route::controller(SettingController::class)->group(function () {
@@ -76,7 +77,7 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
         Route::get('/cart/{id}', 'getCart')->name('get.cart');
         Route::get('/billing/show', 'showbilling')->name('billing.show');
         Route::post('/billing/delete',  'Delete')->name('billing.delete');
-
+        Route::get('/billing_payment_details', 'showBillingPayments')->name('billing.payments');
        // Route::patch('/update/site/setting/{id}', 'UpdateSiteSetting')->name('update.site.setting');
 
     });
