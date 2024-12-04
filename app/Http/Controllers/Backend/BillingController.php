@@ -42,12 +42,13 @@ class BillingController extends Controller
         $items[]=$item;
         }
         //dd($items);
-        $grandTotal = $cartData['grand_total'];  // Grand total value
+        $grandTotal = round($cartData['grand_total'],2);  // Grand total value
         $discount = $cartData['discount'];
-        $discount_amount = $cartData['discount_amount'];
+        $discount_amount = round($cartData['discount_amount'],2);
         $tax = $cartData['tax'];
-        $tax_amount = $cartData['tax_amount'];
+        $tax_amount = round($cartData['tax_amount'],2);
         $customer_id = $cartData['customer_id'];
+        $freight_charges = $cartData['freight_charges'];
         // Example: Save the cart items in the database, or process the order
 
 
@@ -59,7 +60,8 @@ class BillingController extends Controller
             'discount_amount' => $discount_amount,
             'tax' => $tax,
             'tax_amount' => $tax_amount,
-            'grand_total' => $grandTotal
+            'grand_total' => $grandTotal,
+            'freight_charges'=>$freight_charges
         ]);
         $customer = Customer::find($customer_id);
         // $data=[
@@ -99,8 +101,13 @@ class BillingController extends Controller
         return view('backend.billing.show', compact('billings' ));
     }
     public function delete(Request $request)
-    {
-        $cat = Billing::find($request->id);
+    {      
+        if (is_array($request->id)) {
+
+            $cat = Billing::whereIn('id', $request->id);
+        } else {
+            $cat = Billing::find($request->id);
+        }
         $cat->delete($request->id);
         $notification = array(
             'message' => 'Billing Deleted successfully',

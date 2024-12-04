@@ -175,7 +175,7 @@
                                                                                 $productPrice = floatval(
                                                                                     $item->price,
                                                                                 );
-                                                                                $quantity = intval($item->quantity);
+                                                                                $quantity = $item->quantity;
                                                                                 $totalAmount =
                                                                                     $productPrice * $quantity;
                                                                                 $subtotal += $totalAmount;

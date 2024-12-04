@@ -267,7 +267,7 @@
                     $('#billTable tr').each(function() {
                         const row = $(this);
                         const productId = row.find('td').eq(0).text();
-                        const quantity = parseInt(row.find('td').eq(5).text());
+                        const quantity = parseFloat(row.find('td').eq(5).text());
 
                         cartItems.push({
                             productId,
