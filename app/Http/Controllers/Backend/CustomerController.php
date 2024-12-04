@@ -26,7 +26,7 @@ class CustomerController extends Controller
     public function create()
     {
 
-        return view('backend.customer.add_customer', );
+        return view('backend.customer.add_customer',);
     }
 
     /**
@@ -77,7 +77,7 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         $validated = $request->validate([
-            'phone' => 'unique:customers,phone,' . $customer->id,
+            'phone' => 'unique:customers,phone,' . $customer->id
         ]);
 
 
@@ -112,7 +112,7 @@ class CustomerController extends Controller
             $blogs = Customer::whereIn('id', $request->id);
         } else {
             $blogs = Customer::find($request->id);
-        }      
+        }
 
         $blogs->delete();
         $notification = array(

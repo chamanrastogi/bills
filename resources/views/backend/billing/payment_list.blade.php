@@ -152,17 +152,21 @@
                                                                 <table class="table">
                                                                     <thead>
                                                                         <tr>
-                                                                            <th scope="col">S.No</th>
-                                                                            <th scope="col">Bill Total (Dr)</th>
-                                                                            <th scope="col">Payment (Cr)</th>
-                                                                            <th scope="col">Created Date</th>
-
+                                                                            <th scope="col">Date</th>
+                                                                            <th scope="col">Particular</th>
+                                                                            <th scope="col">Type</th>
+                                                                            <th scope="col">Debit</th>
+                                                                            <th scope="col">Credit</th>
+                                                                           
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         @foreach ($mergedResults as $result)
                                                                             <tr>
-                                                                                <td>{{ $result['billing_id'] }}</td>
+                                                                                <td>{{ \Carbon\Carbon::parse($result['billing_created_at'])->format('d-m-Y') }}
+                                                                                </td>
+                                                                                <td>{{ ($result['grand_total']>0)? 'Sales' : $modes[$result['payment_mode']] }}</td>
+                                                                                <td>{{ ($result['grand_total']>0)? 'Sales' : 'Recipt' }}</td>
                                                                                 <td>
                                                                                     @if ($result['debit_credit'] == 'Dr')
                                                                                         {{ MONEY }}
@@ -180,8 +184,7 @@
                                                                                     @endif
                                                                                 </td>
                                                                                 {{-- <td>{{ $modes[$result['payment_mode']] }}</td> --}}
-                                                                                <td>{{ \Carbon\Carbon::parse($result['billing_created_at'])->format('d-m-Y') }}
-                                                                                </td>
+                                                                                
 
                                                                             </tr>
                                                                         @endforeach
@@ -197,31 +200,24 @@
                                                                     <div class="text-sm-end">
                                                                         <div class="row">
                                                                             <div class="col-sm-8 col-7">
-                                                                                <p>Sub Total :</p>
+                                                                                <p>Total Billing :</p>
                                                                             </div>
                                                                             <div class="col-sm-4 col-5">
-                                                                                <p>-
+                                                                                <p>{{MONEY}} {{number_format($customer->bills()->sum('grand_total'),2)}}
                                                                                 </p>
                                                                             </div>
 
-                                                                            <!-- Discount Calculation -->
-
-                                                                            <div class="col-sm-8 col-7">
-                                                                                <p>Discount
-                                                                                    :</p>
-                                                                            </div>
-                                                                            <div class="col-sm-4 col-5">
-                                                                                <p></p>
-                                                                            </div>
+                                                                            
 
 
                                                                             <!-- Tax Calculation -->
 
                                                                             <div class="col-sm-8 col-7">
-                                                                                <p>Freight Charges :</p>
+                                                                                <p>Payments :</p>
                                                                             </div>
                                                                             <div class="col-sm-4 col-5">
-                                                                                <p></p>
+                                                                                <p>{{MONEY}} {{number_format($customer->bills()->sum('payment'),2)}}
+                                                                                </p>
                                                                             </div>
 
 
@@ -229,11 +225,11 @@
 
                                                                             <div
                                                                                 class="col-sm-8 col-7 grand-total-title">
-                                                                                <p class="fw-bold">Grand Total :</p>
+                                                                                <p class="fw-bold">Closting Balance :</p>
                                                                             </div>
                                                                             <div
                                                                                 class="col-sm-4 col-5 grand-total-amount">
-                                                                                <p></p>
+                                                                                <p> {{MONEY}} {{number_format($customer->balance(),2)}}</p>
                                                                             </div>
                                                                         </div>
                                                                     </div>

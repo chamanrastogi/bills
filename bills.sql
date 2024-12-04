@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 04, 2024 at 11:12 AM
+-- Generation Time: Dec 04, 2024 at 01:35 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -57,7 +57,7 @@ INSERT INTO `billing` (`id`, `customer_id`, `cart`, `discount`, `discount_amount
 (7, 1, '[{\"productId\":5,\"quantity\":15,\"price\":99},{\"productId\":11,\"quantity\":18,\"price\":99},{\"productId\":25,\"quantity\":10,\"price\":60},{\"productId\":22,\"quantity\":11,\"price\":15},{\"productId\":14,\"quantity\":4,\"price\":4}]', 0, '0', 0, '0', 0, 4048, 0, 0, '2024-11-10 18:30:00', '2024-11-10 18:30:00'),
 (8, 1, '', 0, '0', 0, '0', 0, 0, 2285, 1, '2024-11-10 18:30:00', '2024-09-10 18:30:00'),
 (9, 1, '[{\"productId\":22,\"quantity\":20,\"price\":15}]', 0, '0', 0, '0', 0, 300, 0, 0, '2024-11-09 18:30:00', '2024-11-09 18:30:00'),
-(10, 1, '', 0, '0', 0, '0', 0, 0, 800, 1, '2024-11-08 18:30:00', '2024-12-04 04:21:20');
+(10, 1, '', 0, '0', 0, '0', 0, 0, 800, 1, '2024-11-17 18:30:00', '2024-12-04 04:21:20');
 
 -- --------------------------------------------------------
 
@@ -108,7 +108,7 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `name`, `email`, `phone`, `address`, `bill_address`, `opening_balance`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Mohan', 'kumar', '2233333333', 'asdasd', NULL, 0, 0, '2024-11-12 04:55:04', '2024-11-27 07:57:31'),
+(1, 'Mohan', 'kumar@gmail.com', '2233333333', 'asdasd', NULL, 0, 0, '2024-11-12 04:55:04', '2024-12-04 06:44:14'),
 (2, 'chaman', 'krish@gmail.com', '34324', 'fdsfds', 'dfdsff', 0, 0, '2024-12-04 07:08:43', '2024-12-04 03:35:58');
 
 -- --------------------------------------------------------
@@ -493,8 +493,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `username`, `email`, `email_verified_at`, `password`, `photo`, `phone`, `top`, `about`, `role`, `status`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'admin', 'admin', 'admin@gmail.com', NULL, '$2y$12$dQN5u.bXyxKOIrdCUy1qrOhXDp8ZiqKXf7EJknImBkSfz5LTKLB/K', 'upload/user/thumbnail/1798391573232030.jpg', NULL, 0, NULL, 'admin', 0, 'WtrHtTCxjNCRyxZqmi6lkm9CI1F6rFHXACnbkCBagBvjAWrALLBxgDPNpAuw', '2023-11-27 23:45:04', '2024-05-07 11:04:17'),
-(2, 'hajari', 'admin2', 'test@gmail.com', NULL, '$2y$12$Yl/BCf6okAdG0BhmIOfzAeEiwS7jaQg8DRK7blpPloITzBhy/z76u', '', NULL, 0, NULL, 'admin', 0, NULL, '2024-11-27 03:36:13', '2024-11-27 03:39:49');
+(1, 'admin', 'admin', 'admin@gmail.com', NULL, '$2y$12$dQN5u.bXyxKOIrdCUy1qrOhXDp8ZiqKXf7EJknImBkSfz5LTKLB/K', 'upload/user/thumbnail/1817511670142466.jpg', NULL, 0, NULL, 'admin', 0, 'Q6Fn8teGrZZjWi7rfICqHBYBOI9vqt1vaPuAyUyRB36yYt0FouVc3LXHiFRB', '2023-11-27 23:45:04', '2024-12-04 06:40:00'),
+(2, 'hajari', 'admin2', 'test@gmail.com', NULL, '$2y$12$Yl/BCf6okAdG0BhmIOfzAeEiwS7jaQg8DRK7blpPloITzBhy/z76u', 'upload/user/thumbnail/1817511688965034.jpg', NULL, 0, NULL, 'admin', 0, NULL, '2024-11-27 03:36:13', '2024-12-04 06:40:17');
 
 --
 -- Indexes for dumped tables

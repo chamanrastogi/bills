@@ -38,7 +38,7 @@
 
 
                                             <td>{{ $customer->name }}</td>
-                                            <td>{{ $customer->email }}<br>{{ $customer->phone }}</td>
+                                            <td><a href="mailto:{{ $customer->email }}">{{ $customer->email }}</a><br> <a href="tel:{{ $customer->phone }}"> {{ $customer->phone }}</a></td>
 
                                             <td>
                                                 @if ($customer->opening_balance)

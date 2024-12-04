@@ -28,10 +28,12 @@
         <div class="mb-3">
             {!! Form::label('email', 'Email', ['class' => 'form-label']) !!}
             {!! Form::text('email', $customer->email ?? null, [
-                'class' => 'form-control',                
+                'class' => 'form-control',
                 'placeholder' => 'Email',
             ]) !!}
-
+            @error('email')
+                <span class="text-danger pt-3">{{ $message }}</span>
+            @enderror
         </div>
     </div>
 </div>
@@ -39,28 +41,34 @@
 
 
 <div class="row">
-    <div class="col-6"><div class="mb-3">
-        {!! Form::label('phone', 'Phone', ['class' => 'form-label']) !!}
-        {!! Form::text('phone', $customer->phone ?? null, [
-            'class' => 'form-control',
-            'required' => 'required',
-            'placeholder' => 'Phone',
-        ]) !!}
-    
-    </div></div>
-    <div class="col-6"><div class="mb-3">
-        {!! Form::label('phone', 'Opening Balance -('. MONEY.')', ['class' => 'form-label']) !!}
-        {!! Form::number('opening_balance', $customer->opening_balance ?? null, [
-            'class' => 'form-control',           
-            'placeholder' => 'Opening Balance',
-        ]) !!}
-    
-    </div></div>
+    <div class="col-6">
+        <div class="mb-3">
+            {!! Form::label('phone', 'Phone', ['class' => 'form-label']) !!}
+            {!! Form::text('phone', $customer->phone ?? null, [
+                'class' => 'form-control',
+                'required' => 'required',
+                'placeholder' => 'Phone',
+            ]) !!}
+            @error('phone')
+                <span class="text-danger pt-3">{{ $message }}</span>
+            @enderror
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="mb-3">
+            {!! Form::label('opening_balance', 'Opening Balance -(' . MONEY . ')', ['class' => 'form-label']) !!}
+            {!! Form::number('opening_balance', $customer->opening_balance ?? null, [
+                'class' => 'form-control',
+                'placeholder' => 'Opening Balance',
+            ]) !!}
+
+        </div>
+    </div>
 </div>
 
 
 <div class="row mb-3">
-   <div class="col-6">
+    <div class="col-6">
         {!! Form::label('address', 'Address', ['class' => 'form-label']) !!}
         {!! Form::textarea('address', $customer->address ?? null, [
             'class' => 'form-control',
