@@ -84,6 +84,13 @@
                                                         data-bs-original-title="Show Payment">
                                                         <i data-feather="book"></i>
                                                     </a>
+                                                    <a href="{{($customer->bills()->sum('grand_total')==0) ? '#' :route('billing.ledger', $customer)}}"
+                                                        class="shadow-none badge badge-light-info warning pb-1  bs-tooltip"
+                                                        data-toggle="tooltip" data-placement="top" title="Show ledger"
+                                                        data-original-title="Show ledger"
+                                                        data-bs-original-title="Show ledger">
+                                                        <i data-feather="users"></i>
+                                                    </a>
                                                    
                                                     <a href="{{ route('customers.edit', $customer->id) }}"
                                                         class="action-btn btn-edit bs-tooltip me-2"

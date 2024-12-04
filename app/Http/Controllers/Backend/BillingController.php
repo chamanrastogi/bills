@@ -96,7 +96,7 @@ class BillingController extends Controller
     }
     public function showbilling()
     {
-        $billings = Billing::latest()->get();
+        $billings = Billing::latest()->where('payment',0)->get();
         return view('backend.billing.show', compact('billings'));
     }
     public function delete(Request $request)
@@ -117,16 +117,17 @@ class BillingController extends Controller
     public function showbills(Customer $customer)
     {
         //dd($customer);
-        $billings = Billing::where('customer_id', $customer->id)->get();
+        $billings = Billing::where('customer_id', $customer->id)->where('payment',0)->get();
         return view('backend.customer.show', compact('billings'));
     }
-    public function showBillingPayments(Customer $customer)
+    public function showBillingPayments(Customer $customer,Request $request)
     {
-        $startDate = '2024-01-01'; // Example start date
-        $endDate = '2024-12-31';
+       
+        list($startDate, $endDate)=explode("to",$request->daterange);
+        
         // Retrieve billing data with specific fields
         $billingResults = Billing::where('customer_id', 1) // Customer ID filter
-            ->whereBetween('created_at', [$startDate, $endDate]) // Date filter
+            ->whereBetween('created_at', [trim($startDate), trim($endDate)]) // Date filter
             ->orderBy('created_at', 'asc')
             ->select(
                 'id as billing_id',
@@ -155,6 +156,10 @@ class BillingController extends Controller
 
 
         // Return the view with the results    
-        return view('backend.billing.payment_list', compact('mergedResults', 'startDate', 'endDate'));
+        return view('backend.billing.payment_list', compact('mergedResults', 'startDate', 'endDate','customer'));
+    }
+    public function Billingledger(Customer $customer)
+    {
+        return view('backend.billing.billing_ledger', compact('customer'));
     }
 }

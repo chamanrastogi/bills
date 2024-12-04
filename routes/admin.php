@@ -77,7 +77,8 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
         Route::get('/cart/{id}', 'getCart')->name('get.cart');
         Route::get('/billing/show', 'showbilling')->name('billing.show');
         Route::post('/billing/delete',  'Delete')->name('billing.delete');
-        Route::get('/billing_payment_details', 'showBillingPayments')->name('billing.payments');
+        Route::post('/billing_payment_details/{customer}', 'showBillingPayments')->name('billing.payments');
+        Route::get('/billing_ledger/{customer}', 'Billingledger')->name('billing.ledger');
        // Route::patch('/update/site/setting/{id}', 'UpdateSiteSetting')->name('update.site.setting');
 
     });

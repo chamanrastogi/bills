@@ -168,12 +168,14 @@ function breadcrumb()
     $n = explode('/', Route::getCurrentRoute()->uri);
     //dd($n);
     if (count($n) == 2) {
-
+      
       $url = "Show " . ucfirst(Str::headline(ucfirst($n[1])));
     } elseif (count($n) == 3 || count($n) == 5) {
 
       if ($n[2] == '{id}') {
         $url = ucfirst(Str::headline(ucfirst($n[1])));
+      }elseif ($n[2] == '{customer}') {
+        $url =  "Customer / Ledger" ;
       }  else {
         $url = ucfirst($n[2]) . " " . ucfirst(Str::headline(ucfirst($n[1])));
       }
