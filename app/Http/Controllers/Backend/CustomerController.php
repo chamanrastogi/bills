@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Traits\CommonTrait;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -113,7 +114,7 @@ class CustomerController extends Controller
         } else {
             $blogs = Customer::find($request->id);
         }
-
+       
         $blogs->delete();
         $notification = array(
             'message' => 'Customer Deleted successfully',

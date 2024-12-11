@@ -98,6 +98,7 @@
                                                         data-bs-original-title="Edit">
                                                         <i data-feather="edit"></i>
                                                     </a>
+                                                    @if(Auth::id()==1)
                                                     <a href="javascript:void(0)"
                                                         onClick="deleteFunction({{ $customer->id }},'Customer')"
                                                         class="action-btn btn-edit bs-tooltip me-2 delete{{ $customer->id }}"
@@ -105,15 +106,14 @@
                                                         data-bs-original-title="Delete">
                                                         <i data-feather="trash-2"></i>
                                                     </a>
-
+                                                    @endif
                                                 </div>
                                             </td>
-
-
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
+                            @if(Auth::id()==1)
                             @if ($customers->count() != 0)
                                 <div class="ms-3">
                                     <div class="form-check form-check-primary form-check-inline">
@@ -127,6 +127,7 @@
                                         <span class="btn-text-inner">Delete Selected</span>
                                     </button>
                                 </div>
+                            @endif
                             @endif
                         </div>
                     </div>
