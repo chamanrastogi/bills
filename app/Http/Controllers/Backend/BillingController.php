@@ -171,7 +171,10 @@ class BillingController extends Controller
         //dd($billings);     
         return view('backend.billing.showall', compact('billings'));
     }
-
+    public function datatable(BillingsDataTable $dataTable)
+    {
+        return $dataTable->render('backend.billing.index');
+    }
     public function Ajax_Load(Request $request, Billing $billing)
     {
         $query = Billing::select('id', 'customer_id', 'cart', 'discount', 'tax', 'freight_charges', 'created_at', 'grand_total')->where('grand_total', '>', 0)->get();

@@ -81,6 +81,7 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
         Route::get('/billing_ledger/{customer}', 'Billingledger')->name('billing.ledger');  
         Route::get('/billing/showall',  'Showall')->name('billing.showall');     
         Route::get('/billings/ajax_load',  'Ajax_Load')->name('billing.ajax_load');
+        Route::get('/billings/datatable', 'datatable')->name('billing.datatable');
        // Route::patch('/update/site/setting/{id}', 'UpdateSiteSetting')->name('update.site.setting');
 
     });

@@ -179,6 +179,7 @@
     <script src="{{ asset('backend/assets/src/plugins/src/table/datatable/custom_miscellaneous.js') }}"></script>
 
 @yield('script')
+@stack('scripts')
     <!-- END PAGE LEVEL SCRIPTS -->
 
 </body>
