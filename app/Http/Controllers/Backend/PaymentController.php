@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Billing;
 use App\Models\Customer;
-use App\Models\Payment;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -13,10 +12,7 @@ class PaymentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-
-    }
+    public function index() {}
 
     /**
      * Show the form for creating a new resource.
@@ -24,27 +20,28 @@ class PaymentController extends Controller
     public function Addpayment(Customer $customer)
     {
 
-        $payment_modes =explode(",", MODE);
-        $customer_id=$customer;
-       // dd($customer->balance());
-        $balance=$customer->balance();
-        $customer_name=$customer->name;
-        return view('backend.payment.add_payment', compact('payment_modes','customer_id','balance','customer_name'));
+        $payment_modes = explode(',', MODE);
+        $customer_id = $customer;
+        // dd($customer->balance());
+        $balance = $customer->balance();
+        $customer_name = $customer->name;
+
+        return view('backend.payment.add_payment', compact('payment_modes', 'customer_id', 'balance', 'customer_name'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request,Customer $customer)
+    public function store(Request $request, Customer $customer)
     {
         $validated = $request->validate([
-            'payment' => 'required|numeric|min:1'
+            'payment' => 'required|numeric|min:1',
 
         ]);
 
-        //dd($customer);
-       
-         Billing::insertGetId([
+        // dd($customer);
+
+        Billing::insertGetId([
             'customer_id' => $customer->id,
             'cart' => '',
             'discount' => 0,
@@ -52,14 +49,15 @@ class PaymentController extends Controller
             'tax' => 0,
             'tax_amount' => 0,
             'grand_total' => 0,
-            'freight_charges'=>0,
-            'payment'=> $request->payment,
-            'payment_mode'=>$request->payment_mode
+            'freight_charges' => 0,
+            'payment' => $request->payment,
+            'payment_mode' => $request->payment_mode,
         ]);
-        $notification = array(
+        $notification = [
             'message' => 'Payment Added Successfully',
             'alert-type' => 'success',
-        );
+        ];
+
         return redirect()->back()->with($notification);
         //
     }
@@ -69,12 +67,13 @@ class PaymentController extends Controller
      */
     public function show(Customer $customer)
     {
-        $payments = Billing::latest()->where('payment','!=',0)->where('customer_id', $customer->id)->with(['customer:id,name'])->get();
-        $customer=Customer::select('name','id')->find($customer->id);
-        $customer_name=$customer->name;
-        $totalpayment= $customer->bills()->sum('payment');
-        //dd($totalpayment);
-        return view('backend.payment.all_payment', compact('payments','customer_name','totalpayment'));
+        $payments = Billing::latest()->where('payment', '!=', 0)->where('customer_id', $customer->id)->with(['customer:id,name'])->get();
+        $customer = Customer::select('name', 'id')->find($customer->id);
+        $customer_name = $customer->name;
+        $totalpayment = $customer->bills()->sum('payment');
+
+        // dd($totalpayment);
+        return view('backend.payment.all_payment', compact('payments', 'customer_name', 'totalpayment'));
     }
 
     /**
@@ -82,9 +81,10 @@ class PaymentController extends Controller
      */
     public function edit(Billing $billing, Request $request)
     {
-       // dd($billing);
-        $payment_modes = explode(",", MODE);
-        $customer_id= $request->id;
+        // dd($billing);
+        $payment_modes = explode(',', MODE);
+        $customer_id = $request->id;
+
         return view('backend.payment.edit_payment', compact('billing', 'payment_modes', 'customer_id'));
     }
 
@@ -93,22 +93,23 @@ class PaymentController extends Controller
      */
     public function update(Request $request, Billing $billing)
     {
-        //dd($request);
+        // dd($request);
         $validated = $request->validate([
-            'payment' => 'required|numeric|min:1'
+            'payment' => 'required|numeric|min:1',
         ]);
 
-       // dd($billing);
-        
-        $billing->update([           
-            'payment'=> $request->payment,
-            'payment_mode'=>$request->payment_mode
+        // dd($billing);
+
+        $billing->update([
+            'payment' => $request->payment,
+            'payment_mode' => $request->payment_mode,
         ]);
 
-        $notification = array(
+        $notification = [
             'message' => 'Payment Updated Successfully',
             'alert-type' => 'success',
-        );
+        ];
+
         return redirect()->back()->with($notification);
         //
     }
@@ -116,7 +117,7 @@ class PaymentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-     public function delete(Request $request)
+    public function delete(Request $request)
     {
         // dd($request);
         if (is_array($request->id)) {
@@ -127,10 +128,11 @@ class PaymentController extends Controller
         }
 
         $pay->delete($request->id);
-        $notification = array(
+        $notification = [
             'message' => 'Payment Deleted successfully',
             'alert-unit_id' => 'success',
-        );
+        ];
+
         return redirect()->back()->with($notification);
     }
 }

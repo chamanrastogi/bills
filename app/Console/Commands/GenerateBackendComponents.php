@@ -12,7 +12,7 @@ class GenerateBackendComponents extends Command
 
     protected $description = 'Generate multiple models with resource controller methods and migration';
 
-    //protected $hidden = true; //Hide your custom command
+    // protected $hidden = true; //Hide your custom command
     public function handle()
     {
 
@@ -23,14 +23,13 @@ class GenerateBackendComponents extends Command
                 'customer_id' => ['type' => 'integer', 'options' => []],
                 'amount' => ['type' => 'integer', 'options' => []],
                 'payment_mode' => ['type' => 'integer', 'options' => []],
-                'status' => ['type' => 'boolean', 'options' => ['default' => 0]]
+                'status' => ['type' => 'boolean', 'options' => ['default' => 0]],
             ],
         ];
 
-
         // Loop through the models and create each one with migration and resource methods
         foreach ($models as $model => $fields) {
-            $form_name = $model . "Form";
+            $form_name = $model.'Form';
             // Create the model with migration and resource options
             $this->call('make:model', [
                 'name' => Str::ucfirst($model),
@@ -81,17 +80,16 @@ class GenerateBackendComponents extends Command
                     if ($option === 'default') {
                         $line .= ")->default({$value}"; // Default value
                     } elseif ($option === 'nullable' && $value) {
-                        $line .= ")->nullable("; // Nullable
+                        $line .= ')->nullable('; // Nullable
                     } elseif ($option === 'useCurrent' && $value) {
-                        $line .= ")->useCurrent("; // Use current timestamp
+                        $line .= ')->useCurrent('; // Use current timestamp
                     }
                 }
             }
 
-            $line .= ");"; // Close the line with a semicolon
-            $fieldLines .= "\n" . $line; // Append to field lines
+            $line .= ');'; // Close the line with a semicolon
+            $fieldLines .= "\n".$line; // Append to field lines
         }
-
 
         // Read the migration file content
         $migrationContent = file_get_contents($migrationFile);
@@ -107,12 +105,10 @@ class GenerateBackendComponents extends Command
         file_put_contents($migrationFile, $newMigrationContent);
     }
 
-
-
-
     protected function getLastMigrationFile()
     {
         $files = glob(database_path('migrations/*.php'));
+
         return end($files);
     }
 
@@ -120,16 +116,16 @@ class GenerateBackendComponents extends Command
     {
         $bladeDirectory = resource_path("views/backend/{$name}");
 
-        if (!File::exists($bladeDirectory)) {
+        if (! File::exists($bladeDirectory)) {
             File::makeDirectory($bladeDirectory, 0755, true);
             $this->info("Blade directory created: {$bladeDirectory}");
         }
 
         // Define paths for the template files
         $filePaths = [
-            'add' => resource_path("views/templates/create.blade.php"),
-            'edit' => resource_path("views/templates/edit.blade.php"),
-            'all' => resource_path("views/templates/show.blade.php"),
+            'add' => resource_path('views/templates/create.blade.php'),
+            'edit' => resource_path('views/templates/edit.blade.php'),
+            'all' => resource_path('views/templates/show.blade.php'),
         ];
 
         // Loop through the array to create each Blade file
@@ -143,16 +139,17 @@ class GenerateBackendComponents extends Command
             }
         }
     }
+
     protected function createComponentWithDummyData($form_name, $model)
     {
         // Call the make:component command to create the component
         $this->call('make:component', ['name' => "backend/backend_component/{$form_name}"]);
 
-        $slug = $model . "-form";
+        $slug = $model.'-form';
         // Define the path to the newly created component view
         $componentPath = resource_path("views/components/backend/backend_component/{$slug}.blade.php");
 
-        $dummyTemplatePath = resource_path("views/templates/component-form.blade.php"); // Adjust the path as necessary
+        $dummyTemplatePath = resource_path('views/templates/component-form.blade.php'); // Adjust the path as necessary
 
         // Check if the component view exists
         if (File::exists($componentPath)) {

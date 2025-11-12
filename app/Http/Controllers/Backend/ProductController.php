@@ -4,20 +4,24 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\Product;
-use Illuminate\Http\Request;
 use App\Models\ImagePresets;
+use App\Models\Product;
 use App\Models\Unit;
-use App\Traits\ImageGenTrait;
 use App\Traits\CommonTrait;
+use App\Traits\ImageGenTrait;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public $path = "upload/product/thumbnail/";
+    public $path = 'upload/product/thumbnail/';
+
     public $image_preset;
+
     public $image_preset_main;
-    use ImageGenTrait;
+
     use CommonTrait;
+    use ImageGenTrait;
+
     public function __construct()
     {
         $this->image_preset = ImagePresets::whereIn('id', [4, 12])->get();
@@ -27,16 +31,19 @@ class ProductController extends Controller
     public function index()
     {
         $products = product::latest()->get();
+
         return view('backend.product.all_product', compact('products'));
     }
+
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
         $categories = Category::where('status', 0)->pluck('name', 'id');
-        $units= Unit::where('status', 0)->pluck('name', 'id');
-        return view('backend.product.add_product', compact('categories','units'));
+        $units = Unit::where('status', 0)->pluck('name', 'id');
+
+        return view('backend.product.add_product', compact('categories', 'units'));
     }
 
     /**
@@ -46,7 +53,7 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|unique:products|max:200',
-            'price' => 'required'
+            'price' => 'required',
         ]);
         $image = $request->file('image');
         if ($request->file('image') != null) {
@@ -62,14 +69,15 @@ class ProductController extends Controller
             'image' => $save_url,
             'price' => $request->price,
             'unit_id' => $request->unit_id,
-            'text' => ''
+            'text' => '',
 
         ]);
 
-        $notification = array(
+        $notification = [
             'message' => 'Product Added Successfully',
             'alert-type' => 'success',
-        );
+        ];
+
         return redirect()->back()->with($notification);
     }
 
@@ -88,8 +96,9 @@ class ProductController extends Controller
     {
         $products = Product::all();
         $categories = Category::where('status', 0)->pluck('name', 'id');
-        $units= Unit::where('status', 0)->pluck('name', 'id');
-        return view('backend.product.edit_product', compact('product', 'categories','units'));
+        $units = Unit::where('status', 0)->pluck('name', 'id');
+
+        return view('backend.product.edit_product', compact('product', 'categories', 'units'));
     }
 
     /**
@@ -98,13 +107,13 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $validated = $request->validate([
-            'name' => 'required|max:200|unique:products,name,' . $product->id,
-            'price' => 'required'
+            'name' => 'required|max:200|unique:products,name,'.$product->id,
+            'price' => 'required',
         ]);
         if ($request->file('image') != null) {
             if (file_exists($product->image)) {
                 $img = explode('.', $product->image);
-                $small_img = $img[0] . "_" . $this->image_preset[0]->name . "." . $img[1];
+                $small_img = $img[0].'_'.$this->image_preset[0]->name.'.'.$img[1];
                 unlink($small_img);
                 unlink($product->post_image);
             }
@@ -127,10 +136,11 @@ class ProductController extends Controller
             'text' => '',
         ]);
 
-        $notification = array(
+        $notification = [
             'message' => 'Product Updated Successfully',
             'alert-type' => 'success',
-        );
+        ];
+
         return redirect()->back()->with($notification);
     }
 
@@ -141,6 +151,7 @@ class ProductController extends Controller
     {
         //
     }
+
     public function delete(Request $request)
     {
         if (is_array($request->id)) {
@@ -148,7 +159,7 @@ class ProductController extends Controller
             foreach ($blogs as $blog) {
                 if (file_exists($blog->image)) {
                     $img = explode('.', $blog->image);
-                    $small_img = $img[0] . "_" . $this->image_preset[0]->name . "." . $img[1];
+                    $small_img = $img[0].'_'.$this->image_preset[0]->name.'.'.$img[1];
                     unlink($small_img);
                     unlink($blog->image);
                 }
@@ -157,23 +168,25 @@ class ProductController extends Controller
             $blogs = Product::find($request->id);
             if (file_exists($blogs->image)) {
                 $img = explode('.', $blogs->image);
-                $small_img = $img[0] . "_" . $this->image_preset[0]->name . "." . $img[1];
+                $small_img = $img[0].'_'.$this->image_preset[0]->name.'.'.$img[1];
                 unlink($small_img);
                 unlink($blogs->image);
             }
         }
 
         $blogs->delete();
-        $notification = array(
+        $notification = [
             'message' => 'Product Deleted successfully',
             'alert-type' => 'success',
-        );
+        ];
+
         return redirect()->back()->with($notification);
     }
 
     public function GetProducts(string $category)
     {
         $products = Product::where('category_id', $category)->with('unit')->get();
+
         return $products;
     }
 }

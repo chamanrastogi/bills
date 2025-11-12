@@ -9,10 +9,8 @@ use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\SiteSetting;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use DataTables;
-
+use Illuminate\Http\Request;
 
 class BillingController extends Controller
 {
@@ -22,11 +20,13 @@ class BillingController extends Controller
         $categories = Category::pluck('name', 'id');
 
         $customers = Customer::all()->mapWithKeys(function ($customer) {
-            return [$customer->id => $customer->name . ' (' . $customer->phone . ')'];
+            return [$customer->id => $customer->name.' ('.$customer->phone.')'];
         });
         $template = SiteSetting::select('tax')->find(1);
-        return view('backend.billing.billing', compact('categories',  'customers', 'template'));
+
+        return view('backend.billing.billing', compact('categories', 'customers', 'template'));
     }
+
     public function cart(Request $request)
     {
         $items = [];
@@ -42,7 +42,7 @@ class BillingController extends Controller
             $item['price'] = $pro->price;
             $items[] = $item;
         }
-        //dd($items);
+        // dd($items);
         $grandTotal = round($cartData['grand_total'], 2);  // Grand total value
         $discount = $cartData['discount'];
         $discount_amount = round($cartData['discount_amount'], 2);
@@ -52,7 +52,7 @@ class BillingController extends Controller
         $freight_charges = $cartData['freight_charges'];
         // Example: Save the cart items in the database, or process the order
 
-        //dd($cartItems);
+        // dd($cartItems);
         $bill = Billing::insertGetId([
             'customer_id' => $customer_id,
             'cart' => json_encode($items),
@@ -63,7 +63,7 @@ class BillingController extends Controller
             'grand_total' => $grandTotal,
             'freight_charges' => $freight_charges,
             'payment' => 0,
-            'payment_mode' => 0
+            'payment_mode' => 0,
         ]);
         $customer = Customer::find($customer_id);
         // $data=[
@@ -79,28 +79,34 @@ class BillingController extends Controller
 
         return redirect()->route('billing.show');
     }
+
     public function getCart(int $id)
     {
         $template = SiteSetting::find(1);
         $billing = Billing::find($id);
-        $notification = array(
+        $notification = [
             'message' => 'Cart Saved Successfully',
             'alert-type' => 'success',
-        );
-        if (!$billing) {
-            $notification = array(
+        ];
+        if (! $billing) {
+            $notification = [
                 'message' => 'Billing Not Found',
                 'alert-type' => 'error',
-            );
+            ];
+
             return redirect()->route('billing.show')->with($notification);
         }
+
         return view('backend.billing.cart', compact('billing', 'id', 'template'))->with($notification);
     }
+
     public function showbilling()
     {
         $billings = Billing::latest()->where('payment', 0)->get();
+
         return view('backend.billing.show', compact('billings'));
     }
+
     public function delete(Request $request)
     {
         if (is_array($request->id)) {
@@ -110,22 +116,26 @@ class BillingController extends Controller
             $cat = Billing::find($request->id);
         }
         $cat->delete($request->id);
-        $notification = array(
+        $notification = [
             'message' => 'Billing Deleted successfully',
             'alert-category_id' => 'success',
-        );
+        ];
+
         return redirect()->back()->with($notification);
     }
+
     public function showbills(Customer $customer)
     {
-        //dd($customer);
+        // dd($customer);
         $billings = Billing::where('customer_id', $customer->id)->where('payment', 0)->get();
+
         return view('backend.customer.show', compact('billings'));
     }
+
     public function showBillingPayments(Customer $customer, Request $request)
     {
 
-        list($startDate, $endDate) = explode("to", $request->daterange);
+        [$startDate, $endDate] = explode('to', $request->daterange);
 
         // Retrieve billing data with specific fields
         $billingResults = Billing::where('customer_id', 1) // Customer ID filter
@@ -152,29 +162,33 @@ class BillingController extends Controller
                 'payment_mode' => $billing->payment_mode,
                 'billing_updated_at' => $billing->billing_updated_at,
                 'billing_created_at' => $billing->billing_created_at,
-                'debit_credit' => $billing->grand_total > 0 ? 'Dr' : ($billing->payment > 0 ? 'Cr' : '')
+                'debit_credit' => $billing->grand_total > 0 ? 'Dr' : ($billing->payment > 0 ? 'Cr' : ''),
             ];
         }
 
-
-        // Return the view with the results    
+        // Return the view with the results
         return view('backend.billing.payment_list', compact('mergedResults', 'startDate', 'endDate', 'customer'));
     }
+
     public function Billingledger(Customer $customer)
     {
         return view('backend.billing.billing_ledger', compact('customer'));
     }
+
     public function Showall()
     {
 
-        $billings = Billing::latest()->where('cart', '!=', NULL)->get();
-        //dd($billings);     
+        $billings = Billing::latest()->where('cart', '!=', null)->get();
+
+        // dd($billings);
         return view('backend.billing.showall', compact('billings'));
     }
+
     public function datatable(BillingsDataTable $dataTable)
     {
         return $dataTable->render('backend.billing.index');
     }
+
     public function Ajax_Load(Request $request, Billing $billing)
     {
         $query = Billing::select('id', 'customer_id', 'cart', 'discount', 'tax', 'freight_charges', 'created_at', 'grand_total')->where('grand_total', '>', 0)->get();
@@ -182,61 +196,62 @@ class BillingController extends Controller
         return DataTables::of($query)
             ->addColumn('check', function (Billing $billing) {
 
-                return    '<span class="form-check form-check-primary"><input
-                                                    class="form-check-input mixed_child " value="' . $billing->id . '"
+                return '<span class="form-check form-check-primary"><input
+                                                    class="form-check-input mixed_child " value="'.$billing->id.'"
                                                     type="checkbox"></span>';
             })
             ->setRowClass(function (Billing $billing) {
-                return 'billing-' . $billing->id;
+                return 'billing-'.$billing->id;
             })
 
             ->addColumn('customer', function (Billing $billing) {
                 $cart = json_decode($billing->cart);
-                $customer_details='-';
-                $customer = Customer::Select('name','phone')->find(
+                $customer_details = '-';
+                $customer = Customer::Select('name', 'phone')->find(
                     $billing->customer_id,
                 );
-                if($customer)
-                {
-                    $customer_details= $customer->name .'<br>Ph:'.$customer->phone;
+                if ($customer) {
+                    $customer_details = $customer->name.'<br>Ph:'.$customer->phone;
                 }
-                return   $customer_details;
+
+                return $customer_details;
             })
             ->addColumn('cart', function (Billing $billing) {
                 $cart = json_decode($billing->cart);
                 $carts = '';
-                $units='';
+                $units = '';
                 foreach ($cart as $item) {
 
                     $product = Product::with('unit')->find(
                         $item->productId,
                     );
-                    $units=($product->unit->name) ? "-Per " . $product->unit->name : '';    
-                    $carts .= $product->name . $units  . "<br>";
+                    $units = ($product->unit->name) ? '-Per '.$product->unit->name : '';
+                    $carts .= $product->name.$units.'<br>';
                 }
-                return   $carts;
+
+                return $carts;
             })
             ->addColumn('details', function (Billing $billing) {
-                return   '<strong>Dis:</strong>' . $billing->discount . ' (%)<br>
-                                            <strong>Tax:</strong>' . $billing->tax . ' (%)<br>
-                                        <strong>Fri_ch:</strong>' . $billing->freight_charges . '';
+                return '<strong>Dis:</strong>'.$billing->discount.' (%)<br>
+                                            <strong>Tax:</strong>'.$billing->tax.' (%)<br>
+                                        <strong>Fri_ch:</strong>'.$billing->freight_charges.'';
             })
             ->addColumn('created', function (Billing $billing) {
-                return   $billing->created_at->format('d-m-Y h:i A');
+                return $billing->created_at->format('d-m-Y h:i A');
             })
             ->addColumn('total', function (Billing $billing) {
-                return   number_format($billing->grand_total, 2);
+                return number_format($billing->grand_total, 2);
             })
 
             ->addColumn('action', function (Billing $billing) {
 
                 $get = route('get.cart', $billing->id);
-                $x = '<a href="' . $get . '"class="action-btn btn-edit bs-tooltip me-2" data-toggle="tooltip"
+                $x = '<a href="'.$get.'"class="action-btn btn-edit bs-tooltip me-2" data-toggle="tooltip"
                               data-placement="top" title="View" data-bs-original-title="View">
                               <i data-feather="eye"></i></a>';
-                $delete = $billing->id . ",'Billing'";
-                $x .= '<a href="javascript:void(0)" onClick="deleteFunction(' . $delete . ')"
-    class="action-btn btn-edit bs-tooltip me-2 delete' . $billing->id . '"
+                $delete = $billing->id.",'Billing'";
+                $x .= '<a href="javascript:void(0)" onClick="deleteFunction('.$delete.')"
+    class="action-btn btn-edit bs-tooltip me-2 delete'.$billing->id.'"
     data-toggle="tooltip" data-placement="top" title="Delete"
     data-bs-original-title="Delete">
     <i data-feather="trash-2"></i>

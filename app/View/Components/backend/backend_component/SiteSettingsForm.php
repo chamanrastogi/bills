@@ -8,14 +8,14 @@ use Illuminate\View\Component;
 
 class SiteSettingsForm extends Component
 {
-    public $sitesetting;  
-   
+    public $sitesetting;
+
     /**
      * Create a new component instance.
      */
     public function __construct($sitesetting = null)
     {
-        $this->sitesetting = $sitesetting;        
+        $this->sitesetting = $sitesetting;
     }
 
     /**

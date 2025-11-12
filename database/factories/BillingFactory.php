@@ -32,7 +32,7 @@ class BillingFactory extends Factory
             $items[] = [
                 'productId' => $product->id,
                 'quantity' => rand(1, 30), // Random quantity between 1 and 30
-                'price' => $product->price // Assuming the 'price' field exists in the product table 
+                'price' => $product->price, // Assuming the 'price' field exists in the product table
             ];
         }
 
@@ -74,12 +74,12 @@ class BillingFactory extends Factory
             'discount_amount' => 0,
             'tax' => 0,
             'tax_amount' => 0,
-            'freight_charges'=>0,
+            'freight_charges' => 0,
             'grand_total' => 0,
-            'payment' =>rand(100, 10000),
-            'payment_mode' =>1,
+            'payment' => rand(100, 10000),
+            'payment_mode' => 1,
             'created_at' => $randomDate,
-            'updated_at' => $randomDate
+            'updated_at' => $randomDate,
         ];
     }
 }

@@ -13,13 +13,16 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id('id');
-            $table->integer('category_id');
+            $table->string('sku')->unique();
+            $table->integer('type_id')->nullable();
             $table->string('name');
-            $table->string('image');
-            $table->integer('price');
-            $table->integer('color');
-            $table->string('text')->nullable();
-            $table->boolean('status')->default(0);
+            $table->integer('purity_id')->nullable(); // 22K, 18K
+            $table->decimal('gross_weight', 10,4);
+            $table->decimal('net_weight', 10,4);
+            $table->decimal('making_charge', 10,2)->default(0);
+            $table->decimal('rate_per_gram', 10,2)->default(0);
+            $table->decimal('stock_qty', 10,4)->default(1);
+            $table->enum('status', ['in_stock','sold','returned'])->default('in_stock');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
         });

@@ -3,21 +3,24 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\SmtpSetting;
-use App\Models\SiteSetting;
 use App\Models\ImagePresets;
+use App\Models\SiteSetting;
 use App\Traits\ImageGenTrait;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class SettingController extends Controller
 {
     //
-    public $path = "upload/template/thumbnail/";
+    public $path = 'upload/template/thumbnail/';
+
     public $image_preset;
+
     public $image_preset_main;
+
     use ImageGenTrait;
+
     public function __construct()
     {
         $this->image_preset = ImagePresets::whereIn('id', [1])->get();
@@ -28,8 +31,11 @@ class SettingController extends Controller
     {
 
         $sitesetting = SiteSetting::find(1);
+
         return view('backend.setting.site_update', compact('sitesetting'));
-    } // End Method
+    }
+
+    // End Method
     public function UpdateSiteSetting(Request $request, $id)
     {
 
@@ -39,11 +45,11 @@ class SettingController extends Controller
             'site_title' => 'required',
             'app_name' => 'required',
             'declaration' => 'required',
-            'message' => 'required',            
+            'message' => 'required',
         ]);
         if ($request->file('logo')) {
             $image = $request->file('logo');
-            $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+            $name_gen = hexdec(uniqid()).'.'.$image->getClientOriginalExtension();
             $image = $request->file('logo');
             $save_url = $this->imageGenrator($image, $this->image_preset_main, $this->image_preset, $this->path);
         } else {
@@ -52,17 +58,16 @@ class SettingController extends Controller
 
         if ($request->file('favicon')) {
             $image = $request->file('favicon');
-            $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+            $name_gen = hexdec(uniqid()).'.'.$image->getClientOriginalExtension();
             $image = $request->file('favicon');
             $save_url2 = $this->imageGenrator($image, $this->image_preset_main, $this->image_preset, $this->path);
         } else {
             $save_url2 = SiteSetting::find($site_id)->favicon;
         }
 
-
         if ($request->file('bank_qr_code')) {
             $image = $request->file('bank_qr_code');
-            $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+            $name_gen = hexdec(uniqid()).'.'.$image->getClientOriginalExtension();
             $image = $request->file('bank_qr_code');
             $save_url_map = $this->imageGenrator($image, $this->image_preset_main, $this->image_preset, $this->path);
         } else {
@@ -85,22 +90,22 @@ class SettingController extends Controller
             'bank_branch' => $request->bank_branch,
             'pan_no' => $request->pan_no,
             'declaration' => $request->declaration,
-			'message' => $request->message,
-            'bank_qr_code'=> $save_url_map               
+            'message' => $request->message,
+            'bank_qr_code' => $save_url_map,
         ]);
 
-        $notification = array(
+        $notification = [
             'message' => 'SiteSetting Updated  Successfully',
-            'alert-type' => 'success'
-        );
+            'alert-type' => 'success',
+        ];
 
         return redirect()->back()->with($notification);
     } // End Method
 
-	 public function myshow($table)
+    public function myshow($table)
     {
         // Check if the table exists
-        if (!Schema::hasTable($table)) {
+        if (! Schema::hasTable($table)) {
             return response()->json(['error' => 'Table does not exist'], 404);
         }
 

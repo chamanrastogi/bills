@@ -2,38 +2,45 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ImagePresets;
 use App\Models\SiteSetting;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Traits\ImageGenTrait;
+use DataTables;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
-use DataTables;
-use App\Models\ImagePresets;
-use App\Traits\ImageGenTrait;
+use Illuminate\Validation\Rules;
 
 class AdminController extends Controller
 {
-    public $path = "upload/user/thumbnail/";
+    public $path = 'upload/user/thumbnail/';
+
     public $image_preset;
+
     public $image_preset_main;
+
     use ImageGenTrait;
+
     public function __construct()
     {
-        $this->image_preset = ImagePresets::whereIn('id', [3,4])->get();
+        $this->image_preset = ImagePresets::whereIn('id', [3, 4])->get();
         $this->image_preset_main = ImagePresets::find(14);
     }
+
     public function AdminDashboard()
     {
         $template = SiteSetting::find(1);
+
         return view('admin.index', compact('template'));
     }
+
     public function AdminLogin()
     {
         return view('admin.login');
     }
+
     public function AdminLogout(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
@@ -42,35 +49,41 @@ class AdminController extends Controller
 
         $request->session()->regenerateToken();
 
-        $notification = array(
-            'message' =>  'Admin Logout Successfully',
-            'alert-type' => 'success'
-        );
+        $notification = [
+            'message' => 'Admin Logout Successfully',
+            'alert-type' => 'success',
+        ];
+
         return redirect('/admin/login')->with($notification);
     }
+
     public function AllAdmin()
     {
         $alladmin = User::where('role', 'admin')->get();
+
         return view('backend.other.admin.all_admin', compact('alladmin'));
-    } // End Method
+    }
+
+    // End Method
     public function AllUsers()
     {
         $users = User::where('role', 'user')->get();
+
         return view('backend.other.admin.all_users', compact('users'));
-    } // End Method
+    }
+
+    // End Method
     public function AddAdmin()
     {
 
-
         return view('backend.other.admin.add_admin');
     } // End Method
-
 
     public function StoreAdmin(Request $request)
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'regex:/^([a-z])+?([a-z])+$/i', 'unique:' . User::class],
+            'username' => ['required', 'string', 'max:255', 'regex:/^([a-z])+?([a-z])+$/i', 'unique:'.User::class],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required',  'confirmed', Rules\Password::defaults()],
         ]);
@@ -86,14 +99,14 @@ class AdminController extends Controller
         } else {
             $save_url = '';
         }
-        $user = new User();
+        $user = new User;
         $user->username = $request->username;
         $user->name = $request->name;
         $user->email = $request->email;
         $user->photo = $save_url;
         $user->phone = $request->phone;
         $user->about = $request->about;
-        $user->password =  Hash::make($request->password);
+        $user->password = Hash::make($request->password);
         $user->role = $role;
         $user->status = 0;
         $user->save();
@@ -102,13 +115,15 @@ class AdminController extends Controller
             $user->assignRole($request->roles);
         }
 
-        $notification = array(
+        $notification = [
             'message' => 'New User Inserted Successfully',
-            'alert-type' => 'success'
-        );
+            'alert-type' => 'success',
+        ];
 
         return redirect()->route('all.admin')->with($notification);
-    } // End Method
+    }
+
+    // End Method
     public function EditAdmin($id)
     {
 
@@ -130,7 +145,7 @@ class AdminController extends Controller
         if ($request->file('image') != null) {
             if (file_exists($user->photo)) {
                 $img = explode('.', $user->photo);
-                $small_img = $img[0] . "_" . $this->image_preset[0]->name . "." . $img[1];
+                $small_img = $img[0].'_'.$this->image_preset[0]->name.'.'.$img[1];
                 unlink($small_img);
                 unlink($user->photo);
             }
@@ -149,9 +164,8 @@ class AdminController extends Controller
         $user->phone = $request->phone;
         $user->photo = $save_url;
         $user->about = $request->about;
-        if(!empty($request->password))
-        {
-            $user->password =  Hash::make($request->password);
+        if (! empty($request->password)) {
+            $user->password = Hash::make($request->password);
         }
         $user->top = ($request->top == null) ? 0 : 1;
         $user->role = $role;
@@ -159,20 +173,18 @@ class AdminController extends Controller
         $user->save();
 
         if ($user->id != 1) {
-           
-            $notification = array(
+
+            $notification = [
                 'message' => 'Admin User Updated Successfully',
-                'alert-type' => 'success'
-            );
-        }else
-        {
-            $notification = array(
+                'alert-type' => 'success',
+            ];
+        } else {
+            $notification = [
                 'message' => 'You can not change superadmin role',
-                'alert-type' => 'warning'
-            );
+                'alert-type' => 'warning',
+            ];
 
         }
-
 
         return redirect()->route('all.admin')->with($notification);
     } // End Method
@@ -181,56 +193,59 @@ class AdminController extends Controller
     {
 
         $user = User::findOrFail($request->id);
-        if (!is_null($user)) {
+        if (! is_null($user)) {
             $user->delete();
         }
 
-        $notification = array(
+        $notification = [
             'message' => 'Staff Deleted Successfully',
-            'alert-type' => 'success'
-        );
+            'alert-type' => 'success',
+        ];
 
         return redirect()->back()->with($notification);
-    } // End Method
+    }
+
+    // End Method
     public function Ajax_Load(Request $request, User $user)
     {
-        $query = User::select('id', 'photo', 'name', 'email', 'phone','top', 'role')->where('role', 'user')->get();
+        $query = User::select('id', 'photo', 'name', 'email', 'phone', 'top', 'role')->where('role', 'user')->get();
 
         return DataTables::of($query)
             ->setRowClass(function (User $user) {
-                return 'admin-' . $user->id;
+                return 'admin-'.$user->id;
             })
             ->addColumn('image', function (User $user) {
-                $img =  !empty($user->photo) || file_exists(asset($user->photo)) ? asset($user->photo) : url('upload/no_image.jpg');
-                return  '<img class="wd-100 rounded-circle"
-                                                    src="' . $img . '"
+                $img = ! empty($user->photo) || file_exists(asset($user->photo)) ? asset($user->photo) : url('upload/no_image.jpg');
+
+                return '<img class="wd-100 rounded-circle"
+                                                    src="'.$img.'"
                                                     alt="profile">';
             })
-          
+
             ->addColumn('name', function (User $user) {
-                return   $user->name;
+                return $user->name;
             })
             ->addColumn('email', function (User $user) {
-                return   $user->email;
+                return $user->email;
             })
 
             ->addColumn('phone', function (User $user) {
-                return   $user->phone;
+                return $user->phone;
             })
             ->addColumn('role', function (User $user) {
-                return  '<span class="badge badge-pill ' . rolecheck(3) . '">' . ucfirst($user->role) . '</span>';
+                return '<span class="badge badge-pill '.rolecheck(3).'">'.ucfirst($user->role).'</span>';
             })
             ->addColumn('action', function (User $user) {
 
                 $show = route('coaches.show', $user->id);
-                $x = '<a href="' . route('edit.admin', $user->id) . '"
+                $x = '<a href="'.route('edit.admin', $user->id).'"
     class="action-btn btn-edit bs-tooltip me-2" data-toggle="tooltip"
     data-placement="top" title="Edit" data-bs-original-title="Edit">
     <i data-feather="edit"></i>
 </a>';
 
-                $x .= '<a href="javascript:void(0)" onClick="deleteFunction(' . $user->id . ')"
-    class="action-btn btn-edit bs-tooltip me-2 delete' . $user->id . '"
+                $x .= '<a href="javascript:void(0)" onClick="deleteFunction('.$user->id.')"
+    class="action-btn btn-edit bs-tooltip me-2 delete'.$user->id.'"
     data-toggle="tooltip" data-placement="top" title="Delete"
     data-bs-original-title="Delete">
     <i data-feather="trash-2"></i>
@@ -239,7 +254,7 @@ class AdminController extends Controller
                 return $x;
             })
 
-            ->rawColumns(['image','top' ,'name', 'email', 'phone', 'role', 'action'])
+            ->rawColumns(['image', 'top', 'name', 'email', 'phone', 'role', 'action'])
             ->make(true);
     }
 }

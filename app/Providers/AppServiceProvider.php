@@ -2,13 +2,9 @@
 
 namespace App\Providers;
 
-
-use Illuminate\Support\ServiceProvider;
-
 use App\Models\SiteSetting;
 use Illuminate\Support\Facades\Schema;
-use Config;
-use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

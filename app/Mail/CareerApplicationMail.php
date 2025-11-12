@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -26,16 +25,16 @@ class CareerApplicationMail extends Mailable
     /**
      * Get the message envelope.
      */
-
-     public function build()
+    public function build()
     {
         return $this->view('mail.career_application') // Create this view
-                    ->with('data', $this->data)
-                    ->attach(storage_path('app/public/' . $this->data['resume_path']), [
-                        'as' => 'resume.pdf',
-                        'mime' => 'application/pdf',
-                    ]);
+            ->with('data', $this->data)
+            ->attach(storage_path('app/public/'.$this->data['resume_path']), [
+                'as' => 'resume.pdf',
+                'mime' => 'application/pdf',
+            ]);
     }
+
     public function envelope(): Envelope
     {
         return new Envelope(

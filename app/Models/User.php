@@ -2,16 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -31,7 +27,7 @@ class User extends Authenticatable
         'password',
         'photo',
         'phone',
-        'role'
+        'role',
     ];
 
     /**
@@ -53,6 +49,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
     protected function name(): Attribute
     {
         return Attribute::make(
@@ -60,11 +57,15 @@ class User extends Authenticatable
             set: fn (string $value) => strtolower($value),
         );
     }
+
     public static function getpermissionGroups()
     {
         $permission_groups = DB::table('permissions')->select('group_name')->groupBy('group_name')->get();
+
         return $permission_groups;
-    } // End Method
+    }
+
+    // End Method
     public static function getpermissionByGroupName($group_name)
     {
 
@@ -72,6 +73,7 @@ class User extends Authenticatable
             ->select('name', 'id')
             ->where('group_name', $group_name)
             ->get();
+
         return $permissions;
     } // End Method
 
@@ -80,12 +82,12 @@ class User extends Authenticatable
 
         $hasPermission = true;
         foreach ($permissions as $permission) {
-            if (!$role->hasPermissionTo($permission->name)) {
+            if (! $role->hasPermissionTo($permission->name)) {
                 $hasPermission = false;
             }
+
             return $hasPermission;
         }
     } // End Method
-
 
 }

@@ -2,8 +2,8 @@
 
 namespace App\Exports;
 
-use Spatie\Permission\Models\Permission;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Spatie\Permission\Models\Permission;
 
 class PermissionExport implements FromCollection
 {

@@ -25,7 +25,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-      
+
         $request->authenticate();
 
         $request->session()->regenerate();
@@ -34,10 +34,11 @@ class AuthenticatedSessionController extends Controller
         } else {
             $url = RouteServiceProvider::HOME;
         }
-        $notification = array(
-            'message' =>  'Login Successfully',
-            'alert-type' => 'success'
-        );
+        $notification = [
+            'message' => 'Login Successfully',
+            'alert-type' => 'success',
+        ];
+
         return redirect()->intended($url)->with($notification);
     }
 

@@ -1,56 +1,53 @@
 {{-- resources/views/components/backend/backend_component/image-preset-form.blade.php --}}
 
-{{ Form::open([
-    'route' => $isEdit ? ['image_preset.update', $imagepreset->id] : 'image_preset.store',
-    'class' => 'forms-sample needs-validation',
-    'novalidate' => 'novalidate',
-    'method' => $isEdit ? 'put' : 'post',
-    'files' => true,
-]) }}
+<x-form.form
+    :route="$isEdit ? route('image_preset.update', $imagepreset->id) : route('image_preset.store')"
+    :method="$isEdit ? 'PUT' : 'POST'"
+    :isEdit="$isEdit"
+    enctype="multipart/form-data"
+    class="forms-sample needs-validation"
+    novalidate
+>
 
+    {{-- Name, Width, Height Fields --}}
+    <div class="row">
+        <div class="col-lg-4 mb-3">
+            <x-form.input-label for="name" value="Name" />
+            <x-form.text-input
+                name="name"
+                :value="$imagepreset->name ?? ''"
+                required
+                placeholder="Name"
+            />
+            <x-form.input-error :messages="$errors->get('name')" />
+        </div>
 
-<div class="row">
-    <div class="col-lg-4 mb-3">
-        {!! Form::label('name', 'Name', ['class' => 'form-label']) !!}
-        {!! Form::text('name', $imagepreset->name ?? null,  [
-            'class' => 'form-control',
-            'placeholder' => 'Name',
-            'required' => 'required',
-        ]) !!}
-        @error('name')
-            <span class="text-danger pt-3">{{ $message }}</span>
-        @enderror
+        <div class="col-lg-4 mb-3">
+            <x-form.input-label for="width" value="Width" />
+            <x-form.text-input
+                name="width"
+                :value="$imagepreset->width ?? ''"
+                required
+                placeholder="Width"
+            />
+            <x-form.input-error :messages="$errors->get('width')" />
+        </div>
+
+        <div class="col-lg-4 mb-3">
+            <x-form.input-label for="height" value="Height" />
+            <x-form.text-input
+                name="height"
+                :value="$imagepreset->height ?? ''"
+                required
+                placeholder="Height"
+            />
+            <x-form.input-error :messages="$errors->get('height')" />
+        </div>
     </div>
-    <div class="col-lg-4 mb-3">
 
-        {!! Form::label('width', 'Width', ['class' => 'form-label']) !!}
+    {{-- Submit Button --}}
+    <x-form.button type="submit">
+        {{ $isEdit ? 'Update' : 'Submit' }}
+    </x-form.button>
 
-        {!! Form::text('width', $imagepreset->width ?? null,  [
-            'class' => 'form-control',
-            'required' => 'required',
-            'placeholder' => 'Width',
-        ]) !!}
-        @error('width')
-            <span class="text-danger pt-3">{{ $message }}</span>
-        @enderror
-    </div>
-    <div class="col-lg-4 mb-3">
-
-        {!! Form::label('height', 'Height', ['class' => 'form-label']) !!}
-
-        {!! Form::text('height', $imagepreset->height ?? null,  [
-            'class' => 'form-control',
-            'required' => 'required',
-            'placeholder' => 'Height',
-        ]) !!}
-        @error('height')
-            <span class="text-danger pt-3">{{ $message }}</span>
-        @enderror
-    </div>
-</div>
-
-
-
-
-{!! Form::submit($isEdit ? 'Update' : 'Submit', ['class' => 'btn btn-outline-primary btn-icon-text mb-2 mb-md-0']) !!}
-{{ Form::close() }}
+</x-form.form>

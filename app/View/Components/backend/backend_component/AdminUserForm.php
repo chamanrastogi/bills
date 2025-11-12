@@ -8,9 +8,12 @@ use Illuminate\View\Component;
 
 class AdminUserForm extends Component
 {
-    public $user; 
-    public $roles;  
+    public $user;
+
+    public $roles;
+
     public $isEdit;
+
     /**
      * Create a new component instance.
      */

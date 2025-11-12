@@ -8,15 +8,17 @@ use Illuminate\View\Component;
 
 class ImagePresetForm extends Component
 {
-    public $imagepreset;   
+    public $imagepreset;
+
     public $isEdit;
+
     /**
      * Create a new component instance.
      */
     public function __construct($imagepreset = null, $isEdit = false)
     {
-       
-        $this->imagepreset = $imagepreset;      
+
+        $this->imagepreset = $imagepreset;
         $this->isEdit = $isEdit;
     }
 

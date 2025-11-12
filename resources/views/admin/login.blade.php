@@ -28,7 +28,8 @@
                         <h2>Sign In</h2>
                         <p>Enter your username and password to login</p>
                     </div>
-                    {{ Form::open(['route' => 'admin.login', 'class' => 'text-left login-form needs-validation', 'id' => 'login', 'method' => 'post', 'novalidate' => 'novalidate']) }}
+                    <form action="{{ route('admin.login') }}" method="POST" class="text-left login-form needs-validation" id="login" novalidate>
+                        @csrf
                     <div class="col-md-12">
                         <div class="mb-3">
                             <x-input-label for="username" :value="__('Username')" />
@@ -88,7 +89,7 @@
 
                         </div>
                     </div>
-                    {{ Form::close() }}
+                    </form>
                 </div>
 
             </div>

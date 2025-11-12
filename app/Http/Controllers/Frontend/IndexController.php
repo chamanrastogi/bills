@@ -4,13 +4,10 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\SiteSetting;
-use Illuminate\Http\Request;
-
 
 class IndexController extends Controller
 {
     // Define the number of items to paginate per page
-
 
     /**
      * Constructor to initialize pagination setting from site settings
@@ -23,9 +20,8 @@ class IndexController extends Controller
      */
     public function Home()
     {
-        $template= SiteSetting::find(1);
-        return view('welcome',compact('template'));
+        $template = SiteSetting::find(1);
+
+        return view('welcome', compact('template'));
     }
-
-
 }

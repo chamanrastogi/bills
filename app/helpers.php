@@ -1,12 +1,9 @@
 <?php
 
-use App\Http\Middleware\Role;
-use App\Models\Customer;
 use App\Models\Menu;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
-
 
 const MONEY = 'Rs.';
 const MODE = 'Cash,Upi,Check';
@@ -23,197 +20,199 @@ const LOADER = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" v
                                         <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
                                     </svg>';
 const LOCATION = [
-  1 => 'Africa',
-  2 => 'Asia',
-  3 => 'Asia Pacific',
-  4 => 'Caribbean',
-  5 => 'Central America',
-  6 => 'Europe',
-  7 => 'Middle East/ North Africa',
-  8 => 'North America',
-  9 => 'Other',
-  10 => 'South America',
+    1 => 'Africa',
+    2 => 'Asia',
+    3 => 'Asia Pacific',
+    4 => 'Caribbean',
+    5 => 'Central America',
+    6 => 'Europe',
+    7 => 'Middle East/ North Africa',
+    8 => 'North America',
+    9 => 'Other',
+    10 => 'South America',
 ];
 const CATEGORY = [
-  0 => 'Portfolio',
-  1 => 'Service',
-  2 => 'Products',
-  3 => 'Category'
+    0 => 'Portfolio',
+    1 => 'Service',
+    2 => 'Products',
+    3 => 'Category',
 ];
 const PERMISSIONS = [
-  "enquiry" => "Contact Enquiry",
-  "careerenquiry" => "Career Enquiry",
-  "menus" => "Menu",
-  "menugroup" => "Menu Group",
-  "serviecs" => "Serviecs",
-  "category" => "Category",
-  "portfolio" => "Portfolio",
-  "product" => "product",
-  "skill" => "Skill",
-  "whychoose" => "Whychoose",
-  "job_positions" => "Job Postions", // Corrected from duplicate
-  "pages" => "Pages",
-  "pagebanner" => "Page Banner",
-  "module" => "Module",
-  "testimonial" => "Testimonials",
-  "blogcategory" => "Blog Category",
-  "blog" => "Blog Post",
-  "tag" => "Blog Tag",
-  "admin" => "Admin",
-  "image_preset" => "Image Preset",
-  "smtp" => "SMTP Setting",
-  "site" => "Site Setting",
-  "role" => "Role & Permission"
+    'enquiry' => 'Contact Enquiry',
+    'careerenquiry' => 'Career Enquiry',
+    'menus' => 'Menu',
+    'menugroup' => 'Menu Group',
+    'serviecs' => 'Serviecs',
+    'category' => 'Category',
+    'portfolio' => 'Portfolio',
+    'product' => 'product',
+    'skill' => 'Skill',
+    'whychoose' => 'Whychoose',
+    'job_positions' => 'Job Postions', // Corrected from duplicate
+    'pages' => 'Pages',
+    'pagebanner' => 'Page Banner',
+    'module' => 'Module',
+    'testimonial' => 'Testimonials',
+    'blogcategory' => 'Blog Category',
+    'blog' => 'Blog Post',
+    'tag' => 'Blog Tag',
+    'admin' => 'Admin',
+    'image_preset' => 'Image Preset',
+    'smtp' => 'SMTP Setting',
+    'site' => 'Site Setting',
+    'role' => 'Role & Permission',
 ];
 const GENDER = [
-  1 => 'Male',
-  2 => 'Female'
+    1 => 'Male',
+    2 => 'Female',
 ];
 const STYLES = [
-  'main',
-  'alabama',
-  'imperial-blue',
-  'university',
-  'cerulean',
-  'bronze',
-  'viridian-green',
-  'amaranth',
-  'yellow',
-  'coquelicot',
-  'viridian-green',
-  'dark-cyan',
-  'azure',
-  'blue-green',
-  'crimson',
-  'cerulean',
-  'blueberry',
-  'burnt-orange',
-  'lilac',
-  'amber',
-  'cg-blue',
-  'ball-blue',
-  'american-rose',
-  'alizarin',
-  'dark-pink',
-  'lime-green',
-  'cyan-cornflower',
-  'blue-munsell',
-  'violet',
-  'orange-pantone',
-  'magenta-violet',
-  'forest-green',
-  'debian-red',
-  'go-green',
-  'rich-carmine',
-  'university',
-  'charcoal',
-  'cadmium',
-  'fuchsia',
-  'green-pantone',
-  'amaranth',
+    'main',
+    'alabama',
+    'imperial-blue',
+    'university',
+    'cerulean',
+    'bronze',
+    'viridian-green',
+    'amaranth',
+    'yellow',
+    'coquelicot',
+    'viridian-green',
+    'dark-cyan',
+    'azure',
+    'blue-green',
+    'crimson',
+    'cerulean',
+    'blueberry',
+    'burnt-orange',
+    'lilac',
+    'amber',
+    'cg-blue',
+    'ball-blue',
+    'american-rose',
+    'alizarin',
+    'dark-pink',
+    'lime-green',
+    'cyan-cornflower',
+    'blue-munsell',
+    'violet',
+    'orange-pantone',
+    'magenta-violet',
+    'forest-green',
+    'debian-red',
+    'go-green',
+    'rich-carmine',
+    'university',
+    'charcoal',
+    'cadmium',
+    'fuchsia',
+    'green-pantone',
+    'amaranth',
 ];
 function active_class($path)
 {
-  $currentRoute = Route::getCurrentRoute();
+    $currentRoute = Route::getCurrentRoute();
 
-  if ($currentRoute) {
-    return ($currentRoute->uri == $path) ? 'active' : '';
-  } else {
-  }
+    if ($currentRoute) {
+        return ($currentRoute->uri == $path) ? 'active' : '';
+    } else {
+    }
 }
 function active_class_menu($path)
 {
-  $currentRoute = Route::getCurrentRoute();
+    $currentRoute = Route::getCurrentRoute();
 
-  if ($currentRoute) {
-    return ($currentRoute->uri == $path) ? 'mm-selected' : '';
-  } else {
-  }
+    if ($currentRoute) {
+        return ($currentRoute->uri == $path) ? 'mm-selected' : '';
+    } else {
+    }
 }
 
 function is_active_route($path)
 {
-  #dd(Route::getCurrentRoute()->uri);
-  return (Str::contains(Route::getCurrentRoute()->uri, $path)) ? 'true' : 'false';
+    // dd(Route::getCurrentRoute()->uri);
+    return (Str::contains(Route::getCurrentRoute()->uri, $path)) ? 'true' : 'false';
 }
 
 function show_class($path)
 {
-  return (Str::contains(Route::getCurrentRoute()->uri, $path)) ? 'show' : '';
+    return (Str::contains(Route::getCurrentRoute()->uri, $path)) ? 'show' : '';
 }
 function rolecheck($id)
 {
-  $i = 0;
-  $result = DB::table('roles')
-    ->selectRaw('ROW_NUMBER() OVER (ORDER BY id) AS rid,id')
-    ->get();
-  #dd($result);
-  while ($i != count($result)) {
-    if ($result[$i]->id == $id) {
-      $re = $result[$i]->rid;
+    $i = 0;
+    $result = DB::table('roles')
+        ->selectRaw('ROW_NUMBER() OVER (ORDER BY id) AS rid,id')
+        ->get();
+    // dd($result);
+    while ($i != count($result)) {
+        if ($result[$i]->id == $id) {
+            $re = $result[$i]->rid;
+        }
+        $i++;
     }
-    $i++;
-  }
-  #dd($result[0]->rid);
-  $roles = ['bg-info', 'bg-danger', 'bg-warning', 'bg-info', 'bg-primary'];
-  //echo $id;
-  return $roles[$re];
+    // dd($result[0]->rid);
+    $roles = ['bg-info', 'bg-danger', 'bg-warning', 'bg-info', 'bg-primary'];
+
+    // echo $id;
+    return $roles[$re];
 }
 function breadcrumb()
 {
 
-  if (Route::getCurrentRoute()->uri == 'admin/dashboard') {
-    $url = 'Home';
-  } else {
-    $n = explode('/', Route::getCurrentRoute()->uri);
-    //dd($n);
-    if (count($n) == 2) {
-      
-      $url = "Show " . ucfirst(Str::headline(ucfirst($n[1])));
-    } elseif (count($n) == 3 || count($n) == 5) {
-
-      if ($n[2] == '{id}') {
-        $url = ucfirst(Str::headline(ucfirst($n[1])));
-      }elseif ($n[2] == '{customer}') {
-        $url =  "Customer / Ledger" ;
-      }  else {
-        $url = ucfirst($n[2]) . " " . ucfirst(Str::headline(ucfirst($n[1])));
-      }
+    if (Route::getCurrentRoute()->uri == 'admin/dashboard') {
+        $url = 'Home';
     } else {
+        $n = explode('/', Route::getCurrentRoute()->uri);
+        // dd($n);
+        if (count($n) == 2) {
 
-      if ($n[2] === 'admin') {
-        $url = ucfirst($n[1]) . " " . ucfirst(Str::headline(ucfirst($n[2])));
-      }elseif ($n[3] == '{customer}') {
-        $url =  "Payment / Customer" ;
-      } else {
-        $url = ucfirst($n[3]) . " " . ucfirst(Str::headline(ucfirst($n[1])));
-      }
+            $url = 'Show '.ucfirst(Str::headline(ucfirst($n[1])));
+        } elseif (count($n) == 3 || count($n) == 5) {
+
+            if ($n[2] == '{id}') {
+                $url = ucfirst(Str::headline(ucfirst($n[1])));
+            } elseif ($n[2] == '{customer}') {
+                $url = 'Customer / Ledger';
+            } else {
+                $url = ucfirst($n[2]).' '.ucfirst(Str::headline(ucfirst($n[1])));
+            }
+        } else {
+
+            if ($n[2] === 'admin') {
+                $url = ucfirst($n[1]).' '.ucfirst(Str::headline(ucfirst($n[2])));
+            } elseif ($n[3] == '{customer}') {
+                $url = 'Payment / Customer';
+            } else {
+                $url = ucfirst($n[3]).' '.ucfirst(Str::headline(ucfirst($n[1])));
+            }
+        }
     }
-  }
 
-  return  $url;
+    return $url;
 }
 
 function urlgen($id)
 {
-  $x = Menu::select('id', 'type', 'url')->find($id);
-  return  $x->url;
+    $x = Menu::select('id', 'type', 'url')->find($id);
+
+    return $x->url;
 }
 
 function checkarr($id, $array)
 {
-  return in_array($id, $array) ? 'checked' : '';
+    return in_array($id, $array) ? 'checked' : '';
 }
 
 function pagebanner($image)
 {
 
-  echo  "<style>
+    echo '<style>
    .bannerimg {
     float: left;
     width: 100%;
     height: 400px;
-    background: url(" . $image . ") no-repeat center 0;
+    background: url('.$image.') no-repeat center 0;
     background-size: cover;
     display: flex; /* Enables flexbox */
     justify-content: center; /* Centers horizontally */
@@ -228,5 +227,5 @@ function pagebanner($image)
     border-radius: 10px; /* Optional: Rounds the corners of the background */
 }
 </style>
-";
+';
 }

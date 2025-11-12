@@ -8,14 +8,16 @@ use Illuminate\View\Component;
 
 class CategoryForm extends Component
 {
-    public $category;   
+    public $category;
+
     public $isEdit;
+
     /**
      * Create a new component instance.
      */
     public function __construct($category = null, $isEdit = false)
     {
-        $this->category = $category;      
+        $this->category = $category;
         $this->isEdit = $isEdit;
     }
 

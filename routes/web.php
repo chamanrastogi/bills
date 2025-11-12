@@ -1,9 +1,8 @@
 <?php
 
-
+use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Frontend\IndexController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Backend\SettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +15,7 @@ use App\Http\Controllers\Backend\SettingController;
 |
 */
 Route::get('/test', function () {
-   return view('test');
+    return view('test');
 });
 Route::get('/clear-cache', function () {
     $exitCode = Artisan::call('cache:clear');
@@ -25,11 +24,13 @@ Route::get('/clear-cache', function () {
     $exitCode = Artisan::call('route:clear');
     $exitCode = Artisan::call('view:clear');
     $exitCode = Artisan::call('config:cache');
+
     return '<h1>Cache facade value cleared</h1>';
 });
 
 Route::get('/route-cache', function () {
     $exitCode = Artisan::call('route:clear');
+
     return '<h1>Route facade value cleared</h1>';
 });
 
@@ -37,8 +38,6 @@ Route::get('/', [IndexController::class, 'Home'])->name('home');
 
 Route::get('/table-structure/{table}', [SettingController::class, 'myshow']);
 
-require __DIR__ . '/admin.php';
+require __DIR__.'/admin.php';
 
-
-
-#require __DIR__ . '/auth.php';
+// require __DIR__ . '/auth.php';

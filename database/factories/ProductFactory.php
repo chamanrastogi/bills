@@ -18,9 +18,10 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         $category_id = Category::inRandomOrder()->value('id'); // Fetch a random category ID
+
         return [
             'category_id' => $category_id,
-            'name' => 'Product ' . fake()->unique()->numberBetween(1, 100), // Generate names like "Product 1", "Product 2", etc.
+            'name' => 'Product '.fake()->unique()->numberBetween(1, 100), // Generate names like "Product 1", "Product 2", etc.
             'image' => '',
             'price' => fake()->randomFloat(2, 1, 100), // Generate a random price with 2 decimal places
             'text' => fake()->text(),

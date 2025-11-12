@@ -8,8 +8,6 @@ use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Yajra\DataTables\Html\Editor\Editor;
-use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
 class BillingsDataTable extends DataTable
@@ -17,7 +15,7 @@ class BillingsDataTable extends DataTable
     /**
      * Build the DataTable class.
      *
-     * @param QueryBuilder $query Results from query() method.
+     * @param  QueryBuilder  $query  Results from query() method.
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
@@ -40,20 +38,20 @@ class BillingsDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('billings-table')
-                    ->columns($this->getColumns())
-                    ->minifiedAjax()
-                    //->dom('Bfrtip')
-                    ->orderBy(1)
-                    ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
-                    ]);
+            ->setTableId('billings-table')
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+                    // ->dom('Bfrtip')
+            ->orderBy(1)
+            ->selectStyleSingle()
+            ->buttons([
+                Button::make('excel'),
+                Button::make('csv'),
+                Button::make('pdf'),
+                Button::make('print'),
+                Button::make('reset'),
+                Button::make('reload'),
+            ]);
     }
 
     /**
@@ -62,16 +60,16 @@ class BillingsDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            
+
             Column::make('id'),
             Column::make('payment'),
-            Column::make('grand_total'),           
+            Column::make('grand_total'),
             Column::make('created_at'),
             Column::computed('action')
-            ->exportable(true)
-            ->printable(true)
-            ->width(60)
-            ->addClass('text-center'),
+                ->exportable(true)
+                ->printable(true)
+                ->width(60)
+                ->addClass('text-center'),
         ];
     }
 
@@ -80,6 +78,6 @@ class BillingsDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Billings_' . date('YmdHis');
+        return 'Billings_'.date('YmdHis');
     }
 }

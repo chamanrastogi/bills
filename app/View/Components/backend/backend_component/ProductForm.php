@@ -9,18 +9,20 @@ use Illuminate\View\Component;
 class ProductForm extends Component
 {
     public $product;
-    public $categories;  
+
+    public $categories;
+
     public $isEdit;
+
     /**
      * Create a new component instance.
      */
-    public function __construct($product = null,$categories = [], $isEdit = false)
+    public function __construct($product = null, $categories = [], $isEdit = false)
     {
-        $this->product = $product;        
+        $this->product = $product;
         $this->categories = $categories;
         $this->isEdit = $isEdit;
     }
-
 
     /**
      * Get the view / contents that represent the component.

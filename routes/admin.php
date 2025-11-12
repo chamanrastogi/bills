@@ -2,22 +2,22 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-
-use App\Http\Controllers\Backend\PaymentController;
-use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Backend\BillingController;
-use App\Http\Controllers\Backend\CategoryController;
-use App\Http\Controllers\Backend\UnitController;
 use App\Http\Controllers\Backend\CustomerController;
-use App\Http\Controllers\Backend\SettingController;
+use App\Http\Controllers\Backend\PaymentController;
 use App\Http\Controllers\Backend\ProductController;
+use App\Http\Controllers\Backend\SettingController;
+use App\Http\Controllers\Backend\SupplierController;
+use App\Http\Controllers\Backend\TypeController;
+use App\Http\Controllers\Backend\UnitController;
+use App\Http\Controllers\UserController;
+use App\Http\Middleware\RedirectIfAuthenticated;
+use Illuminate\Support\Facades\Route;
 
 // Admin Group Middleware
 Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
@@ -26,7 +26,7 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
         Route::get('/dashboard', 'AdminDashboard')->name('admin.dashboard');
         // Admin User All Route
         Route::get('/all/admin', 'AllAdmin')->name('all.admin');
-        Route::get('/user/ajax_load',  'Ajax_Load')->name('users.ajax_load');
+        Route::get('/user/ajax_load', 'Ajax_Load')->name('users.ajax_load');
         Route::get('/all/users', 'AllUsers')->name('all.users');
         Route::get('/add/admin', 'AddAdmin')->name('add.admin');
         Route::post('/store/admin', 'StoreAdmin')->name('store.admin');
@@ -36,16 +36,15 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     });
 
     // Category All Routes
-    Route::resource('category', CategoryController::class);
-    Route::post('/category/status', [CategoryController::class, 'StatusUpdate'])->name('category.status');
-    Route::post('/category/delete', [CategoryController::class, 'Delete'])->name('category.delete');
+    Route::resource('type', TypeController::class);
+    Route::post('/type/status', [TypeController::class, 'StatusUpdate'])->name('type.status');
+    Route::post('/type/delete', [TypeController::class, 'Delete'])->name('type.delete');
 
-     // Product All Routes
-     Route::resource('products', ProductController::class);
-     Route::post('/products/status', [ProductController::class, 'StatusUpdate'])->name('product.status');
-     Route::post('/products/delete', [ProductController::class, 'Delete'])->name('product.delete');
-     Route::get('/products/category/{category}', [ProductController::class, 'GetProducts'])->name('product.category');
-
+    // Product All Routes
+    Route::resource('products', ProductController::class);
+    Route::post('/products/status', [ProductController::class, 'StatusUpdate'])->name('product.status');
+    Route::post('/products/delete', [ProductController::class, 'Delete'])->name('product.delete');
+    Route::get('/products/type/{type}', [ProductController::class, 'GetProducts'])->name('product.type');
 
     // Color All Routes
     Route::resource('units', UnitController::class);
@@ -63,7 +62,11 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::get('/payment/edit/{billing}/{id}', [PaymentController::class, 'edit'])->name('payment.edit');
     Route::patch('/payment/update/{billing}', [PaymentController::class, 'update'])->name('payment.update');
     Route::post('/payment/delete', [PaymentController::class, 'Delete'])->name('payment.delete.one');
-  
+
+    // Supplier All Routes
+    Route::resource('supplier', SupplierController::class);
+    Route::post('/supplier/status', [SupplierController::class, 'StatusUpdate'])->name('supplier.status');
+    Route::post('/supplier/delete', [SupplierController::class, 'Delete'])->name('supplier.delete');
 
     // SMTP and Site Setting  All Route
     Route::controller(SettingController::class)->group(function () {
@@ -76,13 +79,13 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
         Route::post('/cart', 'cart')->name('cart.submit');
         Route::get('/cart/{id}', 'getCart')->name('get.cart');
         Route::get('/billing/show', 'showbilling')->name('billing.show');
-        Route::post('/billing/delete',  'Delete')->name('billing.delete');
+        Route::post('/billing/delete', 'Delete')->name('billing.delete');
         Route::post('/billing_payment_details/{customer}', 'showBillingPayments')->name('billing.payments');
-        Route::get('/billing_ledger/{customer}', 'Billingledger')->name('billing.ledger');  
-        Route::get('/billing/showall',  'Showall')->name('billing.showall');     
-        Route::get('/billings/ajax_load',  'Ajax_Load')->name('billing.ajax_load');
+        Route::get('/billing_ledger/{customer}', 'Billingledger')->name('billing.ledger');
+        Route::get('/billing/showall', 'Showall')->name('billing.showall');
+        Route::get('/billings/ajax_load', 'Ajax_Load')->name('billing.ajax_load');
         Route::get('/billings/datatable', 'datatable')->name('billing.datatable');
-       // Route::patch('/update/site/setting/{id}', 'UpdateSiteSetting')->name('update.site.setting');
+        // Route::patch('/update/site/setting/{id}', 'UpdateSiteSetting')->name('update.site.setting');
 
     });
 

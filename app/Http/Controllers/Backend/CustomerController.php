@@ -3,21 +3,21 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-
 use App\Models\Customer;
-use Illuminate\Http\Request;
 use App\Traits\CommonTrait;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
     use CommonTrait;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $customers = Customer::latest()->get();
+
         return view('backend.customer.all_customer', compact('customers'));
     }
 
@@ -27,7 +27,7 @@ class CustomerController extends Controller
     public function create()
     {
 
-        return view('backend.customer.add_customer',);
+        return view('backend.customer.add_customer');
     }
 
     /**
@@ -39,20 +39,20 @@ class CustomerController extends Controller
             'phone' => 'unique:customers|max:100',
         ]);
 
-
         Customer::insert([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'address' => $request->address,
             'bill_address' => $request->bill_address,
-            'opening_balance' => $request->opening_balance
+            'opening_balance' => $request->opening_balance,
         ]);
 
-        $notification = array(
+        $notification = [
             'message' => 'Customer Added Successfully',
             'alert-type' => 'success',
-        );
+        ];
+
         return redirect()->back()->with($notification);
     }
 
@@ -78,9 +78,8 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         $validated = $request->validate([
-            'phone' => 'unique:customers,phone,' . $customer->id
+            'phone' => 'unique:customers,phone,'.$customer->id,
         ]);
-
 
         $customer->update([
             'name' => $request->name,
@@ -88,13 +87,14 @@ class CustomerController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'bill_address' => $request->bill_address,
-            'opening_balance' => $request->opening_balance
+            'opening_balance' => $request->opening_balance,
         ]);
 
-        $notification = array(
+        $notification = [
             'message' => 'Customer Updated Successfully',
             'alert-type' => 'success',
-        );
+        ];
+
         return redirect()->back()->with($notification);
     }
 
@@ -105,21 +105,23 @@ class CustomerController extends Controller
     {
         //
     }
+
     public function delete(Request $request)
     {
 
         if (is_array($request->id)) {
 
-            $blogs = Customer::whereIn('id', $request->id);
+            $customer = Customer::whereIn('id', $request->id);
         } else {
-            $blogs = Customer::find($request->id);
+            $customer = Customer::find($request->id);
         }
-       
-        $blogs->delete();
-        $notification = array(
+
+        $customer->delete();
+        $notification = [
             'message' => 'Customer Deleted successfully',
             'alert-type' => 'success',
-        );
+        ];
+
         return redirect()->back()->with($notification);
     }
 }

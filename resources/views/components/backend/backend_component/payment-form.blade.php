@@ -1,42 +1,44 @@
 {{-- resources/views/components/backend/backend_component/payment-form.blade.php --}}
 
-{{ Form::open([
-    'route' => $isEdit ? ['payment.update', $billing->id] : ['payment.store', $id],
-    'class' => 'forms-sample needs-validation',
-    'method' => $isEdit ? 'patch' : 'post',
-    'novalidate' => 'novalidate',
-    'files' => true,
-]) }}
+<x-form.form
+    :route="$isEdit ? route('payment.update', $billing->id) : route('payment.store', $id)"
+    :method="$isEdit ? 'PATCH' : 'POST'"
+    :isEdit="$isEdit"
+    enctype="multipart/form-data"
+    class="forms-sample needs-validation"
+    novalidate
+>
 
-<div class="mb-3">
-    {!! Form::label('payment_mode', 'Payment Mode', ['class' => 'form-label']) !!}
-    {!! Form::select('payment_mode', $modes, $billing->payment_mode ?? null, [
-        'class' => 'form-control',
-        'placeholder' => 'Select Payment Mode',
-    ]) !!}
-</div>
-<div class="col-sm-12">
+    {{-- Payment Mode --}}
     <div class="mb-3">
-    {!! Form::label('payment', 'Amount', ['class' => 'form-label']) !!}
-    {!! Form::number('payment', $billing->payment ?? null, [
-        'class' => 'form-control',
-        'required' => 'required',
-        'placeholder' => 'Amount',
-    ]) !!}
-    @error('payment')
-        <span class="text-danger pt-3">{{ $message }}</span>
-    @enderror
-</div>
-</div>
+        <x-form.input-label for="payment_mode" value="Payment Mode" />
+        <x-form.select
+            name="payment_mode"
+            :options="$modes"
+            :selected="$billing->payment_mode ?? null"
+            placeholder="Select Payment Mode"
+        />
+        <x-form.input-error :messages="$errors->get('payment_mode')" />
+    </div>
 
+    {{-- Payment Amount --}}
+    <div class="col-sm-12">
+        <div class="mb-3">
+            <x-form.input-label for="payment" value="Amount" />
+            <x-form.text-input
+                type="number"
+                name="payment"
+                :value="$billing->payment ?? ''"
+                required
+                placeholder="Amount"
+            />
+            <x-form.input-error :messages="$errors->get('payment')" />
+        </div>
+    </div>
 
+    {{-- Submit Button --}}
+    <x-form.button type="submit">
+        {{ $isEdit ? 'Update' : 'Submit' }}
+    </x-form.button>
 
-
-
-
-
-
-{!! Form::submit($isEdit ? 'Update' : 'Submit', [
-    'class' => 'btn btn-outline-primary btn-icon-text mb-2 mb-md-0',
-]) !!}
-{{ Form::close() }}
+</x-form.form>

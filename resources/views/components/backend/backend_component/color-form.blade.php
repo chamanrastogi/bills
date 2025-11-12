@@ -1,34 +1,28 @@
-{{-- resources/views/components/backend/backend_component/blog-form.blade.php --}}
+{{-- resources/views/components/backend/backend_component/units-form.blade.php --}}
+<x-form.form
+    :route="$isEdit ? route('units.update', $unit->id) : route('units.store')"
+    :method="$isEdit ? 'PUT' : 'POST'"
+    :isEdit="$isEdit"
+    enctype="multipart/form-data"
+    class="forms-sample needs-validation"
+    novalidate
+>
 
+    {{-- Blog/Unit Name --}}
+    <div class="mb-3">
+        <x-form.input-label for="name" value="Name" />
+        <x-form.text-input
+            name="name"
+            :value="$unit->name ?? ''"
+            required
+            placeholder="Name"
+        />
+        <x-form.input-error :messages="$errors->get('name')" />
+    </div>
 
-{{ Form::open([
-    'route' => $isEdit ? ['units.update', $unit->id] : 'units.store',
-    'class' => 'forms-sample needs-validation',
-    'method' => $isEdit ? 'put' : 'post',
-    'novalidate' => 'novalidate',
-    'files' => true,
-]) }}
+    {{-- Submit Button --}}
+    <x-form.button type="submit">
+        {{ $isEdit ? 'Update' : 'Submit' }}
+    </x-form.button>
 
-
-
-
-
-<div class="mb-3">
-    {!! Form::label('name', 'Name', ['class' => 'form-label']) !!}
-    {!! Form::text('name', $unit->name ?? null, [
-        'class' => 'form-control',
-        'required' => 'required',
-        'placeholder' => 'Name',
-    ]) !!}
-    @error('name')
-        <span class="text-danger pt-3">{{ $message }}</span>
-    @enderror
-</div>
-
-
-
-
-{!! Form::submit($isEdit ? 'Update' : 'Submit', [
-    'class' => 'btn btn-outline-primary btn-icon-text mb-2 mb-md-0',
-]) !!}
-{{ Form::close() }}
+</x-form.form>

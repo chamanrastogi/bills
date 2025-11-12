@@ -17,11 +17,11 @@ class CustomerFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => 'Customer ' . $this->faker->unique()->numberBetween(1, 100),
+            'name' => 'Customer '.$this->faker->unique()->numberBetween(1, 100),
             'email' => $this->faker->unique()->safeEmail,
             'phone' => $this->faker->phoneNumber, // Use phoneNumber for realistic phone values
             'address' => $this->faker->address,
-            'bill_address' => $this->faker->address // Use address for billing as well
+            'bill_address' => $this->faker->address, // Use address for billing as well
         ];
     }
 }
