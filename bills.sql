@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 12, 2025 at 01:32 PM
+-- Generation Time: Nov 19, 2025 at 01:56 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -335,19 +335,31 @@ CREATE TABLE `products` (
   `sku` varchar(255) NOT NULL,
   `type_id` int(11) DEFAULT NULL,
   `name` varchar(255) NOT NULL,
+  `price` varchar(100) DEFAULT '0',
   `image` varchar(255) DEFAULT NULL,
   `purity_id` int(11) DEFAULT NULL,
+  `unit_id` int(11) NOT NULL DEFAULT 2,
   `gross_weight` decimal(10,4) NOT NULL,
   `net_weight` decimal(10,4) NOT NULL,
-  `making_charge` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `rate_per_gram` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `gst_percent` decimal(5,2) NOT NULL DEFAULT 0.00,
-  `stock_qty` decimal(10,4) NOT NULL DEFAULT 1.0000,
+  `making_charge` int(11) NOT NULL DEFAULT 0,
+  `rate_per_gram` int(11) NOT NULL DEFAULT 0,
+  `gst_percent` int(11) NOT NULL DEFAULT 0,
+  `stock_qty` int(11) NOT NULL DEFAULT 1,
   `pstatus` enum('in_stock','sold','returned') NOT NULL DEFAULT 'in_stock',
   `status` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`id`, `sku`, `type_id`, `name`, `price`, `image`, `purity_id`, `unit_id`, `gross_weight`, `net_weight`, `making_charge`, `rate_per_gram`, `gst_percent`, `stock_qty`, `pstatus`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'GOLD001', 1, '22K Gold Chain', '118,398.50', 'upload/product/thumbnail/1849221672701399.png', 2, 2, 10.0000, 10.0000, 500, 11445, 3, 1, 'in_stock', 0, '2025-11-19 11:52:49', '2025-11-19 07:25:05'),
+(2, 'GOLD002', 1, '24K Gold Ring', '0', '', 1, 2, 5.0000, 5.0000, 300, 12486, 3, 1, 'in_stock', 0, '2025-11-19 11:54:15', '2025-11-19 11:54:15'),
+(3, 'GOLD003', 1, '22K Gold Necklace', '0', '', 2, 2, 20.0000, 20.0000, 800, 11445, 3, 1, 'in_stock', 0, '2025-11-19 11:55:49', '2025-11-19 11:55:49'),
+(4, 'GOLD004', 1, '18K Gold Bracelet', '0', '', 3, 2, 15.0000, 15.0000, 600, 9364, 3, 1, 'in_stock', 0, '2025-11-19 11:57:27', '2025-11-19 11:57:27');
 
 -- --------------------------------------------------------
 
@@ -357,6 +369,7 @@ CREATE TABLE `products` (
 
 CREATE TABLE `purities` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `type_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -365,11 +378,15 @@ CREATE TABLE `purities` (
 -- Dumping data for table `purities`
 --
 
-INSERT INTO `purities` (`id`, `name`, `status`) VALUES
-(1, '22K', 0),
-(2, '18K', 0),
-(3, '14K', 0),
-(4, '9K', 0);
+INSERT INTO `purities` (`id`, `type_id`, `name`, `status`) VALUES
+(1, 1, '24K - (99.9% Pure Gold)', 0),
+(2, 1, '22K - (91.6% Gold)', 0),
+(3, 1, '18K - (75% Gold)', 0),
+(4, 1, '14K - (58.5% Gold)', 0),
+(5, 1, '9K  - (37.5% Gold)', 0),
+(6, 2, '999 - (Fine Silver 99.9%)', 0),
+(7, 2, '958 - (Britannia Silver 95.8%)', 0),
+(8, 2, '925 - (Sterling Silver 92.5%)', 0);
 
 -- --------------------------------------------------------
 
@@ -668,13 +685,13 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `purities`
 --
 ALTER TABLE `purities`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `site_settings`

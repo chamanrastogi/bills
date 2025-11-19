@@ -147,6 +147,7 @@ class ProductController extends Controller
             'sku'            => $request->sku,
             'type_id'        => $request->type_id,
             'name'           => $request->name,
+            'price'          => $request->price,
             'image'          => $save_url,
             'purity_id'      => $request->purity_id,
             'unit_id'        => $request->unit_id,
@@ -156,7 +157,6 @@ class ProductController extends Controller
             'rate_per_gram'  => $request->rate_per_gram ?? 0,
             'gst_percent'    => $request->gst_percent ?? 0,
             'stock_qty'      => $request->stock_qty ?? 1,
-            'price'          => $request->price,
             'pstatus'        => $request->pstatus ?? 'in_stock',
         ]);
 

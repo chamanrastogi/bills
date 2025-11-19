@@ -1,50 +1,29 @@
 {{-- resources/views/components/backend/backend_component/product-form.blade.php --}}
 
-<x-form.form
-    :route="$isEdit ? route('products.update', $product->id) : route('products.store')"
-    :method="$isEdit ? 'PUT' : 'POST'"
-    :isEdit="$isEdit"
-    enctype="multipart/form-data"
-    class="forms-sample needs-validation"
-    novalidate
->
+<x-form.form :route="$isEdit ? route('products.update', $product->id) : route('products.store')" :method="$isEdit ? 'PUT' : 'POST'" :isEdit="$isEdit" enctype="multipart/form-data"
+    class="forms-sample needs-validation" novalidate>
     {{-- SKU, Type & Purity --}}
     <div class="row">
         {{-- SKU --}}
         <div class="col-sm-4">
             <x-form.input-label for="sku" value="SKU" />
-            <x-form.text-input
-                name="sku"
-                :value="$product->sku ?? ''"
-                required
-                placeholder="Unique SKU Code"
-            />
+            <x-form.text-input name="sku" :value="$product->sku ?? ''" required placeholder="Unique SKU Code" />
             <x-form.input-error :messages="$errors->get('sku')" />
         </div>
 
         {{-- Type --}}
         <div class="col-sm-4">
             <x-form.input-label for="type_id" value="Type" />
-            <x-form.select
-                name="type_id"
-                id="type_id"
-                :options="$types"
-                :selected="$product->type_id ?? ''"
-                placeholder="Select Type"
-            />
+            <x-form.select name="type_id" id="type_id" :options="$types" :selected="$product->type_id ?? ''"
+                placeholder="Select Type" />
             <x-form.input-error :messages="$errors->get('type_id')" />
         </div>
 
         {{-- Purity --}}
         <div class="col-sm-4">
             <x-form.input-label for="purity_id" value="Purity" />
-            <x-form.select
-                name="purity_id"
-                id="prurities_name"
-                :options="$purities"
-                :selected="$product->purity_id ?? ''"
-                placeholder="Select Purity (e.g. 22K, 18K)"
-            />
+            <x-form.select name="purity_id" id="prurities_name" :options="$purities" :selected="$product->purity_id ?? ''"
+                placeholder="Select Purity (e.g. 22K, 18K)" />
             <x-form.input-error :messages="$errors->get('purity_id')" />
         </div>
     </div>
@@ -53,23 +32,13 @@
     <div class="row mt-3">
         <div class="col-sm-6">
             <x-form.input-label for="name" value="Product Name" />
-            <x-form.text-input
-                name="name"
-                :value="$product->name ?? ''"
-                required
-                placeholder="Product Name"
-            />
+            <x-form.text-input name="name" :value="$product->name ?? ''" required placeholder="Product Name" />
             <x-form.input-error :messages="$errors->get('name')" />
         </div>
 
         <div class="col-sm-6">
             <x-form.input-label for="unit_id" value="Unit" />
-            <x-form.select
-                name="unit_id"
-                :options="$units"
-                :selected="$product->unit_id ?? ''"
-                placeholder="Select Unit"
-            />
+            <x-form.select name="unit_id" :options="$units" :selected="$product->unit_id ?? ''" placeholder="Select Unit" />
             <x-form.input-error :messages="$errors->get('unit_id')" />
         </div>
     </div>
@@ -84,12 +53,8 @@
             @endphp
 
             <x-form.input-label for="image" value="Product Image" />
-            <x-form.file-input
-                name="image"
-                id="image"
-                onchange="mainThamUrl(this)"
-                placeholder="Main Thumbnail"
-            />
+            <x-form.file-input name="image" id="image" onchange="mainThamUrl(this)"
+                placeholder="Main Thumbnail" />
             <x-form.input-error :messages="$errors->get('image')" />
             <img src="" id="mainThmb" class="img-thumbnail img-fluid img-responsive w-10 my-3">
         </div>
@@ -103,109 +68,67 @@
     <div class="row mt-3">
         <div class="col-sm-3">
             <x-form.input-label for="gross_weight" value="Gross Weight (g)" />
-            <x-form.text-input
-                type="number"
-                step="0.0001"
-                name="gross_weight"
-                :value="$product->gross_weight ?? ''"
-                required
-                placeholder="Gross Weight"
-            />
+            <x-form.text-input type="number" step="0.0001" name="gross_weight" :value="$product->gross_weight ?? ''" required
+                placeholder="Gross Weight" />
             <x-form.input-error :messages="$errors->get('gross_weight')" />
         </div>
 
         <div class="col-sm-3">
             <x-form.input-label for="net_weight" value="Net Weight (g)" />
-            <x-form.text-input
-                type="number"
-                step="0.0001"
-                name="net_weight"
-                :value="$product->net_weight ?? ''"
-                required
-                placeholder="Net Weight"
-            />
+            <x-form.text-input type="number" step="0.0001" name="net_weight" :value="$product->net_weight ?? ''" required
+                placeholder="Net Weight" />
             <x-form.input-error :messages="$errors->get('net_weight')" />
         </div>
 
         <div class="col-sm-3">
             <x-form.input-label for="rate_per_gram" value="Rate / Gram" />
-            <x-form.text-input
-                type="number"
-                step="0.01"
-                name="rate_per_gram"
-                :value="$product->rate_per_gram ?? ''"
-                placeholder="Rate per Gram"
-            />
+            <x-form.text-input type="number" step="0.01" name="rate_per_gram" :value="$product->rate_per_gram ?? ''"
+                placeholder="Rate per Gram" />
             <x-form.input-error :messages="$errors->get('rate_per_gram')" />
         </div>
 
         <div class="col-sm-3">
             <x-form.input-label for="making_charge" value="Making Charge" />
-            <x-form.text-input
-                type="number"
-                step="0.01"
-                name="making_charge"
-                :value="$product->making_charge ?? ''"
-                placeholder="Making Charge"
-            />
+            <x-form.text-input type="number" step="0.01" name="making_charge" :value="$product->making_charge ?? ''"
+                placeholder="Making Charge" />
             <x-form.input-error :messages="$errors->get('making_charge')" />
         </div>
     </div>
 
     {{-- Stock, Price & Status --}}
     <div class="row mt-3">
-         <div class="col-sm-3">
+        <div class="col-sm-3">
             <x-form.input-label for="gst_percent" value="Gst Percentage" />
-            <x-form.text-input
-                type="number"
-                step="1"
-                name="gst_percent"
-                :value="$product->gst_percent ?? '1'"
-                placeholder="Gst Percentage"
-            />
+            <x-form.text-input type="number" step="1" name="gst_percent" :value="$product->gst_percent ?? '1'"
+                placeholder="Gst Percentage" />
             <x-form.input-error :messages="$errors->get('gst_percent')" />
         </div>
         <div class="col-sm-3">
             <x-form.input-label for="stock_qty" value="Stock Quantity" />
-            <x-form.text-input
-                type="number"
-                step="0.0001"
-                name="stock_qty"
-                :value="$product->stock_qty ?? '1'"
-                required
-                placeholder="Available Stock Quantity"
-            />
+            <x-form.text-input type="number" step="0.0001" name="stock_qty" :value="$product->stock_qty ?? '1'" required
+                placeholder="Available Stock Quantity" />
             <x-form.input-error :messages="$errors->get('stock_qty')" />
         </div>
+@php
+    if($product->price>0){
+        $price_value = $product->price;
+    } else {
+        $price_value = number_format((($product->rate_per_gram * $product->net_weight + $product->making_charge) *
+            (1 + $product->gst_percent / 100) *
+            $product->stock_qty), 2);
+    }
 
+@endphp
         <div class="col-sm-3">
             <x-form.input-label for="price" value="Price" />
-            <x-form.text-input
-                type="number"
-                step="0.01"
-                name="price"
-                :value="$product->price !== ''
-                ? $product->price
-                : (
-                    (
-                        ($product->rate_per_gram * $product->net_weight)
-                        + $product->making_charge
-                    )
-                    * 1.03
-                ) * $product->stock_qty"
-                 placeholder="Total Price"
-            />
+            <x-form.text-input   name="price" :value="$price_value"
+                placeholder="Total Price" />
             <x-form.input-error :messages="$errors->get('price')" />
         </div>
 
         <div class="col-sm-3">
             <x-form.input-label for="pstatus" value="Product Status" />
-            <x-form.select
-                name="pstatus"
-                :options="['in_stock' => 'In Stock', 'sold' => 'Sold', 'returned' => 'Returned']"
-                :selected="$product->pstatus ?? 'in_stock'"
-                placeholder="Select Product Status"
-            />
+            <x-form.select name="pstatus" :options="['in_stock' => 'In Stock', 'sold' => 'Sold', 'returned' => 'Returned']" :selected="$product->pstatus ?? 'in_stock'" placeholder="Select Product Status" />
             <x-form.input-error :messages="$errors->get('pstatus')" />
         </div>
     </div>
