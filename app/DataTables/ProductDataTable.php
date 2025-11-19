@@ -2,7 +2,7 @@
 
 namespace App\DataTables;
 
-use App\Models\Purity;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -12,7 +12,7 @@ use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
-class PurityDataTable extends DataTable
+class ProductDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
@@ -25,11 +25,11 @@ class PurityDataTable extends DataTable
 
         return $dataTable
             ->setRowClass(function ($row) {
-                return 'purity-'.$row->id;
+                return 'product-'.$row->id;
             })
             // Separate status column
             ->addColumn('status', function ($row) {
-                $name = 'purity';
+                $name = 'product';
                 $badge = $row->status == 1 ? 'danger' : 'success';
                 $status = $row->status == 0 ? 'Active' : 'Deactive';
 
@@ -42,8 +42,8 @@ class PurityDataTable extends DataTable
 
             // Action column (edit + delete only)
             ->addColumn('action', function ($row) {
-                $name = 'purity';
-                $edit = route('purity.edit', $row->id);
+                $name = 'product';
+                $edit = route('products.edit', $row->id);
 
                 return
                     '<a href="'.$edit.'"
@@ -66,9 +66,9 @@ class PurityDataTable extends DataTable
     /**
      * Get the query source of dataTable.
      */
-    public function query(Purity $model): QueryBuilder
+    public function query(Product $model): QueryBuilder
     {
-        return $model->newQuery()->with('type:id,name');
+        return $model->newQuery()->with('type:id,name')->with('purity:id,name');
     }
 
     /**
@@ -77,7 +77,7 @@ class PurityDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('purity-table')
+            ->setTableId('product-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
             ->orderBy(0)
@@ -166,7 +166,10 @@ class PurityDataTable extends DataTable
         return [
             Column::make('id'),
             Column::make('type.name')->title('Type'),
+            Column::make('purity.name')->title('Purity'),
             Column::make('name')->title('Name'),
+            Column::make('gross_weight')->title('Gross Weight'),
+            Column::make('net_weight')->title('Net Weight'),
             Column::computed('status'),
             Column::computed('action')
                 ->exportable(false)
@@ -181,6 +184,6 @@ class PurityDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Purity_' . date('YmdHis');
+        return 'Product_' . date('YmdHis');
     }
 }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 04, 2024 at 01:35 PM
+-- Generation Time: Nov 12, 2025 at 01:32 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -56,33 +56,7 @@ INSERT INTO `billing` (`id`, `customer_id`, `cart`, `discount`, `discount_amount
 (6, 1, '', 0, '0', 0, '0', 0, 0, 2000, 1, '2024-11-11 18:30:00', '2024-08-10 18:30:00'),
 (7, 1, '[{\"productId\":5,\"quantity\":15,\"price\":99},{\"productId\":11,\"quantity\":18,\"price\":99},{\"productId\":25,\"quantity\":10,\"price\":60},{\"productId\":22,\"quantity\":11,\"price\":15},{\"productId\":14,\"quantity\":4,\"price\":4}]', 0, '0', 0, '0', 0, 4048, 0, 0, '2024-11-10 18:30:00', '2024-11-10 18:30:00'),
 (8, 1, '', 0, '0', 0, '0', 0, 0, 2285, 1, '2024-11-10 18:30:00', '2024-09-10 18:30:00'),
-(9, 1, '[{\"productId\":22,\"quantity\":20,\"price\":15}]', 0, '0', 0, '0', 0, 300, 0, 0, '2024-11-09 18:30:00', '2024-11-09 18:30:00'),
 (10, 1, '', 0, '0', 0, '0', 0, 0, 800, 1, '2024-11-17 18:30:00', '2024-12-04 04:21:20');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `categories`
---
-
-CREATE TABLE `categories` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `status` varchar(255) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `categories`
---
-
-INSERT INTO `categories` (`id`, `name`, `status`) VALUES
-(1, 'Upvc Windows & Door Manufacturer', '0'),
-(2, 'Aluminium Partition & Window Elevation', '0'),
-(3, 'Aluminium Powder Coating Section', '0'),
-(4, 'Exclusive Hardware & Aluminium', '0'),
-(5, 'Acp Composite Panel', '0'),
-(6, 'Hpl Composite Panel', '0'),
-(7, 'Technologiesa', '0');
 
 -- --------------------------------------------------------
 
@@ -102,14 +76,6 @@ CREATE TABLE `customers` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `customers`
---
-
-INSERT INTO `customers` (`id`, `name`, `email`, `phone`, `address`, `bill_address`, `opening_balance`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Mohan', 'kumar@gmail.com', '2233333333', 'asdasd', NULL, 0, 0, '2024-11-12 04:55:04', '2024-12-04 06:44:14'),
-(2, 'chaman', 'krish@gmail.com', '34324', 'fdsfds', 'dfdsff', 0, 0, '2024-12-04 07:08:43', '2024-12-04 03:35:58');
 
 -- --------------------------------------------------------
 
@@ -182,13 +148,15 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (2, '2014_10_12_100000_create_password_reset_tokens_table', 1),
 (3, '2019_08_19_000000_create_failed_jobs_table', 1),
 (4, '2019_12_14_000001_create_personal_access_tokens_table', 1),
-(5, '2024_09_13_153402_create_categories_table', 14),
+(5, '2024_09_13_153402_create_types_table', 14),
 (84, '2023_11_28_131149_create_site_settings_table', 15),
-(85, '2024_11_11_112538_create_products_table', 15),
 (86, '2024_11_12_093838_create_customers_table', 16),
-(87, '2024_11_16_131427_create_colors_table', 17),
 (88, '2024_11_17_173827_billing', 18),
-(90, '2024_11_27_094333_create_payments_table', 19);
+(90, '2024_11_27_094333_create_payments_table', 19),
+(91, '2025_11_11_073214_create_suppliers_table', 20),
+(97, '2025_11_12_090524_create_purities_table', 21),
+(98, '2024_11_16_131427_create_unit_table', 22),
+(99, '2024_11_11_112538_create_products_table', 23);
 
 -- --------------------------------------------------------
 
@@ -364,47 +332,44 @@ CREATE TABLE `personal_access_tokens` (
 
 CREATE TABLE `products` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `category_id` int(11) NOT NULL,
+  `sku` varchar(255) NOT NULL,
+  `type_id` int(11) DEFAULT NULL,
   `name` varchar(255) NOT NULL,
-  `image` varchar(255) NOT NULL,
-  `price` int(11) NOT NULL,
-  `unit_id` int(11) NOT NULL,
-  `text` varchar(255) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `purity_id` int(11) DEFAULT NULL,
+  `gross_weight` decimal(10,4) NOT NULL,
+  `net_weight` decimal(10,4) NOT NULL,
+  `making_charge` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `rate_per_gram` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `gst_percent` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `stock_qty` decimal(10,4) NOT NULL DEFAULT 1.0000,
+  `pstatus` enum('in_stock','sold','returned') NOT NULL DEFAULT 'in_stock',
   `status` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `products`
+-- Table structure for table `purities`
 --
 
-INSERT INTO `products` (`id`, `category_id`, `name`, `image`, `price`, `unit_id`, `text`, `status`, `created_at`, `updated_at`) VALUES
-(1, 1, 'SILVER ANODIDES 1 KG', '', 52, 0, 'Rem et deleniti et consequatur porro et deserunt sit. Quia est ducimus et aut cum illum. Odio modi mollitia et possimus sit pariatur.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(2, 4, 'Product 13', '', 89, 0, 'Rerum eos voluptates et quam ut consequatur sunt rerum. Qui tempora dignissimos sit in accusamus eveniet. Quod illum consequuntur ut quasi sunt dolorum. Ut nam ut architecto sed non ipsum.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(3, 3, 'Product 8', '', 21, 0, 'Nihil doloremque delectus voluptatem beatae reiciendis dolorem dicta laudantium. Culpa rem omnis expedita et necessitatibus eius. Illo aliquid in repellendus inventore ipsam fugit.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(4, 5, 'Product 29', '', 36, 0, 'Omnis sequi aut minima excepturi odio eum ipsam. Ex dicta voluptatem iusto exercitationem placeat et. Temporibus nemo unde quidem esse voluptate.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(5, 1, 'Product 39', '', 99, 0, 'Nisi sed eveniet ut ut aut quod voluptatem. Et recusandae illo et voluptates inventore. Non sed et dolorum aut distinctio fuga occaecati. Non expedita cumque laudantium recusandae.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(6, 1, 'Product 84', '', 28, 0, 'Id corrupti minus quia. Et nulla tenetur et. Minus impedit praesentium officiis dicta sunt.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(7, 6, 'Product 99', '', 16, 0, 'Temporibus voluptas eos suscipit hic nihil pariatur vero. Magni adipisci sed accusantium dolorem. Enim tenetur ut accusantium iusto officia.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(8, 3, 'Product 100', '', 51, 0, 'Qui id rerum et. Blanditiis ut et non suscipit sapiente sed vel. Quibusdam id et et consequuntur et id.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(9, 1, 'Product 69', '', 62, 0, 'Voluptas perspiciatis suscipit velit doloribus aut facere possimus. Corporis sed quae sapiente consequatur accusantium voluptatem. Fugiat et perspiciatis quam culpa.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(10, 3, 'Product 73', '', 32, 0, 'Nihil quia fuga dicta aut. Consequuntur doloremque deserunt aliquid qui perspiciatis tempora. Quasi voluptas aliquam quaerat culpa commodi. Porro inventore maxime quas vel.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(11, 3, 'Product 66', '', 99, 0, 'Qui quibusdam nesciunt sapiente aut tempore voluptas consequuntur est. Occaecati ipsum nihil eius ducimus. Qui cum est ex dolor sunt nisi. Voluptatem voluptatem consequatur necessitatibus delectus.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(12, 3, 'Product 49', '', 59, 0, 'Error aliquam quis nam qui temporibus ut. Nam iusto ea voluptatem in accusamus. Vitae assumenda temporibus a est libero dolore quo.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(13, 2, 'Product 72', '', 45, 0, 'Non sunt est ullam laudantium laborum non et. Eius eum minus sit nihil eum. Iste quibusdam saepe non ad.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(14, 5, 'Product 42', '', 4, 0, 'Magnam autem eius accusamus. Rerum dolor maxime vero possimus blanditiis est. Beatae aspernatur est hic quis dolor.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(15, 3, 'Product 94', '', 97, 0, 'Quas culpa cum non minima. Quia animi aut et. Dolore provident qui et. Delectus nihil tempore sequi ea. Nostrum dignissimos perspiciatis voluptatem sed. Quo dolores qui deleniti quibusdam quos aut.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(16, 1, 'Product 27', '', 52, 0, 'Ut aut dolores eum consectetur. Nemo et facilis explicabo sint modi mollitia. Expedita aut inventore sint magni ut quis dignissimos.', 0, '2024-11-12 14:14:59', '2024-11-22 07:57:46'),
-(17, 4, 'Product 57', '', 56, 0, 'Dignissimos facilis sint sint est. Recusandae perferendis nobis ducimus officia alias voluptatum illum eaque. Ea aut aliquam voluptate qui ipsum. Rerum numquam ut hic optio dolorem et.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(18, 1, 'Product 80', '', 75, 0, 'Provident earum iste in doloremque atque. Et eligendi reprehenderit et veniam. Ut nobis est quia autem sunt incidunt. Enim hic tenetur saepe iusto ducimus necessitatibus dolores.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(19, 6, 'Product 54', '', 34, 0, 'Tempora aut facere ut velit impedit. Earum possimus est dolorem sint sed hic eaque. Sit eum architecto qui tenetur sunt quisquam et. Reiciendis rerum iste illum culpa nemo quae rerum aperiam.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(20, 7, 'Product 68', '', 25, 0, 'Magnam voluptas amet eum sed dolore qui voluptatem. Aut vitae laudantium neque et quibusdam. Odio quasi veniam perspiciatis iure optio. Cumque autem deserunt eum doloremque ut minima accusamus.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(21, 1, 'Product 67', '', 28, 0, 'Eum veritatis tempore iste eum. Suscipit a est et aut. Corporis placeat consequuntur veniam.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(22, 1, 'Product 35', '', 15, 0, 'Aperiam soluta sapiente quo ratione quos in. Et eius dolores cum ipsum consectetur quis magni.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(23, 1, 'Product 98', '', 75, 0, 'Nulla ipsum eveniet et laudantium optio. Dolores quae sed rem aut. Assumenda voluptatum id ex.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(24, 5, 'Product 33', '', 48, 0, 'Sit omnis perspiciatis saepe quae est. Minus esse ipsum aspernatur ut. Voluptates eligendi beatae illum officiis explicabo qui ea. Maxime ut sint architecto non molestias.', 0, '2024-11-12 14:14:59', '2024-11-12 14:14:59'),
-(25, 4, 'Product 28', '', 60, 1, 'Dolor sed maiores minima beatae delectus quis sit. Sunt laudantium nihil enim libero sapiente aperiam. Earum inventore iste rerum sint et tenetur. Eveniet hic consequatur ullam sint qui.', 0, '2024-11-12 14:14:59', '2024-11-22 08:28:59');
+CREATE TABLE `purities` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `purities`
+--
+
+INSERT INTO `purities` (`id`, `name`, `status`) VALUES
+(1, '22K', 0),
+(2, '18K', 0),
+(3, '14K', 0),
+(4, '9K', 0);
 
 -- --------------------------------------------------------
 
@@ -444,12 +409,51 @@ INSERT INTO `site_settings` (`id`, `logo`, `favicon`, `site_title`, `app_name`, 
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `suppliers`
+--
+
+CREATE TABLE `suppliers` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `types`
+--
+
+CREATE TABLE `types` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `status` varchar(255) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `types`
+--
+
+INSERT INTO `types` (`id`, `name`, `status`) VALUES
+(1, 'Gold', '0'),
+(2, 'Slider', '0'),
+(3, 'Other', '0');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `units`
 --
 
 CREATE TABLE `units` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
+  `fname` varchar(255) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -457,12 +461,15 @@ CREATE TABLE `units` (
 -- Dumping data for table `units`
 --
 
-INSERT INTO `units` (`id`, `name`, `status`) VALUES
-(1, 'Brown', 0),
-(2, 'Sliver', 0),
-(3, 'Ivory', 0),
-(4, 'Marvel', 0),
-(5, 'Wooden', 0);
+INSERT INTO `units` (`id`, `name`, `fname`, `status`) VALUES
+(1, 'mg', 'Milligram (mg)', 0),
+(2, 'g', 'Gram (g)', 0),
+(3, 'kg', 'Kilogram (kg)', 0),
+(4, 'tola', 'Tola', 0),
+(5, 'carat', 'Carat (ct)', 0),
+(6, 'piece', 'Piece (pcs)', 0),
+(7, 'set', 'Set', 0),
+(8, 'pair', 'Pair', 0);
 
 -- --------------------------------------------------------
 
@@ -493,7 +500,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `username`, `email`, `email_verified_at`, `password`, `photo`, `phone`, `top`, `about`, `role`, `status`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'admin', 'admin', 'admin@gmail.com', NULL, '$2y$12$dQN5u.bXyxKOIrdCUy1qrOhXDp8ZiqKXf7EJknImBkSfz5LTKLB/K', 'upload/user/thumbnail/1817511670142466.jpg', NULL, 0, NULL, 'admin', 0, 'Q6Fn8teGrZZjWi7rfICqHBYBOI9vqt1vaPuAyUyRB36yYt0FouVc3LXHiFRB', '2023-11-27 23:45:04', '2024-12-04 06:40:00'),
+(1, 'admin', 'admin', 'admin@gmail.com', NULL, '$2y$12$dQN5u.bXyxKOIrdCUy1qrOhXDp8ZiqKXf7EJknImBkSfz5LTKLB/K', 'upload/user/thumbnail/1817511670142466.jpg', NULL, 0, NULL, 'admin', 0, 'SVQ3NyzO3OpPQEyMDvBy3MdBRNS4UIACkzrkfpabwJShMPCUs2YEYFFVnCOS', '2023-11-27 23:45:04', '2024-12-04 06:40:00'),
 (2, 'hajari', 'admin2', 'test@gmail.com', NULL, '$2y$12$Yl/BCf6okAdG0BhmIOfzAeEiwS7jaQg8DRK7blpPloITzBhy/z76u', 'upload/user/thumbnail/1817511688965034.jpg', NULL, 0, NULL, 'admin', 0, NULL, '2024-11-27 03:36:13', '2024-12-04 06:40:17');
 
 --
@@ -505,13 +512,6 @@ INSERT INTO `users` (`id`, `name`, `username`, `email`, `email_verified_at`, `pa
 --
 ALTER TABLE `billing`
   ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `categories`
---
-ALTER TABLE `categories`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `name` (`name`);
 
 --
 -- Indexes for table `customers`
@@ -569,6 +569,13 @@ ALTER TABLE `personal_access_tokens`
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `products_sku_unique` (`sku`);
+
+--
+-- Indexes for table `purities`
+--
+ALTER TABLE `purities`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -576,6 +583,19 @@ ALTER TABLE `products`
 --
 ALTER TABLE `site_settings`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `suppliers`
+--
+ALTER TABLE `suppliers`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `types`
+--
+ALTER TABLE `types`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`);
 
 --
 -- Indexes for table `units`
@@ -603,16 +623,10 @@ ALTER TABLE `billing`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `categories`
---
-ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
---
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -630,7 +644,7 @@ ALTER TABLE `image_presets`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
 
 --
 -- AUTO_INCREMENT for table `payments`
@@ -654,7 +668,13 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `purities`
+--
+ALTER TABLE `purities`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `site_settings`
@@ -663,10 +683,22 @@ ALTER TABLE `site_settings`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `suppliers`
+--
+ALTER TABLE `suppliers`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `types`
+--
+ALTER TABLE `types`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `units`
 --
 ALTER TABLE `units`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `users`

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\DataTables\BillingsDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Billing;
-use App\Models\Category;
+use App\Models\Type;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\SiteSetting;
@@ -17,14 +17,14 @@ class BillingController extends Controller
     //
     public function index()
     {
-        $categories = Category::pluck('name', 'id');
+        $types = Type::pluck('name', 'id');
 
         $customers = Customer::all()->mapWithKeys(function ($customer) {
             return [$customer->id => $customer->name.' ('.$customer->phone.')'];
         });
         $template = SiteSetting::select('tax')->find(1);
 
-        return view('backend.billing.billing', compact('categories', 'customers', 'template'));
+        return view('backend.billing.billing', compact('types', 'customers', 'template'));
     }
 
     public function cart(Request $request)

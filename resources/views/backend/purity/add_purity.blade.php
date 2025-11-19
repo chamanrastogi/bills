@@ -22,7 +22,7 @@
 
                         {{-- Auto-generated form component --}}
                         {{-- Located at: resources/views/components/backend/backend_component/{{ ModelLower }}-form.blade.php --}}
-                        <x-backend.backend_component.purity-form :isEdit="false" />
+                        <x-backend.backend_component.purity-form  :$types :isEdit="false" />
                     </div>
                 </div>
             </div>

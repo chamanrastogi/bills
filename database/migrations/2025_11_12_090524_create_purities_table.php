@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('purities', function (Blueprint $table) {
             $table->id();
+            $table->integer('type_id');
             $table->string('name');
             $table->boolean('status')->default(0);
         });

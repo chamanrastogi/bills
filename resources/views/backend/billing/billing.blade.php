@@ -17,10 +17,10 @@
                                     <div class="row justify-content-center align-middle">
                                         <div class="col-md-6">
                                             <label for="Customer" class="form-label">Customer:</label>
-                                            {!! Form::select('color', $customers, null, [
-                                                'class' => 'form-control customer',
-                                                'placeholder' => 'Select Customer',
-                                            ]) !!}
+
+                                            <x-form.input-label for="color" value="Customer" />
+                                            <x-form.select name="color" :options="$customers"
+                                                placeholder="Select Customer" />
                                         </div>
                                     </div>
                                 </div>
@@ -44,12 +44,10 @@
                                     <div class="row mb-2">
 
                                         <div class="col-md-4">
-                                            <label for="category" class="form-label">Category:</label>
-                                            {!! Form::select('category', $categories, null, [
-                                                'class' => 'form-control categorys',
-                                                'required' => 'required',
-                                                'placeholder' => 'Select Category',
-                                            ]) !!}
+
+
+                                            <x-form.input-label for="type" value="Type" />
+                                            <x-form.select name="type" :options="$types"   placeholder="Select Type" />
                                         </div>
                                         <div class="col-md-4">
                                             <label for="product" class="form-label">Product:</label>
@@ -148,17 +146,17 @@
                 $('#freightChargesAmount').text(`Freight Charges Added: {{ MONEY }}${freightCharges.toFixed(2)}`);
 
             }
-            // Function to populate products based on selected category
+            // Function to populate products based on selected type
             function datatable() {
-                const category = $(".categorys").val();
+                const type = $(".types").val();
                 const productSelect = $("#productitems");
 
                 productSelect.html('<option value="" disabled selected>Select Product</option>');
 
-                if (category) {
+                if (type) {
                     $.ajax({
-                        url: `{{ route('product.category', ['category' => ':category']) }}`.replace(':category',
-                            category),
+                        url: `{{ route('product.type', ['type' => ':type']) }}`.replace(':type',
+                            type),
                         method: 'GET',
                         success: function(data) {
                             if (Array.isArray(data) && data.length > 0) {
@@ -184,7 +182,7 @@
                     updateGrandTotal();
                 });
                 $('#billing_system').hide();
-                $(".categorys").on("change", function() {
+                $(".types").on("change", function() {
                     datatable();
                 });
                 $('#discount').on('input', function() {
@@ -199,7 +197,7 @@
 
                 $('#addProductBtn').on('click', function() {
 
-                    const categoryText = $('.categorys option:selected').text();
+                    const typeText = $('.types option:selected').text();
                     const productText = $('#productitems option:selected').text();
                     const productValue = $('#productitems').val();
                     const quantity = parseFloat($('#quantity').val()); // Use parseFloat here
@@ -219,7 +217,7 @@
 
                     // Reset inputs
                     $('#quantity').val(1);
-                    $('.categorys').val('');
+                    $('.types').val('');
                     $('#productitems').html('<option value="" disabled selected>Select a product</option>');
 
                     // Calculate total based on decimal quantity
@@ -233,7 +231,7 @@
                     $('#billTable').append(`
         <tr>
             <td>${productId}</td>
-            <td>${categoryText}</td>
+            <td>${typeText}</td>
             <td>${productText}</td>
             <td>${unitName}</td> <!-- Add Unit here -->
             <td>{{ MONEY }}${priceFloat.toFixed(2)}</td>

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\DataTables\ProductDataTable;
 use App\Http\Controllers\Controller;
-use App\Models\Category;
 use App\Models\ImagePresets;
 use App\Models\Product;
+use App\Models\Purity;
+use App\Models\Type;
 use App\Models\Unit;
 use App\Traits\CommonTrait;
 use App\Traits\ImageGenTrait;
@@ -28,11 +30,10 @@ class ProductController extends Controller
         $this->image_preset_main = ImagePresets::find(11);
     }
 
-    public function index()
-    {
-        $products = product::latest()->get();
 
-        return view('backend.product.all_product', compact('products'));
+      public function index(ProductDataTable $dataTable)
+    {
+        return $dataTable->render('backend.product.all_product');
     }
 
     /**
@@ -40,10 +41,11 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $categories = Category::where('status', 0)->pluck('name', 'id');
-        $units = Unit::where('status', 0)->pluck('name', 'id');
+        $purities = [];
+        $types = Type::where('status', 0)->pluck('name', 'id');
+        $units = Unit::where('status', 0)->pluck('fname', 'id');
 
-        return view('backend.product.add_product', compact('categories', 'units'));
+        return view('backend.product.add_product', compact('purities', 'types', 'units'));
     }
 
     /**
@@ -53,7 +55,9 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|unique:products|max:200',
-            'price' => 'required',
+            'gross_weight'   => 'required|numeric|min:0',
+            'net_weight'     => 'required|numeric|min:0',
+            'making_charge'  => 'nullable|numeric|min:0',
         ]);
         $image = $request->file('image');
         if ($request->file('image') != null) {
@@ -64,12 +68,20 @@ class ProductController extends Controller
         }
 
         product::insert([
-            'category_id' => $request->category_id,
-            'name' => $request->name,
-            'image' => $save_url,
-            'price' => $request->price,
-            'unit_id' => $request->unit_id,
-            'text' => '',
+            'sku'            => $request->sku,
+            'type_id'        => $request->type_id,
+            'name'           => $request->name,
+            'image'          => $save_url,
+            'purity_id'      => $request->purity_id,
+            'unit_id'        => $request->unit_id,
+            'gross_weight'   => $request->gross_weight,
+            'net_weight'     => $request->net_weight,
+            'making_charge'  => $request->making_charge ?? 0,
+            'rate_per_gram'  => $request->rate_per_gram ?? 0,
+            'gst_percent'    => $request->gst_percent ?? 0,
+            'stock_qty'      => $request->stock_qty ?? 1,
+            'price'          => $request->price,
+            'pstatus'        => $request->pstatus ?? 'in_stock',
 
         ]);
 
@@ -95,10 +107,11 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $products = Product::all();
-        $categories = Category::where('status', 0)->pluck('name', 'id');
-        $units = Unit::where('status', 0)->pluck('name', 'id');
+        $purities = Purity::where('status', 0)->where('type_id', $product->type_id)->pluck('name', 'id');
+        $types = Type::where('status', 0)->pluck('name', 'id');
+        $units = Unit::where('status', 0)->pluck('fname', 'id');
 
-        return view('backend.product.edit_product', compact('product', 'categories', 'units'));
+        return view('backend.product.edit_product', compact('product', 'purities', 'types', 'units'));
     }
 
     /**
@@ -106,14 +119,17 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+
         $validated = $request->validate([
-            'name' => 'required|max:200|unique:products,name,'.$product->id,
-            'price' => 'required',
+            'name' => 'required',
+            'gross_weight'   => 'required|numeric|min:0',
+            'net_weight'     => 'required|numeric|min:0',
+            'making_charge'  => 'nullable|numeric|min:0',
         ]);
         if ($request->file('image') != null) {
             if (file_exists($product->image)) {
                 $img = explode('.', $product->image);
-                $small_img = $img[0].'_'.$this->image_preset[0]->name.'.'.$img[1];
+                $small_img = $img[0] . '_' . $this->image_preset[0]->name . '.' . $img[1];
                 unlink($small_img);
                 unlink($product->post_image);
             }
@@ -128,12 +144,20 @@ class ProductController extends Controller
         }
 
         $product->update([
-            'category_id' => $request->category_id,
-            'name' => $request->name,
-            'image' => $save_url,
-            'price' => $request->price,
-            'unit_id' => $request->unit_id,
-            'text' => '',
+            'sku'            => $request->sku,
+            'type_id'        => $request->type_id,
+            'name'           => $request->name,
+            'image'          => $save_url,
+            'purity_id'      => $request->purity_id,
+            'unit_id'        => $request->unit_id,
+            'gross_weight'   => $request->gross_weight,
+            'net_weight'     => $request->net_weight,
+            'making_charge'  => $request->making_charge ?? 0,
+            'rate_per_gram'  => $request->rate_per_gram ?? 0,
+            'gst_percent'    => $request->gst_percent ?? 0,
+            'stock_qty'      => $request->stock_qty ?? 1,
+            'price'          => $request->price,
+            'pstatus'        => $request->pstatus ?? 'in_stock',
         ]);
 
         $notification = [
@@ -159,7 +183,7 @@ class ProductController extends Controller
             foreach ($blogs as $blog) {
                 if (file_exists($blog->image)) {
                     $img = explode('.', $blog->image);
-                    $small_img = $img[0].'_'.$this->image_preset[0]->name.'.'.$img[1];
+                    $small_img = $img[0] . '_' . $this->image_preset[0]->name . '.' . $img[1];
                     unlink($small_img);
                     unlink($blog->image);
                 }
@@ -168,7 +192,7 @@ class ProductController extends Controller
             $blogs = Product::find($request->id);
             if (file_exists($blogs->image)) {
                 $img = explode('.', $blogs->image);
-                $small_img = $img[0].'_'.$this->image_preset[0]->name.'.'.$img[1];
+                $small_img = $img[0] . '_' . $this->image_preset[0]->name . '.' . $img[1];
                 unlink($small_img);
                 unlink($blogs->image);
             }
@@ -183,10 +207,18 @@ class ProductController extends Controller
         return redirect()->back()->with($notification);
     }
 
-    public function GetProducts(string $category)
-    {
-        $products = Product::where('category_id', $category)->with('unit')->get();
+    public function GetPurity(Request $request)
+{
+    $purities = Purity::where('type_id', $request->type_id)
+                      ->orderBy('name', 'ASC')
+                      ->get();
 
-        return $products;
+    $html = '<option value="">Select Purity</option>';
+
+    foreach ($purities as $purity) {
+        $html .= '<option value="'. $purity->id .'">'. $purity->name .'</option>';
     }
+
+    return $html;
+}
 }

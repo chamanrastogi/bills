@@ -22,7 +22,7 @@
 
                         {{-- Auto-generated form component --}}
                         {{-- Located at: resources/views/components/backend/backend_component/purity-form.blade.php --}}
-                        <x-backend.backend_component.purity-form :$purity :isEdit="true" />
+                        <x-backend.backend_component.purity-form  :$purity :$types :isEdit="true" />
                     </div>
                 </div>
             </div>

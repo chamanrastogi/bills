@@ -12,12 +12,16 @@ class Product extends Model
 
     protected $guarded = [];
 
-    public function category(): BelongsTo
+    public function Type(): BelongsTo
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Type::class);
+    }
+    public function Purity(): BelongsTo
+    {
+        return $this->belongsTo(Purity::class);
     }
 
-    public function unit(): BelongsTo
+    public function Unit(): BelongsTo
     {
         return $this->belongsto(Unit::class, 'unit_id')->withDefault([
             'name' => '', // or any other attribute you want to default to ''

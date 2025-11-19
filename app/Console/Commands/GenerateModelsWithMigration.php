@@ -15,281 +15,266 @@ class GenerateModelsWithMigration extends Command
      */
     protected $signature = 'app:gen {--force : Overwrite existing files}';
 
-    public $folder;
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Generate multiple models with resource controller methods, migration, views, and components.';
 
-    public $folder_path;
+    protected string $folderPath = 'backend';
+    protected string $componentFolder = 'backend_component';
 
-    public $component_folder;
-
-    protected $description = 'Generate multiple models with resource controller methods and migration';
-
-    public function __construct()
+    /**
+     * Define the models and their fields configuration.
+     */
+    protected function configuration(): array
     {
-        parent::__construct();
-        $this->folder_path = 'backend';
-        $this->component_folder = 'backend_component';
+        return [
+            'purity' => [
+                'name' => ['type' => 'string', 'options' => []],
+                'status' => ['type' => 'boolean', 'options' => ['default' => 0]],
+            ],
+            // Add more models here...
+        ];
     }
 
-    // protected $hidden = true; //Hide your custom command
     public function handle()
     {
+        $models = $this->configuration();
 
-        // Define the models and their fields with types and options
-        $models = [
-            'purity' => [
+        foreach ($models as $modelName => $fields) {
+            // Pre-calculate naming conventions to ensure consistency
+            $meta = [
+                'name' => $modelName,
+                'studly' => Str::studly(Str::singular($modelName)), // Purity
+                'lower' => Str::lower($modelName), // purity
+                'plural_snake' => Str::snake(Str::plural($modelName)), // purities
+                'singular_snake' => Str::snake(Str::singular($modelName)), // purity
+            ];
 
-                'name' => ['type' => 'string', 'options' => []],
-                // Active or inactive status
-                'status' => ['type' => 'boolean', 'options' => ['default' => 0]],
+            $this->info("\n🛠  Processing: {$meta['studly']}...");
 
-            ],
+            $this->generateController($meta);
+            $this->generateMigration($meta, $fields);
+            $this->generateDataTable($meta);
+            $this->generateBladeFiles($meta);
+            $this->generateComponent($meta);
 
-        ];
-
-        // Loop through the models and create each one with migration and resource methods
-        foreach ($models as $model => $fields) {
-            $mName = Str::studly(Str::singular($model));
-            $form_name = $mName.'Form';
-
-            // Create the model with migration and resource options
-            $this->call('make:controller', [
-                'name' => 'Backend/'.$mName.'Controller',
-                '--resource' => true,
-                '--model' => $mName,
-            ]);
-
-            // // Create Custom Controller
-            $this->createCustomController($mName);
-
-            $this->call('make:migration', [
-                'name' => 'create_'.Str::snake(Str::plural($model)).'_table',
-                '--create' => Str::snake(Str::plural($model)),
-            ]);
-
-            // // Create Data Table
-            $this->call('datatables:make', [
-                'name' => $mName,
-            ]);
-
-            // Create Export Table
-            // $this->call('make:export', [
-            //     'name' => Str::ucfirst($model)."Export",
-            //     '--model' => Str::ucfirst($model)
-            // ]);
-
-            // Create Import Table
-            // $this->call('make:import', [
-            //     'name' => Str::ucfirst($model)."Import",
-            //     '--model' => Str::ucfirst($model)
-            // ]);
-
-            // Create custom Blade files
-            $this->createBladeFiles(strtolower($model));
-
-            $this->createComponentWithDummyData($form_name, strtolower($model));
-
-            // Update the migration file with the specified fields
-            $this->addFieldsToMigration($model, $fields);
-            $this->info("\n🛠 Generating: {$mName}");
-            $this->info('📦 Model, migration, and controller created');
-            $this->info("🧱 Blade views: created under resources/views/backend/{$model}");
+            $this->info("✅ All tasks completed for {$meta['studly']}.");
         }
     }
 
-    protected function addFieldsToMigration($model, $fields)
+    /**
+     * Generate the Custom Controller from Stub.
+     */
+    protected function generateController(array $meta): void
     {
-        // Get the latest migration file
-        $migrationFile = $this->getLastMigrationFile();
+        $controllerName = "{$meta['studly']}Controller";
+        $targetPath = app_path("Http/Controllers/Backend/{$controllerName}.php");
+        $stubPath = base_path('resources/views/templates/stubs/custom-controller.stub');
 
-        if (! $migrationFile || ! file_exists($migrationFile)) {
-            $this->error('No migration file found.');
-
+        if (!$this->option('force') && File::exists($targetPath)) {
+            $this->warn("   ⏭️ Controller already exists. Skipping.");
             return;
         }
 
-        // Always start with id() as the first field
-        $fieldLines = "            \$table->id();\n";
-
-        foreach ($fields as $field => $properties) {
-            // Skip if field name is "id" (we already added it)
-            if (strtolower($field) === 'id') {
-                continue;
-            }
-
-            $type = $properties['type'] ?? 'string';
-            $options = $properties['options'] ?? [];
-
-            // Start the field definition
-            $line = "\$table->{$type}('{$field}'";
-
-            // If maxLength exists (e.g. string length)
-            if (isset($options['maxLength'])) {
-                $line .= ", {$options['maxLength']}";
-            }
-
-            $line .= ')';
-
-            // Handle options
-            if (! empty($options)) {
-                if (! empty($options['nullable'])) {
-                    $line .= '->nullable()';
-                }
-
-                if (array_key_exists('default', $options)) {
-                    $defaultValue = $options['default'];
-                    $defaultValue = is_numeric($defaultValue) ? $defaultValue : "'{$defaultValue}'";
-                    $line .= "->default({$defaultValue})";
-                }
-
-                if (! empty($options['useCurrent'])) {
-                    $line .= '->useCurrent()';
-                }
-            }
-
-            $line .= ';';
-            $fieldLines .= $line."\n";
+        if (!File::exists($stubPath)) {
+            $this->error("   ❌ Stub file not found: {$stubPath}");
+            return;
         }
 
-        // Add timestamps automatically at the end
-        $fieldLines .= "            \$table->timestamp('created_at')->useCurrent();\n";
-        $fieldLines .= "            \$table->timestamp('updated_at')->useCurrent();\n";
-        // Read migration file content
-        $migrationContent = file_get_contents($migrationFile);
+        $content = File::get($stubPath);
+        $content = str_replace(
+            ['{{ModelStudly}}', '{{ModelLower}}'],
+            [$meta['studly'], $meta['lower']],
+            $content
+        );
 
-        // Replace Schema::create content block with updated field lines
-        $newMigrationContent = preg_replace(
+        $this->ensureDirectoryExists(dirname($targetPath));
+        File::put($targetPath, $content);
+
+        $this->info("   📦 Controller created: {$controllerName}");
+    }
+
+    /**
+     * Create Migration and inject fields.
+     */
+    protected function generateMigration(array $meta, array $fields): void
+    {
+        $tableName = $meta['plural_snake'];
+        $migrationName = "create_{$tableName}_table";
+
+        // 1. Create basic migration file via Artisan
+        $this->callSilent('make:migration', [
+            'name' => $migrationName,
+            '--create' => $tableName,
+        ]);
+
+        // 2. Inject fields
+        $migrationFile = $this->getLastMigrationFile();
+
+        if (!$migrationFile) {
+            $this->error("   ❌ Could not locate the generated migration file.");
+            return;
+        }
+
+        $fieldSchema = $this->buildMigrationFields($fields);
+        $migrationContent = File::get($migrationFile);
+
+        // Regex to replace the Schema::create closure body
+        $newContent = preg_replace(
             '/Schema::create\(.*?\{[\s\S]*?\}\);/m',
-            "Schema::create('".Str::plural(Str::snake($model))."', function (Blueprint \$table) {\n{$fieldLines}        });",
+            "Schema::create('{$tableName}', function (Blueprint \$table) {\n{$fieldSchema}        });",
             $migrationContent
         );
 
-        // Save the updated migration file
-        file_put_contents($migrationFile, $newMigrationContent);
-
-        $this->info("✅ Migration for '{$model}' updated successfully (with \$table->id() first).");
+        File::put($migrationFile, $newContent);
+        $this->info("   📦 Migration created and updated with fields.");
     }
 
-    protected function getLastMigrationFile()
+    /**
+     * Generate DataTables class.
+     */
+    protected function generateDataTable(array $meta): void
     {
-        $files = glob(database_path('migrations/*.php'));
-        usort($files, fn ($a, $b) => filemtime($b) <=> filemtime($a));
-
-        return $files[0] ?? null;
+        // Using callSilent to reduce console noise
+        $this->callSilent('datatables:make', [
+            'name' => $meta['studly'],
+        ]);
+        $this->info("   📦 DataTable created.");
     }
 
-    protected function createBladeFiles(string $model): void
+    /**
+     * Generate Blade Views from Templates.
+     */
+    protected function generateBladeFiles(array $meta): void
     {
+        $bladeDirectory = resource_path("views/backend/{$meta['lower']}");
+        $this->ensureDirectoryExists($bladeDirectory);
 
-        $modelStudly = Str::studly($model);
-        $modelLower = Str::lower($model);
-
-        // Directory where generated blades will be stored
-        $bladeDirectory = resource_path("views/backend/{$modelLower}");
-
-        // Create directory if not exists
-        if (! File::exists($bladeDirectory)) {
-            File::makeDirectory($bladeDirectory, 0755, true);
-            $this->info("📁 Blade directory created: {$bladeDirectory}");
-        }
-
-        // Locate all .blade.php templates in resources/views/templates
         $templateDir = resource_path('views/templates');
         $templateFiles = File::glob("{$templateDir}/*.blade.php");
 
         if (empty($templateFiles)) {
-            $this->warn("⚠️ No Blade templates found in: {$templateDir}");
-
+            $this->warn("   ⚠️ No templates found in {$templateDir}");
             return;
         }
 
         foreach ($templateFiles as $templatePath) {
-            $templateName = basename($templatePath);                    // e.g. create.blade.php
-            $baseName = pathinfo($templateName, PATHINFO_FILENAME); // e.g. create.blade
-            $baseName = Str::before($baseName, '.blade');            // now "add"
-            $destination = "{$bladeDirectory}/{$baseName}_{$modelLower}.blade.php";
+            $baseName = Str::before(pathinfo($templatePath, PATHINFO_FILENAME), '.blade'); // e.g., "create"
+            $destination = "{$bladeDirectory}/{$baseName}_{$meta['lower']}.blade.php";
 
-            // Skip if already exists (unless force option)
-            if (File::exists($destination) && ! $this->option('force')) {
-                $this->warn("⏭️ Skipped (already exists): {$destination}");
-
+            if (File::exists($destination) && !$this->option('force')) {
                 continue;
             }
 
-            // Read and process template content
             $content = File::get($templatePath);
-
-            // Replace dynamic placeholders inside template
             $content = str_replace(
                 ['{{ModelStudly}}', '{{ModelLower}}'],
-                [$modelStudly, $modelLower],
+                [$meta['studly'], $meta['lower']],
                 $content
             );
 
-            // Save the generated Blade file
             File::put($destination, $content);
-            $this->info("✅ Blade file created: {$destination}");
         }
+
+        $this->info("   🧱 Blade views created in resources/views/backend/{$meta['lower']}");
     }
 
-    protected function createComponentWithDummyData($form_name, $model)
+    /**
+     * Generate View Component and Blade.
+     */
+    protected function generateComponent(array $meta): void
     {
-        // Call the make:component command to create only the component class
-        $this->call('make:component', [
-            'name' => "{$this->folder_path}/{$this->component_folder}/{$form_name}",
+        $formName = "{$meta['studly']}Form";
+        $componentPath = "{$this->folderPath}/{$this->componentFolder}/{$formName}";
+
+        // 1. Create the Component Class
+        $this->callSilent('make:component', [
+            'name' => $componentPath,
             '--inline' => true,
         ]);
 
-        $slug = $model.'-form';
+        // 2. Overwrite the view manually (Hybrid approach)
+        // Laravel components with --inline usually don't have a view file,
+        // but your logic suggests you want a specific blade file for it.
 
-        // Define the target path to manually create the blade file
-        $componentPath = resource_path("views/components/{$this->folder_path}/{$this->component_folder}/{$slug}.blade.php");
-        $componentDirectory = dirname($componentPath);
-
-        // Ensure the directory exists
-        if (! File::exists($componentDirectory)) {
-            File::makeDirectory($componentDirectory, 0755, true);
-        }
-
+        $slug = "{$meta['lower']}-form";
+        $viewPath = resource_path("views/components/{$this->folderPath}/{$this->componentFolder}/{$slug}.blade.php");
         $dummyTemplatePath = resource_path('views/templates/component-form.blade.php');
 
-        // Check if the dummy template exists
         if (File::exists($dummyTemplatePath)) {
-            $bladeContent = File::get($dummyTemplatePath);
-
-            // Create the view file manually
-            File::put($componentPath, $bladeContent);
-            $this->info("Blade component view created: {$componentPath}");
+            $this->ensureDirectoryExists(dirname($viewPath));
+            File::put($viewPath, File::get($dummyTemplatePath));
+            $this->info("   🧩 Component view created: {$slug}");
         } else {
-            $this->error("Dummy template file not found: {$dummyTemplatePath}");
+            $this->warn("   ⚠️ Component dummy template missing.");
         }
     }
 
-    protected function createCustomController($model)
+    /**
+     * Construct the migration schema string.
+     */
+    protected function buildMigrationFields(array $fields): string
     {
-        $controllerName = $model.'Controller';
-        $modelLower = Str::lower($model);
+        $lines = ["            \$table->id();"];
 
-        $stubPath = base_path('resources/views/templates/stubs/custom-controller.stub');
-        $targetPath = app_path("Http/Controllers/Backend/{$controllerName}.php");
+        foreach ($fields as $name => $props) {
+            if (strtolower($name) === 'id') continue;
 
-        if (! File::exists(dirname($targetPath))) {
-            File::makeDirectory(dirname($targetPath), 0755, true);
+            $type = $props['type'] ?? 'string';
+            $options = $props['options'] ?? [];
+
+            // Build: $table->string('name', 255)
+            $definition = "\$table->{$type}('{$name}'";
+            if (isset($options['maxLength'])) {
+                $definition .= ", {$options['maxLength']}";
+            }
+            $definition .= ")";
+
+            // Chain options: ->nullable()->default(0)
+            if (!empty($options['nullable'])) {
+                $definition .= "->nullable()";
+            }
+            if (array_key_exists('default', $options)) {
+                $val = is_numeric($options['default']) ? $options['default'] : "'{$options['default']}'";
+                $definition .= "->default({$val})";
+            }
+            if (!empty($options['useCurrent'])) {
+                $definition .= "->useCurrent()";
+            }
+
+            $lines[] = "            {$definition};";
         }
 
-        if (File::exists($stubPath)) {
-            $stub = File::get($stubPath);
+        $lines[] = "            \$table->timestamp('created_at')->useCurrent();";
+        $lines[] = "            \$table->timestamp('updated_at')->useCurrent();\n";
 
-            // Replace placeholders
-            $stub = str_replace(
-                ['{{ModelStudly}}', '{{ModelLower}}'],
-                [$model, $modelLower],
-                $stub
-            );
+        return implode("\n", $lines);
+    }
 
-            File::put($targetPath, $stub);
-            $this->info("Custom controller created: {$controllerName}");
-        } else {
-            $this->error("Missing stub file: {$stubPath}");
+    /**
+     * Helper to find the most recently created migration file.
+     */
+    protected function getLastMigrationFile(): ?string
+    {
+        $files = glob(database_path('migrations/*.php'));
+        if (!$files) return null;
+
+        // Sort by modification time descending
+        usort($files, fn ($a, $b) => filemtime($b) <=> filemtime($a));
+
+        return $files[0];
+    }
+
+    /**
+     * Helper to ensure directory exists.
+     */
+    protected function ensureDirectoryExists(string $path): void
+    {
+        if (!File::exists($path)) {
+            File::makeDirectory($path, 0755, true);
         }
     }
 }

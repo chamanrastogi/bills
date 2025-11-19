@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('units', function (Blueprint $table) {
             $table->id('id');
             $table->string('name');
+            $table->string('fname');
             $table->boolean('status')->default(0);
         });
     }

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\DataTables\PurityDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Purity;
+use App\Models\Type;
 use App\Traits\CommonTrait;
 use Illuminate\Http\Request;
 
@@ -14,18 +16,18 @@ class PurityController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $data = Purity::get();
-        return view('backend.purity.all_purity', compact('data'));
-    }
 
+    public function index(PurityDataTable $dataTable)
+    {
+        return $dataTable->render('backend.purity.all_purity');
+    }
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        return view('backend.purity.add_purity');
+        $types = Type::pluck('name', 'id');
+        return view('backend.purity.add_purity', compact('types'));
     }
 
     /**
@@ -54,7 +56,8 @@ class PurityController extends Controller
      */
     public function edit(Purity $purity)
     {
-        return view('backend.purity.edit_purity', compact('purity'));
+        $types = Type::pluck('name', 'id');
+        return view('backend.purity.edit_purity', compact('purity', 'types'));
     }
 
     /**

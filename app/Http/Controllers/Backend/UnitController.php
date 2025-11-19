@@ -35,12 +35,13 @@ class UnitController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-
             'name' => 'required|unique:units|max:200',
+            'fname' => 'required|unique:units|max:200',
         ]);
 
         unit::insert([
             'name' => $request->name,
+            'fname' => $request->fname,
         ]);
 
         $notification = [
@@ -74,10 +75,12 @@ class UnitController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|max:200|unique:units,name,'.$unit->id,
+            'fname' => 'required|max:200|unique:units,fname,'.$unit->id,
         ]);
 
         $unit->update([
             'name' => $request->name,
+             'fname' => $request->fname,
 
         ]);
         $notification = [
