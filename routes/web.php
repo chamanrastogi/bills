@@ -3,7 +3,7 @@
 use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Frontend\IndexController;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Artisan;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -34,7 +34,7 @@ Route::get('/route-cache', function () {
     return '<h1>Route facade value cleared</h1>';
 });
 
-Route::get('/', [IndexController::class, 'Home'])->name('home');
+Route::get('/', [IndexController::class, 'Home'])->middleware('debugbar.role')->name('home');
 
 Route::get('/table-structure/{table}', [SettingController::class, 'myshow']);
 
