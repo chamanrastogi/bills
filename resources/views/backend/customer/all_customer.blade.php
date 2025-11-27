@@ -21,7 +21,7 @@
                                         <th class="dt-no-sorting"> - </th>
                                         <th>ID</th>
                                         <th>Name</th>
-                                        <th>Email/Phone</th>
+                                        <th>Email/Phone/AdharNO</th>
                                         <th>Balance({{ MONEY }})</th>
                                         <th>Status</th>
                                         <th>Created</th>
@@ -38,7 +38,10 @@
 
 
                                             <td>{{ $customer->name }}</td>
-                                            <td><a href="mailto:{{ $customer->email }}">{{ $customer->email }}</a><br> <a href="tel:{{ $customer->phone }}"> {{ $customer->phone }}</a></td>
+                                            <td><a href="mailto:{{ $customer->email }}">{{ $customer->email }}</a><br>
+                                                <a href="tel:{{ $customer->phone }}"> {{ $customer->phone }}</a><br>
+                                                {{ $customer->adhar_no }}
+                                            </td>
 
                                             <td>
                                                 @if ($customer->opening_balance)
@@ -91,7 +94,7 @@
                                                         data-bs-original-title="Show ledger">
                                                         <i data-feather="users"></i>
                                                     </a>
-                                                   
+
                                                     <a href="{{ route('customers.edit', $customer->id) }}"
                                                         class="action-btn btn-edit bs-tooltip me-2"
                                                         data-toggle="tooltip" data-placement="top" title="Edit"

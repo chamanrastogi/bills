@@ -110,14 +110,22 @@
             <x-form.input-error :messages="$errors->get('stock_qty')" />
         </div>
 @php
-    if($product->price>0){
-        $price_value = $product->price;
-    } else {
-        $price_value = number_format((($product->rate_per_gram * $product->net_weight + $product->making_charge) *
-            (1 + $product->gst_percent / 100) *
-            $product->stock_qty), 2);
-    }
+    $price_value = 0;
 
+    if (isset($product)) {
+        if ($product->price > 0) {
+            $price_value = $product->price;
+        } else {
+            $price_value = number_format(
+                (
+                    ($product->rate_per_gram * $product->net_weight + $product->making_charge)
+                    * (1 + $product->gst_percent / 100)
+                    * $product->stock_qty
+                ),
+                2
+            );
+        }
+    }
 @endphp
         <div class="col-sm-3">
             <x-form.input-label for="price" value="Price" />

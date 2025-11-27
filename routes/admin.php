@@ -52,6 +52,7 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::post('/products/status', [ProductController::class, 'StatusUpdate'])->name('product.status');
     Route::post('/products/delete', [ProductController::class, 'Delete'])->name('product.delete');
     Route::post('/products/purity', [ProductController::class, 'GetPurity'])->name('product.purity_units');
+    Route::get('/products/type/{type}', [ProductController::class, 'GetProducts'])->name('product.type');
 
     // Color All Routes
     Route::resource('units', UnitController::class);

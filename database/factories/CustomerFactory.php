@@ -21,7 +21,7 @@ class CustomerFactory extends Factory
             'email' => $this->faker->unique()->safeEmail,
             'phone' => $this->faker->phoneNumber, // Use phoneNumber for realistic phone values
             'address' => $this->faker->address,
-            'bill_address' => $this->faker->address, // Use address for billing as well
+            'adhar_no' => $this->faker->unique()->numerify('##########'), // Generate a unique 10-digit number for Adhar No
         ];
     }
 }

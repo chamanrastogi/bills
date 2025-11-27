@@ -9,8 +9,20 @@
     novalidate
 >
 
-    {{-- Name & Email --}}
+    {{-- Shop Name, Name, Phone --}}
     <div class="row">
+        <div class="col-4">
+            <div class="mb-3">
+                <x-form.input-label for="shop_name" value="Shop Name" />
+                <x-form.text-input
+                    name="shop_name"
+                    :value="$supplier->shop_name ?? ''"
+                    placeholder="Shop Name"
+                />
+                <x-form.input-error :messages="$errors->get('shop_name')" />
+            </div>
+        </div>
+
         <div class="col-4">
             <div class="mb-3">
                 <x-form.input-label for="name" value="Name" />
@@ -26,17 +38,6 @@
 
         <div class="col-4">
             <div class="mb-3">
-                <x-form.input-label for="email" value="Email" />
-                <x-form.text-input
-                    name="email"
-                    :value="$supplier->email ?? ''"
-                    placeholder="Email"
-                />
-                <x-form.input-error :messages="$errors->get('email')" />
-            </div>
-        </div>
-           <div class="col-4">
-            <div class="mb-3">
                 <x-form.input-label for="phone" value="Phone" />
                 <x-form.text-input
                     name="phone"
@@ -50,7 +51,37 @@
     </div>
 
 
-    {{-- Address & Billing Address --}}
+    {{-- Email, GST No, Status --}}
+    <div class="row">
+        <div class="col-6">
+            <div class="mb-3">
+                <x-form.input-label for="email" value="Email" />
+                <x-form.text-input
+                    name="email"
+                    :value="$supplier->email ?? ''"
+                    placeholder="Email"
+                />
+                <x-form.input-error :messages="$errors->get('email')" />
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="mb-3">
+                <x-form.input-label for="gst_no" value="GST No." />
+                <x-form.text-input
+                    name="gst_no"
+                    :value="$supplier->gst_no ?? ''"
+                    placeholder="GST Number"
+                />
+                <x-form.input-error :messages="$errors->get('gst_no')" />
+            </div>
+        </div>
+
+
+    </div>
+
+
+    {{-- Address --}}
     <div class="row mb-3">
         <div class="col-12">
             <x-form.input-label for="address" value="Shop Address" />
@@ -61,8 +92,20 @@
             >{{ $supplier->address ?? '' }}</x-form.textarea>
             <x-form.input-error :messages="$errors->get('address')" />
         </div>
+    </div>
 
 
+    {{-- Bank Account --}}
+    <div class="row mb-3">
+        <div class="col-12">
+            <x-form.input-label for="account" value="Bank Account Details" />
+            <x-form.textarea
+                name="account"
+                rows="2"
+                placeholder="Account Details"
+            >{{ $supplier->account ?? '' }}</x-form.textarea>
+            <x-form.input-error :messages="$errors->get('account')" />
+        </div>
     </div>
 
     {{-- Submit Button --}}

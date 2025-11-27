@@ -39,7 +39,7 @@
 
     {{-- Phone & Opening Balance --}}
     <div class="row">
-        <div class="col-6">
+        <div class="col-4">
             <div class="mb-3">
                 <x-form.input-label for="phone" value="Phone" />
                 <x-form.text-input
@@ -51,27 +51,38 @@
                 <x-form.input-error :messages="$errors->get('phone')" />
             </div>
         </div>
-
-        <div class="col-6">
+  <div class="col-4">
+            <div class="mb-3">
+                <x-form.input-label for="phone" value="Phone" />
+                <x-form.text-input
+                    name="phone"
+                    :value="$customer->phone ?? ''"
+                    required
+                    placeholder="Phone"
+                />
+                <x-form.input-error :messages="$errors->get('phone')" />
+            </div>
+        </div>
+        <div class="col-4">
             <div class="mb-3">
                 <x-form.input-label
-                    for="opening_balance"
-                    value="Opening Balance ({{ MONEY }})"
+                    for="adhar_no"
+                    value="Adhar No"
                 />
                 <x-form.text-input
-                    type="number"
-                    name="opening_balance"
-                    :value="$customer->opening_balance ?? ''"
+                    type="text"
+                    name="adhar_no"
+                    :value="$customer->adhar_no ?? ''"
                     placeholder="Opening Balance"
                 />
-                <x-form.input-error :messages="$errors->get('opening_balance')" />
+                <x-form.input-error :messages="$errors->get('adhar_no')" />
             </div>
         </div>
     </div>
 
     {{-- Address & Billing Address --}}
     <div class="row mb-3">
-        <div class="col-6">
+        <div class="col-12">
             <x-form.input-label for="address" value="Address" />
             <x-form.textarea
                 name="address"
@@ -81,15 +92,7 @@
             <x-form.input-error :messages="$errors->get('address')" />
         </div>
 
-        <div class="col-6">
-            <x-form.input-label for="bill_address" value="Billing Address" />
-            <x-form.textarea
-                name="bill_address"
-                rows="2"
-                placeholder="Billing Address"
-            >{{ $customer->bill_address ?? '' }}</x-form.textarea>
-            <x-form.input-error :messages="$errors->get('bill_address')" />
-        </div>
+
     </div>
 
     {{-- Submit Button --}}

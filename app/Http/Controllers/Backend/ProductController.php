@@ -221,4 +221,9 @@ class ProductController extends Controller
 
     return $html;
 }
+ public function GetProducts(string $type)
+    {
+        $products = Product::where('type_id', $type)->with('unit')->get();
+        return $products;
+    }
 }
