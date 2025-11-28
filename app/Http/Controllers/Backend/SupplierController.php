@@ -4,14 +4,28 @@ namespace App\Http\Controllers\Backend;
 
 use App\DataTables\SupplierDataTable;
 use App\Http\Controllers\Controller;
+use App\Models\ImagePresets;
 use App\Models\Supplier;
 use App\Traits\CommonTrait;
+use App\Traits\ImageGenTrait;
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
-    use CommonTrait;
+     public $path = 'upload/supplier/thumbnail/';
 
+    public $image_preset;
+
+    public $image_preset_main;
+
+    use CommonTrait;
+    use ImageGenTrait;
+
+    public function __construct()
+    {
+        $this->image_preset = ImagePresets::whereIn('id', [4, 12])->get();
+        $this->image_preset_main = ImagePresets::find(11);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -37,9 +51,16 @@ class SupplierController extends Controller
             'name' => 'required',
         ]);
 
+        $bill_image = $request->file('bill_image');
+        if ($request->file('bill_image') != null) {
+            $bill_image = $request->file('bill_image');
+            $bill_save_url = $this->imageGenrator($bill_image, $this->image_preset_main, $this->image_preset, $this->path);
+        } else {
+            $bill_save_url = '';
+        }
         Supplier::create([
             'shop_name' => $request->shop_name,
-            'name' => $request->name,
+            'bill_image' => $bill_save_url,
             'phone' => $request->phone,
             'email' => $request->email,
             'address' => $request->address,
@@ -69,9 +90,26 @@ class SupplierController extends Controller
      */
     public function update(Request $request, Supplier $supplier)
     {
+
+        if ($request->file('bill_image') != null) {
+            if (file_exists($supplier->bill_image)) {
+                $bill_img = explode('.', $supplier->bill_image);
+                $small_img = $bill_img[0] . '_' . $this->image_preset[0]->name . '.' . $bill_img[1];
+                unlink($small_img);
+                unlink($supplier->bill_image);
+            }
+            $bill_image = $request->file('bill_image');
+            $bill_save_url = $this->imageGenrator($bill_image, $this->image_preset_main, $this->image_preset, $this->path);
+        } else {
+            if ($supplier->bill_image != '') {
+                $bill_save_url = $supplier->bill_image;
+            } else {
+                $bill_save_url = '';
+            }
+        }
         $supplier->update([
             'shop_name' => $request->shop_name,
-            'name' => $request->name,
+            'bill_image' => $bill_save_url,
             'phone' => $request->phone,
             'email' => $request->email,
             'address' => $request->address,

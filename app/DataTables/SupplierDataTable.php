@@ -162,7 +162,7 @@ class SupplierDataTable extends DataTable
         return [
 
             Column::make('id'),
-            Column::make('name')->title('Supplier Name'),
+            Column::make('shop_name')->title('Shop Name'),
             Column::make('phone')->title('Phone'),
             Column::make('address')->title('Shop Address'),
             Column::computed('status'),

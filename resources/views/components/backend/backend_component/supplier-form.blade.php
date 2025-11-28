@@ -11,7 +11,7 @@
 
     {{-- Shop Name, Name, Phone --}}
     <div class="row">
-        <div class="col-4">
+        <div class="col-6">
             <div class="mb-3">
                 <x-form.input-label for="shop_name" value="Shop Name" />
                 <x-form.text-input
@@ -23,20 +23,9 @@
             </div>
         </div>
 
-        <div class="col-4">
-            <div class="mb-3">
-                <x-form.input-label for="name" value="Name" />
-                <x-form.text-input
-                    name="name"
-                    :value="$supplier->name ?? ''"
-                    required
-                    placeholder="Name"
-                />
-                <x-form.input-error :messages="$errors->get('name')" />
-            </div>
-        </div>
 
-        <div class="col-4">
+
+        <div class="col-6">
             <div class="mb-3">
                 <x-form.input-label for="phone" value="Phone" />
                 <x-form.text-input
@@ -80,7 +69,25 @@
 
     </div>
 
+ <div class="row pt-3">
+        <div class="col-sm-10">
+            @php
+                $small_img = !empty($supplier->bill_image)
+                    ? preg_replace('/\.(?=[^.]*$)/', '_thumb.', $supplier->bill_image)
+                    : '/upload/no_image.jpg';
+            @endphp
 
+            <x-form.input-label for="bill_image" value="Bill Image" />
+            <x-form.file-input name="bill_image" id="bill_image" onchange="mainThamUrl(this)"
+                placeholder="Main Thumbnail" />
+            <x-form.input-error :messages="$errors->get('bill_image')" />
+            <img src="" id="mainThmb" class="img-thumbnail img-fluid img-responsive w-10 my-3">
+        </div>
+
+        <div class="mt-3 col-sm-2">
+            <img src="{{ asset($small_img) }}" class="img-thumbnail img-fluid img-responsive w-10">
+        </div>
+    </div>
     {{-- Address --}}
     <div class="row mb-3">
         <div class="col-12">
