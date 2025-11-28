@@ -22,7 +22,34 @@ class ProductDataTable extends DataTable
 
         return $dataTable
             ->setRowClass(function ($row) {
-                return 'product-'.$row->id;
+                return 'product-' . $row->id;
+            })
+             ->addColumn('type_name', function ($row) {
+                $name = $row->type->name ?? 'N/A';
+
+                 $badge = ($row->type && strtolower($row->type->name) == 'gold')
+                    ? 'warning'
+                    : 'light-secondary';
+
+                return '<span class="shadow-none badge badge-' . $badge . '">' . $name . '</span>';
+            })
+            ->addColumn('purity_name', function ($row) {
+                $raw = $row->purity->name ?? 'N/A';
+
+                $name = explode(' -', $raw)[0];
+
+                $badge = ($row->type && strtolower($row->type->name) == 'gold')
+                    ? 'warning'
+                    : 'light-secondary';
+
+                return '<span class="badge badge-' . $badge . '">' . $name . '</span>';
+            })
+            ->addColumn('supplier_name', function ($row) {
+                $name = $row->supplier->name ?? 'IN HOUSE';
+
+                $badge = $row->supplier ? 'info' : 'secondary';
+
+                return '<span class="badge badge-' . $badge . '">' . $name . '</span>';
             })
             // Separate status column
             ->addColumn('status', function ($row) {
@@ -31,33 +58,43 @@ class ProductDataTable extends DataTable
                 $status = $row->status == 0 ? 'Active' : 'Deactive';
 
                 return '<button type="button"
-                            onClick="statusFunction('.$row->id.', \''.$name.'\')"
-                            class="shadow-none badge badge-light-'.$badge.' warning changestatus'.$row->id.' bs-tooltip"
+                            onClick="statusFunction(' . $row->id . ', \'' . $name . '\')"
+                            class="shadow-none badge badge-light-' . $badge . ' warning changestatus' . $row->id . ' bs-tooltip"
                             data-toggle="tooltip" data-placement="top" title="Status"
-                            data-original-title="Status">'.$status.'</button>';
+                            data-original-title="Status">' . $status . '</button>';
             })
+            ->addColumn('details', function ($row) {
+                return '
+        <div class="product-details">
 
+            <strong class="text-info fw-bold">Gross:</strong> ' . $row->gross_weight . ' | Net: ' . $row->net_weight . '<br>
+            <strong class="text-success fw-bold">Price:</strong> ' .MONEY . $row->price .  '<br>
+            <strong class="text-warning fw-bold">Created At:</strong> ' . $row->created_at->format('d-M-Y') . '<br>
+            <strong class="text-danger fw-bold">Updated At:</strong> ' . $row->updated_at->format('d-M-Y') . '
+        </div>
+    ';
+            })
             // Action column (edit + delete only)
             ->addColumn('action', function ($row) {
                 $name = 'product';
                 $edit = route('products.edit', $row->id);
 
                 return
-                    '<a href="'.$edit.'"
+                    '<a href="' . $edit . '"
                         class="action-btn btn-edit bs-tooltip me-2"
                         data-toggle="tooltip" data-placement="top" title="Edit"
                         data-bs-original-title="Edit">
                         <i data-feather="edit"></i>
                     </a>'
-                    .' <a href="javascript:void(0)"
-                        onClick="deleteFunction('.$row->id.', \''.$name.'\')"
-                        class="action-btn btn-edit bs-tooltip me-2 delete'.$row->id.'"
+                    . ' <a href="javascript:void(0)"
+                        onClick="deleteFunction(' . $row->id . ', \'' . $name . '\')"
+                        class="action-btn btn-edit bs-tooltip me-2 delete' . $row->id . '"
                         data-toggle="tooltip" data-placement="top" title="Delete"
                         data-bs-original-title="Delete">
                         <i data-feather="trash-2"></i>
                     </a>';
             })
-            ->rawColumns(['status', 'action']);
+            ->rawColumns(['status', 'action', 'supplier_name', 'details', 'purity_name','type_name']);
     }
 
     /**
@@ -65,7 +102,7 @@ class ProductDataTable extends DataTable
      */
     public function query(Product $model): QueryBuilder
     {
-        return $model->newQuery()->with('type:id,name')->with('purity:id,name');
+        return $model->newQuery()->with('supplier:id,name')->with('type:id,name')->with('purity:id,name');
     }
 
     /**
@@ -87,19 +124,19 @@ class ProductDataTable extends DataTable
 
                 // Custom DOM layout
                 'dom' =>
-                    // Top section
-                    "<'dt--top-section'<'row' ".
-                        "<'col-sm-12 col-md-6 d-flex justify-content-md-start justify-content-center'lB>".
-                        "<'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-center mt-md-0 mt-3'f>".
-                    '>>'.
+                // Top section
+                "<'dt--top-section'<'row' " .
+                    "<'col-sm-12 col-md-6 d-flex justify-content-md-start justify-content-center'lB>" .
+                    "<'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-center mt-md-0 mt-3'f>" .
+                    '>>' .
 
                     // Table
-                    "<'table-responsive' tr>".
+                    "<'table-responsive' tr>" .
 
                     // Bottom section
-                    "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center' ".
-                        "<'dt--pages-count mb-sm-0 mb-3'i>".
-                        "<'dt--pagination'p>".
+                    "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center' " .
+                    "<'dt--pages-count mb-sm-0 mb-3'i>" .
+                    "<'dt--pagination'p>" .
                     '>',
 
                 // Export Buttons
@@ -162,12 +199,11 @@ class ProductDataTable extends DataTable
     {
         return [
             Column::make('id'),
-            Column::make('type.name')->title('Type'),
-            Column::make('purity.name')->title('Purity'),
-            Column::make('name')->title('Name'),
-            Column::make('gross_weight')->title('Gross Weight'),
-            Column::make('net_weight')->title('Net Weight'),
-             Column::make('price')->title('Price'),
+            Column::computed('supplier_name')->title('Supplier')->searchable(true),
+            Column::computed('type_name')->title('Type')->searchable(true),
+            Column::computed('purity_name')->title('Purity')->searchable(true),
+            Column::make('name')->title('Name')->searchable(true),
+            Column::computed('details')->title('Product Details')->orderable(false)->searchable(false),
             Column::computed('status'),
             Column::computed('action')
                 ->exportable(false)
@@ -182,6 +218,6 @@ class ProductDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Product_'.date('YmdHis');
+        return 'Product_' . date('YmdHis');
     }
 }

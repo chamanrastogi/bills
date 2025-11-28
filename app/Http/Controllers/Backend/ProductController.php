@@ -46,6 +46,7 @@ class ProductController extends Controller
         $units = Unit::where('status', 0)->pluck('fname', 'id');
         $suppliers = Supplier::where('status', 0)->pluck('name', 'id');
 
+        $suppliers->prepend('IN HOUSE', '');
         return view('backend.product.add_product', compact('purities', 'types', 'units', 'suppliers'));
     }
 
@@ -74,7 +75,7 @@ class ProductController extends Controller
         } else {
             $bill_save_url = '';
         }
-$price = str_replace(',', '', $request->price);
+        $price = str_replace(',', '', $request->price);
         product::insert([
             'supplier_id' => $request->supplier_id,
             'sku' => $request->sku,
@@ -116,13 +117,13 @@ $price = str_replace(',', '', $request->price);
      */
     public function edit(Product $product)
     {
-            $products = Product::all();
-            $purities = Purity::where('status', 0)->where('type_id', $product->type_id)->pluck('name', 'id');
-            $types = Type::where('status', 0)->pluck('name', 'id');
-            $units = Unit::where('status', 0)->pluck('fname', 'id');
-            $suppliers = Supplier::where('status', 0)->pluck('name', 'id');
-
-            return view('backend.product.edit_product', compact('product', 'purities', 'types', 'units', 'suppliers'));
+        $products = Product::all();
+        $purities = Purity::where('status', 0)->where('type_id', $product->type_id)->pluck('name', 'id');
+        $types = Type::where('status', 0)->pluck('name', 'id');
+        $units = Unit::where('status', 0)->pluck('fname', 'id');
+        $suppliers = Supplier::where('status', 0)->pluck('name', 'id');
+        $suppliers->prepend('IN HOUSE', '');
+        return view('backend.product.edit_product', compact('product', 'purities', 'types', 'units', 'suppliers'));
     }
 
     /**
@@ -140,7 +141,7 @@ $price = str_replace(',', '', $request->price);
         if ($request->file('image') != null) {
             if (file_exists($product->image)) {
                 $img = explode('.', $product->image);
-                $small_img = $img[0].'_'.$this->image_preset[0]->name.'.'.$img[1];
+                $small_img = $img[0] . '_' . $this->image_preset[0]->name . '.' . $img[1];
                 unlink($small_img);
                 unlink($product->image);
             }
@@ -157,7 +158,7 @@ $price = str_replace(',', '', $request->price);
         if ($request->file('bill_image') != null) {
             if (file_exists($product->bill_image)) {
                 $bill_img = explode('.', $product->bill_image);
-                $small_img = $bill_img[0].'_'.$this->image_preset[0]->name.'.'.$bill_img[1];
+                $small_img = $bill_img[0] . '_' . $this->image_preset[0]->name . '.' . $bill_img[1];
                 unlink($small_img);
                 unlink($product->bill_image);
             }
@@ -170,7 +171,7 @@ $price = str_replace(',', '', $request->price);
                 $bill_save_url = '';
             }
         }
-$price = str_replace(',', '', $request->price);
+        $price = str_replace(',', '', $request->price);
         $product->update([
             'supplier_id' => $request->supplier_id,
             'sku' => $request->sku,
@@ -213,14 +214,14 @@ $price = str_replace(',', '', $request->price);
             foreach ($products as $product) {
                 if (file_exists($product->image)) {
                     $img = explode('.', $product->image);
-                    $small_img = $img[0].'_'.$this->image_preset[0]->name.'.'.$img[1];
+                    $small_img = $img[0] . '_' . $this->image_preset[0]->name . '.' . $img[1];
                     unlink($small_img);
                     unlink($product->image);
                 }
 
                 if (file_exists($product->bill_image)) {
                     $bill_img = explode('.', $product->bill_image);
-                    $small_img = $bill_img[0].'_'.$this->image_preset[0]->name.'.'.$bill_img[1];
+                    $small_img = $bill_img[0] . '_' . $this->image_preset[0]->name . '.' . $bill_img[1];
                     unlink($small_img);
                     unlink($product->bill_image);
                 }
@@ -229,13 +230,13 @@ $price = str_replace(',', '', $request->price);
             $products = Product::find($request->id);
             if (file_exists($products->image)) {
                 $img = explode('.', $products->image);
-                $small_img = $img[0].'_'.$this->image_preset[0]->name.'.'.$img[1];
+                $small_img = $img[0] . '_' . $this->image_preset[0]->name . '.' . $img[1];
                 unlink($small_img);
                 unlink($products->image);
             }
             if (file_exists($products->bill_image)) {
                 $bill_img = explode('.', $products->bill_image);
-                $small_img = $bill_img[0].'_'.$this->image_preset[0]->name.'.'.$bill_img[1];
+                $small_img = $bill_img[0] . '_' . $this->image_preset[0]->name . '.' . $bill_img[1];
                 unlink($small_img);
                 unlink($products->bill_image);
             }
@@ -259,7 +260,7 @@ $price = str_replace(',', '', $request->price);
         $html = '<option value="">Select Purity</option>';
 
         foreach ($purities as $purity) {
-            $html .= '<option value="'.$purity->id.'">'.$purity->name.'</option>';
+            $html .= '<option value="' . $purity->id . '">' . $purity->name . '</option>';
         }
 
         return $html;
@@ -267,8 +268,33 @@ $price = str_replace(',', '', $request->price);
 
     public function GetProducts(string $type)
     {
-        $products = Product::where('type_id', $type)->with('unit')->get();
+        // Return only active products (status = 0) that are in stock (pstatus = 'in_stock')
+        $products = Product::where('type_id', $type)
+            ->where('status', 0)
+            ->where('pstatus', 'in_stock')
+            ->with('unit')
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'sku' => $product->sku,
+                    'name' => $product->name,
+                    'price' => $product->price,
+                    'image' => $product->bill_image ?: $product->image,
+                    'unit' => [
+                        'id' => $product->unit?->id,
+                        'name' => $product->unit?->fname ?? '',
+                    ],
+                    'purity_id' => $product->purity_id,
+                    'gross_weight' => $product->gross_weight,
+                    'net_weight' => $product->net_weight,
+                    'making_charge' => $product->making_charge,
+                    'rate_per_gram' => $product->rate_per_gram,
+                    'gst_percent' => $product->gst_percent,
+                    'stock_qty' => $product->stock_qty,
+                ];
+            });
 
-        return $products;
+        return response()->json($products);
     }
 }

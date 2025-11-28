@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('discount_amount', 100);
             $table->integer('tax');
             $table->string('tax_amount', 100);
-            $table->integer('freight_charges');
+            $table->integer('gst');
             $table->integer('grand_total');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
