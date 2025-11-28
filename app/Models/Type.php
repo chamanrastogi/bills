@@ -9,13 +9,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Type extends Model
 {
     use HasFactory;
+
     public $timestamps = false;
+
     protected $guarded = [];
-    public function scopeActive($query,$status)
+
+    public function scopeActive($query, $status)
     {
         return $query->where('status', $status);
     }
-    public function products():HasMany
+
+    public function products(): HasMany
     {
         return $this->hasMany(Product::class);
     }

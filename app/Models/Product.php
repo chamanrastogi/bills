@@ -16,9 +16,15 @@ class Product extends Model
     {
         return $this->belongsTo(Type::class);
     }
+
     public function Purity(): BelongsTo
     {
         return $this->belongsTo(Purity::class);
+    }
+
+    public function Supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
     }
 
     public function Unit(): BelongsTo

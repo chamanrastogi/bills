@@ -16,7 +16,7 @@
                         <h6 class="card-title fw-bold">Add Product</h6>
 
                         {{-- resources/views/components/backend/backend_component/product-form.blade.php --}}
-                        <x-backend.backend_component.product-form :$purities :$units :$types :isEdit="false" />
+                        <x-backend.backend_component.product-form :$purities :$suppliers :$units :$types :isEdit="false" />
 
                     </div>
                 </div>

@@ -13,7 +13,7 @@
                     <div class="card-body">
                         <h6 class="card-title fw-bold">Edit Product </h6>
                         {{-- resources/views/components/backend/backend_component/product-form.blade.php --}}
-                        <x-backend.backend_component.product-form :$product :$purities :$units :$types
+                        <x-backend.backend_component.product-form :$product  :$purities :$suppliers :$units :$types
                             :isEdit="true" />
                         </div>
                 </div>

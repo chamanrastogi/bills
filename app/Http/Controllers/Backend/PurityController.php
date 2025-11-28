@@ -16,17 +16,18 @@ class PurityController extends Controller
     /**
      * Display a listing of the resource.
      */
-
     public function index(PurityDataTable $dataTable)
     {
         return $dataTable->render('backend.purity.all_purity');
     }
+
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
         $types = Type::pluck('name', 'id');
+
         return view('backend.purity.add_purity', compact('types'));
     }
 
@@ -57,6 +58,7 @@ class PurityController extends Controller
     public function edit(Purity $purity)
     {
         $types = Type::pluck('name', 'id');
+
         return view('backend.purity.edit_purity', compact('purity', 'types'));
     }
 

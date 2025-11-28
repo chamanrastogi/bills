@@ -53,14 +53,14 @@
         </div>
   <div class="col-4">
             <div class="mb-3">
-                <x-form.input-label for="phone" value="Phone" />
+                <x-form.input-label for="opening_balance" value="Opening Balance" />
                 <x-form.text-input
-                    name="phone"
-                    :value="$customer->phone ?? ''"
+                    name="opening_balance"
+                    :value="$customer->opening_balance ?? ''"
                     required
-                    placeholder="Phone"
+                    placeholder="Opening Balance"
                 />
-                <x-form.input-error :messages="$errors->get('phone')" />
+                <x-form.input-error :messages="$errors->get('opening_balance')" />
             </div>
         </div>
         <div class="col-4">

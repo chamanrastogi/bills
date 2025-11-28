@@ -21,7 +21,7 @@ class DebugbarToggle
         Debugbar::disable();
 
         // Proceed only if Debugbar is installed (fails silently if missing)
-        if (!class_exists(\Barryvdh\Debugbar\Facades\Debugbar::class)) {
+        if (! class_exists(\Barryvdh\Debugbar\Facades\Debugbar::class)) {
             return $next($request);
         }
 

@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Backend;
 use App\DataTables\BillingsDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Billing;
-use App\Models\Type;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\SiteSetting;
+use App\Models\Type;
 use DataTables;
 use Illuminate\Http\Request;
 

@@ -2,8 +2,9 @@
 
 use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Frontend\IndexController;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes

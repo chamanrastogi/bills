@@ -23,6 +23,7 @@ class GenerateModelsWithMigration extends Command
     protected $description = 'Generate multiple models with resource controller methods, migration, views, and components.';
 
     protected string $folderPath = 'backend';
+
     protected string $componentFolder = 'backend_component';
 
     /**
@@ -74,13 +75,15 @@ class GenerateModelsWithMigration extends Command
         $targetPath = app_path("Http/Controllers/Backend/{$controllerName}.php");
         $stubPath = base_path('resources/views/templates/stubs/custom-controller.stub');
 
-        if (!$this->option('force') && File::exists($targetPath)) {
-            $this->warn("   ⏭️ Controller already exists. Skipping.");
+        if (! $this->option('force') && File::exists($targetPath)) {
+            $this->warn('   ⏭️ Controller already exists. Skipping.');
+
             return;
         }
 
-        if (!File::exists($stubPath)) {
+        if (! File::exists($stubPath)) {
             $this->error("   ❌ Stub file not found: {$stubPath}");
+
             return;
         }
 
@@ -114,8 +117,9 @@ class GenerateModelsWithMigration extends Command
         // 2. Inject fields
         $migrationFile = $this->getLastMigrationFile();
 
-        if (!$migrationFile) {
-            $this->error("   ❌ Could not locate the generated migration file.");
+        if (! $migrationFile) {
+            $this->error('   ❌ Could not locate the generated migration file.');
+
             return;
         }
 
@@ -130,7 +134,7 @@ class GenerateModelsWithMigration extends Command
         );
 
         File::put($migrationFile, $newContent);
-        $this->info("   📦 Migration created and updated with fields.");
+        $this->info('   📦 Migration created and updated with fields.');
     }
 
     /**
@@ -142,7 +146,7 @@ class GenerateModelsWithMigration extends Command
         $this->callSilent('datatables:make', [
             'name' => $meta['studly'],
         ]);
-        $this->info("   📦 DataTable created.");
+        $this->info('   📦 DataTable created.');
     }
 
     /**
@@ -158,6 +162,7 @@ class GenerateModelsWithMigration extends Command
 
         if (empty($templateFiles)) {
             $this->warn("   ⚠️ No templates found in {$templateDir}");
+
             return;
         }
 
@@ -165,7 +170,7 @@ class GenerateModelsWithMigration extends Command
             $baseName = Str::before(pathinfo($templatePath, PATHINFO_FILENAME), '.blade'); // e.g., "create"
             $destination = "{$bladeDirectory}/{$baseName}_{$meta['lower']}.blade.php";
 
-            if (File::exists($destination) && !$this->option('force')) {
+            if (File::exists($destination) && ! $this->option('force')) {
                 continue;
             }
 
@@ -209,7 +214,7 @@ class GenerateModelsWithMigration extends Command
             File::put($viewPath, File::get($dummyTemplatePath));
             $this->info("   🧩 Component view created: {$slug}");
         } else {
-            $this->warn("   ⚠️ Component dummy template missing.");
+            $this->warn('   ⚠️ Component dummy template missing.');
         }
     }
 
@@ -218,10 +223,12 @@ class GenerateModelsWithMigration extends Command
      */
     protected function buildMigrationFields(array $fields): string
     {
-        $lines = ["            \$table->id();"];
+        $lines = ['            $table->id();'];
 
         foreach ($fields as $name => $props) {
-            if (strtolower($name) === 'id') continue;
+            if (strtolower($name) === 'id') {
+                continue;
+            }
 
             $type = $props['type'] ?? 'string';
             $options = $props['options'] ?? [];
@@ -231,18 +238,18 @@ class GenerateModelsWithMigration extends Command
             if (isset($options['maxLength'])) {
                 $definition .= ", {$options['maxLength']}";
             }
-            $definition .= ")";
+            $definition .= ')';
 
             // Chain options: ->nullable()->default(0)
-            if (!empty($options['nullable'])) {
-                $definition .= "->nullable()";
+            if (! empty($options['nullable'])) {
+                $definition .= '->nullable()';
             }
             if (array_key_exists('default', $options)) {
                 $val = is_numeric($options['default']) ? $options['default'] : "'{$options['default']}'";
                 $definition .= "->default({$val})";
             }
-            if (!empty($options['useCurrent'])) {
-                $definition .= "->useCurrent()";
+            if (! empty($options['useCurrent'])) {
+                $definition .= '->useCurrent()';
             }
 
             $lines[] = "            {$definition};";
@@ -260,7 +267,9 @@ class GenerateModelsWithMigration extends Command
     protected function getLastMigrationFile(): ?string
     {
         $files = glob(database_path('migrations/*.php'));
-        if (!$files) return null;
+        if (! $files) {
+            return null;
+        }
 
         // Sort by modification time descending
         usort($files, fn ($a, $b) => filemtime($b) <=> filemtime($a));
@@ -273,7 +282,7 @@ class GenerateModelsWithMigration extends Command
      */
     protected function ensureDirectoryExists(string $path): void
     {
-        if (!File::exists($path)) {
+        if (! File::exists($path)) {
             File::makeDirectory($path, 0755, true);
         }
     }

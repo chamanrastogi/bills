@@ -38,10 +38,14 @@ class SupplierController extends Controller
         ]);
 
         Supplier::create([
+            'shop_name' => $request->shop_name,
             'name' => $request->name,
-            'email' => $request->email,
             'phone' => $request->phone,
+            'email' => $request->email,
             'address' => $request->address,
+            'gst_no' => $request->gst_no,
+            'account' => $request->account,
+            // default if not selected
         ]);
 
         $notification = [
@@ -66,10 +70,13 @@ class SupplierController extends Controller
     public function update(Request $request, Supplier $supplier)
     {
         $supplier->update([
+            'shop_name' => $request->shop_name,
             'name' => $request->name,
-            'email' => $request->email,
             'phone' => $request->phone,
+            'email' => $request->email,
             'address' => $request->address,
+            'gst_no' => $request->gst_no,
+            'account' => $request->account,
         ]);
 
         $notification = [

@@ -6,10 +6,7 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
-use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Yajra\DataTables\Html\Editor\Editor;
-use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
 class ProductDataTable extends DataTable
@@ -17,7 +14,7 @@ class ProductDataTable extends DataTable
     /**
      * Build the DataTable class.
      *
-     * @param QueryBuilder $query Results from query() method.
+     * @param  QueryBuilder  $query  Results from query() method.
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
@@ -170,6 +167,7 @@ class ProductDataTable extends DataTable
             Column::make('name')->title('Name'),
             Column::make('gross_weight')->title('Gross Weight'),
             Column::make('net_weight')->title('Net Weight'),
+             Column::make('price')->title('Price'),
             Column::computed('status'),
             Column::computed('action')
                 ->exportable(false)
@@ -184,6 +182,6 @@ class ProductDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Product_' . date('YmdHis');
+        return 'Product_'.date('YmdHis');
     }
 }

@@ -46,7 +46,6 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::post('/purity/status', [PurityController::class, 'StatusUpdate'])->name('purity.status');
     Route::post('/purity/delete', [PurityController::class, 'Delete'])->name('purity.delete');
 
-
     // Product All Routes
     Route::resource('products', ProductController::class);
     Route::post('/products/status', [ProductController::class, 'StatusUpdate'])->name('product.status');

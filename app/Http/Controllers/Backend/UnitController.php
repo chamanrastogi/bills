@@ -80,7 +80,7 @@ class UnitController extends Controller
 
         $unit->update([
             'name' => $request->name,
-             'fname' => $request->fname,
+            'fname' => $request->fname,
 
         ]);
         $notification = [

@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Purity extends Model
 {
     protected $guarded = [];
+
     public $timestamps = false;
 
-    public function type() : BelongsTo
+    public function type(): BelongsTo
     {
         return $this->belongsTo(Type::class);
     }
