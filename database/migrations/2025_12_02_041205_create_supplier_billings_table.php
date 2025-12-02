@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('suppliers', function (Blueprint $table) {
+        Schema::create('supplier_billings', function (Blueprint $table) {
             $table->id();
-            $table->string('shop_name')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('email')->nullable();
-            $table->text('address')->nullable();
-            $table->text('gst_no')->nullable();
-            $table->integer('account')->nullable();
-            $table->text('balance')->default(0);
-            $table->boolean('status')->default(0);
+            $table->string('supplier_id')->nullable();
+            $table->string('bill_image')->nullable();
+            $table->integer('bill_amount')->default(0);
+            $table->integer('paid')->default(0);
+            $table->integer('payment_mode')->default(0);
+            $table->string('transaction_id')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
         });
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('suppliers');
+        Schema::dropIfExists('supplier_billings');
     }
 };

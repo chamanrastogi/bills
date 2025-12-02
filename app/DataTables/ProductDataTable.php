@@ -45,7 +45,7 @@ class ProductDataTable extends DataTable
                 return '<span class="badge badge-' . $badge . '">' . $name . '</span>';
             })
             ->addColumn('supplier_name', function ($row) {
-                $name = $row->supplier->name ?? 'IN HOUSE';
+                $name = $row->supplier->shop_name ?? 'IN HOUSE';
 
                 $badge = $row->supplier ? 'info' : 'secondary';
 

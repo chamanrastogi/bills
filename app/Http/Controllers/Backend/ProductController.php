@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\ImagePresets;
 use App\Models\Product;
 use App\Models\Purity;
-use App\Models\Supplier;
 use App\Models\Type;
 use App\Models\Unit;
 use App\Traits\CommonTrait;
@@ -44,10 +43,9 @@ class ProductController extends Controller
         $purities = [];
         $types = Type::where('status', 0)->pluck('name', 'id');
         $units = Unit::where('status', 0)->pluck('fname', 'id');
-        $suppliers = Supplier::where('status', 0)->pluck('name', 'id');
 
-        $suppliers->prepend('IN HOUSE', '');
-        return view('backend.product.add_product', compact('purities', 'types', 'units', 'suppliers'));
+
+        return view('backend.product.add_product', compact('purities', 'types', 'units'));
     }
 
     /**
@@ -77,12 +75,11 @@ class ProductController extends Controller
         }
         $price = str_replace(',', '', $request->price);
         product::insert([
-            'supplier_id' => $request->supplier_id,
+
             'sku' => $request->sku,
             'type_id' => $request->type_id,
             'name' => $request->name,
             'image' => $save_url,
-            'bill_image' => $bill_save_url,
             'purity_id' => $request->purity_id,
             'unit_id' => $request->unit_id,
             'gross_weight' => $request->gross_weight,
@@ -121,9 +118,8 @@ class ProductController extends Controller
         $purities = Purity::where('status', 0)->where('type_id', $product->type_id)->pluck('name', 'id');
         $types = Type::where('status', 0)->pluck('name', 'id');
         $units = Unit::where('status', 0)->pluck('fname', 'id');
-        $suppliers = Supplier::where('status', 0)->pluck('name', 'id');
-        $suppliers->prepend('IN HOUSE', '');
-        return view('backend.product.edit_product', compact('product', 'purities', 'types', 'units', 'suppliers'));
+
+        return view('backend.product.edit_product', compact('product', 'purities', 'types', 'units' ));
     }
 
     /**
@@ -155,31 +151,14 @@ class ProductController extends Controller
             }
         }
 
-        if ($request->file('bill_image') != null) {
-            if (file_exists($product->bill_image)) {
-                $bill_img = explode('.', $product->bill_image);
-                $small_img = $bill_img[0] . '_' . $this->image_preset[0]->name . '.' . $bill_img[1];
-                unlink($small_img);
-                unlink($product->bill_image);
-            }
-            $bill_image = $request->file('bill_image');
-            $bill_save_url = $this->imageGenrator($bill_image, $this->image_preset_main, $this->image_preset, $this->path);
-        } else {
-            if ($product->bill_image != '') {
-                $bill_save_url = $product->bill_image;
-            } else {
-                $bill_save_url = '';
-            }
-        }
+
         $price = str_replace(',', '', $request->price);
         $product->update([
-            'supplier_id' => $request->supplier_id,
             'sku' => $request->sku,
             'type_id' => $request->type_id,
             'name' => $request->name,
             'price' => $price,
             'image' => $save_url,
-            'bill_image' => $bill_save_url,
             'purity_id' => $request->purity_id,
             'unit_id' => $request->unit_id,
             'gross_weight' => $request->gross_weight,

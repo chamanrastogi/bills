@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 const MONEY = 'Rs.';
-const MODE = 'Cash,Upi,Check';
+const MODE = ['Online','Cash','Upi','Bank Transfer'];
 const BADGE = ['success', 'secondary', 'warning', 'primary'];
 const MENUTYPE = ['Page', 'Url', 'External Page', 'Category'];
 const LOADER = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-loader spin ms-2">
@@ -192,12 +192,7 @@ function breadcrumb()
     return $url;
 }
 
-function urlgen($id)
-{
-    $x = Menu::select('id', 'type', 'url')->find($id);
 
-    return $x->url;
-}
 
 function checkarr($id, $array)
 {

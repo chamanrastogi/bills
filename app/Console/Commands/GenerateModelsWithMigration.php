@@ -32,9 +32,13 @@ class GenerateModelsWithMigration extends Command
     protected function configuration(): array
     {
         return [
-            'purity' => [
-                'name' => ['type' => 'string', 'options' => []],
-                'status' => ['type' => 'boolean', 'options' => ['default' => 0]],
+            'supplier_billings' => [
+                'supplier_id' => ['type' => 'string', 'options' => ['nullable' => true]],
+                'bill_image' => ['type' => 'string', 'options' => ['nullable' => true]],
+                'payment' => ['type' => 'integer', 'options' => ['default' => 0]],
+                'received' => ['type' => 'integer', 'options' => ['default' => 0]],
+                'payment_mode' => ['type' => 'integer', 'options' => ['default' => 0]],
+                'transaction_id' => ['type' => 'string', 'options' => ['nullable' => true]],
             ],
             // Add more models here...
         ];
@@ -55,7 +59,10 @@ class GenerateModelsWithMigration extends Command
             ];
 
             $this->info("\n🛠  Processing: {$meta['studly']}...");
+             $this->call('make:model', [
+                'name' => Str::ucfirst($modelName),
 
+            ]);
             $this->generateController($meta);
             $this->generateMigration($meta, $fields);
             $this->generateDataTable($meta);
@@ -272,7 +279,7 @@ class GenerateModelsWithMigration extends Command
         }
 
         // Sort by modification time descending
-        usort($files, fn ($a, $b) => filemtime($b) <=> filemtime($a));
+        usort($files, fn($a, $b) => filemtime($b) <=> filemtime($a));
 
         return $files[0];
     }

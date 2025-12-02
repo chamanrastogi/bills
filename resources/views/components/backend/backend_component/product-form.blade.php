@@ -2,17 +2,7 @@
 
 <x-form.form :route="$isEdit ? route('products.update', $product->id) : route('products.store')" :method="$isEdit ? 'PUT' : 'POST'" :isEdit="$isEdit" enctype="multipart/form-data"
     class="forms-sample needs-validation" novalidate>
-    {{-- Supplier --}}
-    <div class="row">
-        <div class="col-sm-12">
-            <x-form.input-label for="supplier_id" value="Supplier" />
-            <x-form.select name="supplier_id" id="supplier_id" :options="$suppliers" :selected="$product->supplier_id ?? ''"
-                placeholder="Select Supplier" />
-            <x-form.input-error :messages="$errors->get('supplier_id')" />
-        </div>
 
-
-    </div>
     <div class="row">
         {{-- SKU --}}
         <div class="col-sm-4">
@@ -66,27 +56,6 @@
             <x-form.file-input name="image" id="image" onchange="mainThamUrl(this)"
                 placeholder="Main Thumbnail" />
             <x-form.input-error :messages="$errors->get('image')" />
-            <img src="" id="mainThmb" class="img-thumbnail img-fluid img-responsive w-10 my-3">
-        </div>
-
-        <div class="mt-3 col-sm-2">
-            <img src="{{ asset($small_img) }}" class="img-thumbnail img-fluid img-responsive w-10">
-        </div>
-    </div>
-
-    {{-- Bill Image Upload --}}
-    <div class="row pt-3">
-        <div class="col-sm-10">
-            @php
-                $small_img = !empty($product->bill_image)
-                    ? preg_replace('/\.(?=[^.]*$)/', '_thumb.', $product->bill_image)
-                    : '/upload/no_image.jpg';
-            @endphp
-
-            <x-form.input-label for="bill_image" value="Bill Image" />
-            <x-form.file-input name="bill_image" id="bill_image" onchange="mainThamUrl(this)"
-                placeholder="Main Thumbnail" />
-            <x-form.input-error :messages="$errors->get('bill_image')" />
             <img src="" id="mainThmb" class="img-thumbnail img-fluid img-responsive w-10 my-3">
         </div>
 

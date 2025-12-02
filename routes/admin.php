@@ -13,6 +13,7 @@ use App\Http\Controllers\Backend\PaymentController;
 use App\Http\Controllers\Backend\ProductController;
 use App\Http\Controllers\Backend\PurityController;
 use App\Http\Controllers\Backend\SettingController;
+use App\Http\Controllers\Backend\SupplierBillingController;
 use App\Http\Controllers\Backend\SupplierController;
 use App\Http\Controllers\Backend\TypeController;
 use App\Http\Controllers\Backend\UnitController;
@@ -74,6 +75,16 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::resource('supplier', SupplierController::class);
     Route::post('/supplier/status', [SupplierController::class, 'StatusUpdate'])->name('supplier.status');
     Route::post('/supplier/delete', [SupplierController::class, 'Delete'])->name('supplier.delete');
+    Route::get('/supplier/{supplier}/full-pay', [SupplierController::class, 'getFullPay'])
+    ->name('supplier.fullPay.form');
+
+    Route::post('/supplier/{supplier}/full-pay', [SupplierController::class, 'fullPay'])
+    ->name('supplier.fullPay');
+
+     // Supplier Billing All Routes
+    Route::resource('supplier_billings', SupplierBillingController::class);
+    Route::post('/supplier_billings/status', [SupplierBillingController::class, 'StatusUpdate'])->name('supplier_billings.status');
+    Route::post('/supplier_billings/delete', [SupplierBillingController::class, 'Delete'])->name('supplier_billings.delete');
 
     // SMTP and Site Setting  All Route
     Route::controller(SettingController::class)->group(function () {

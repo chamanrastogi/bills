@@ -13,13 +13,11 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id('id');
-            $table->integer('supplier_id')->nullable();
             $table->string('sku')->unique();
             $table->integer('type_id')->nullable();
             $table->string('name');
             $table->decimal('price', 12, 2)->nullable();
             $table->string('image')->nullable();
-            $table->string('bill_image')->nullable();
             $table->integer('purity_id')->nullable(); // 22K, 18K
             $table->integer('unit_id')->nullable(); // gram, kg
             $table->decimal('gross_weight', 10, 4);

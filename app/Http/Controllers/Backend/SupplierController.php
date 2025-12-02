@@ -6,16 +6,16 @@ use App\DataTables\SupplierDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\ImagePresets;
 use App\Models\Supplier;
+use App\Models\SupplierBilling;
 use App\Traits\CommonTrait;
 use App\Traits\ImageGenTrait;
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
-     public $path = 'upload/supplier/thumbnail/';
+    public $path = 'upload/supplier/thumbnail/';
 
     public $image_preset;
-
     public $image_preset_main;
 
     use CommonTrait;
@@ -51,22 +51,14 @@ class SupplierController extends Controller
             'name' => 'required',
         ]);
 
-        $bill_image = $request->file('bill_image');
-        if ($request->file('bill_image') != null) {
-            $bill_image = $request->file('bill_image');
-            $bill_save_url = $this->imageGenrator($bill_image, $this->image_preset_main, $this->image_preset, $this->path);
-        } else {
-            $bill_save_url = '';
-        }
+
         Supplier::create([
             'shop_name' => $request->shop_name,
-            'bill_image' => $bill_save_url,
             'phone' => $request->phone,
             'email' => $request->email,
             'address' => $request->address,
             'gst_no' => $request->gst_no,
             'account' => $request->account,
-            // default if not selected
         ]);
 
         $notification = [
@@ -91,25 +83,9 @@ class SupplierController extends Controller
     public function update(Request $request, Supplier $supplier)
     {
 
-        if ($request->file('bill_image') != null) {
-            if (file_exists($supplier->bill_image)) {
-                $bill_img = explode('.', $supplier->bill_image);
-                $small_img = $bill_img[0] . '_' . $this->image_preset[0]->name . '.' . $bill_img[1];
-                unlink($small_img);
-                unlink($supplier->bill_image);
-            }
-            $bill_image = $request->file('bill_image');
-            $bill_save_url = $this->imageGenrator($bill_image, $this->image_preset_main, $this->image_preset, $this->path);
-        } else {
-            if ($supplier->bill_image != '') {
-                $bill_save_url = $supplier->bill_image;
-            } else {
-                $bill_save_url = '';
-            }
-        }
+
         $supplier->update([
             'shop_name' => $request->shop_name,
-            'bill_image' => $bill_save_url,
             'phone' => $request->phone,
             'email' => $request->email,
             'address' => $request->address,
@@ -123,5 +99,40 @@ class SupplierController extends Controller
         ];
 
         return redirect()->back()->with($notification);
+    }
+
+    public function getFullPay(Supplier $supplier)
+    {
+        return view('backend.supplier.full_pay', compact('supplier'));
+    }
+
+    public function fullPay(Request $request, Supplier $supplier)
+    {
+         $validated = $request->validate([
+            'payment_mode' => 'required',
+        ]);
+
+        // Current balance
+        $balance = $supplier->balance; // accessor
+
+        if ($balance <= 0) {
+            return back()->with([
+                'message' => 'No pending balance to pay!',
+                'alert-type' => 'info'
+            ]);
+        }
+
+        SupplierBilling::create([
+            'supplier_id' => $supplier->id,
+            'bill_amount' => 0,       // no new bill
+            'paid'        => $balance, // full settlement
+            'payment_mode' => 1,       // default mode (or take from request)
+            'transaction_id' => 'FULLPAY-' . time(),
+        ]);
+
+        return back()->with([
+            'message' => 'Supplier fully paid successfully!',
+            'alert-type' => 'success'
+        ]);
     }
 }

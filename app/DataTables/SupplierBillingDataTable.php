@@ -2,18 +2,22 @@
 
 namespace App\DataTables;
 
-use App\Models\Supplier;
+use App\Models\SupplierBilling;
+use COM;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
+use Yajra\DataTables\Html\Builder as HtmlBuilder;
+
 use Yajra\DataTables\Html\Column;
+
 use Yajra\DataTables\Services\DataTable;
 
-class SupplierDataTable extends DataTable
+class SupplierBillingDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
      *
-     * @param  QueryBuilder  $query  Results from query() method.
+     * @param QueryBuilder $query Results from query() method.
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
@@ -21,40 +25,47 @@ class SupplierDataTable extends DataTable
 
         return $dataTable
             ->setRowClass(function ($row) {
-                return 'supplier-' . $row->id;
+                return 'supplier_billing-' . $row->id;
             })
-            // Separate status column
-            ->addColumn('status', function ($row) {
-                $name = 'supplier';
-                $badge = $row->status == 1 ? 'danger' : 'success';
-                $status = $row->status == 0 ? 'Active' : 'Deactive';
+            ->addColumn('bill_image', function ($row) {
 
-                return '<button type="button"
-                            onClick="statusFunction(' . $row->id . ', \'' . $name . '\')"
-                            class="shadow-none badge badge-light-' . $badge . ' warning changestatus' . $row->id . ' bs-tooltip"
-                            data-toggle="tooltip" data-placement="top" title="Status"
-                            data-original-title="Status">' . $status . '</button>';
-            })
-            ->addColumn('balance', function ($row) {
+                // Always show image (real or default)
+                $image = $row->bill_image ? asset($row->bill_image) : asset('upload/no_image.jpg');
 
-                // If no dues
-                if ($row->balance <= 0) {
-                    return '' . MONEY . ' ' . number_format($row->balance) . '';
+                // Download button only if real image exists
+                $downloadBtn = '';
+                if ($row->bill_image) {
+                    $downloadBtn = '<a href="' . $image . '" download class="action-btn btn-edit bs-tooltip me-2" data-toggle="tooltip" data-placement="top" title="Download">
+                <i data-feather="download-cloud"></i></a>';
                 }
 
-                // If due, clickable balance to full-pay page
-                $url = route('supplier.fullPay.form', $row->id);
+                return '<img src="' . $image . '" class="img-thumbnail img-fluid" style="max-width: 80px; max-height: 80px;">' . $downloadBtn . '';
+            })
 
-                return '<a href="' . $url . '"
-                class="badge bg-info text-dark"
-                >
-                ' . MONEY . ' ' . number_format($row->balance) . '
-            </a>';
+
+            ->addColumn('supplier_name', function ($row) {
+                $name = $row->supplier->shop_name ?? 'IN HOUSE';
+
+                $badge = $row->supplier ? 'info' : 'secondary';
+
+                return '<span class="badge badge-' . $badge . '">' . $name . '</span>';
+            })
+            // Separate status column
+
+            ->addColumn('details', function ($row) {
+                return '
+        <div class="product-details">
+            <strong class="text-info fw-bold">Payment Mode:</strong> ' . MODE[$row->payment_mode] .  '<br>
+            <strong class="text-success fw-bold">Bill Amount:</strong> ' . MONEY . $row->bill_amount .  '<br>
+            <strong class="text-secondary fw-bold">Paid Amount:</strong> ' . MONEY . $row->paid .  '<br>
+            <strong class="text-warning fw-bold">Created At:</strong> ' . $row->created_at->format('d-M-Y') . '<br>
+            <strong class="text-danger fw-bold">Updated At:</strong> ' . $row->updated_at->format('d-M-Y') . '
+        </div> ';
             })
             // Action column (edit + delete only)
             ->addColumn('action', function ($row) {
-                $name = 'supplier';
-                $edit = route('supplier.edit', $row->id);
+                $name = 'SupplierBilling';
+                $edit = route('supplier_billings.edit', $row->id);
 
                 return
                     '<a href="' . $edit . '"
@@ -71,24 +82,24 @@ class SupplierDataTable extends DataTable
                         <i data-feather="trash-2"></i>
                     </a>';
             })
-            ->rawColumns(['status', 'action', 'balance']);
+            ->rawColumns(['status', 'action', 'supplier_name', 'details', 'bill_image']);
     }
 
     /**
      * Get the query source of dataTable.
      */
-    public function query(Supplier $model): QueryBuilder
+    public function query(SupplierBilling $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()->with('supplier:id,shop_name');
     }
 
     /**
      * Optional method if you want to use the html builder.
      */
-    public function html()
+    public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('supplier-table')
+            ->setTableId('product-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
             ->orderBy(0)
@@ -177,10 +188,10 @@ class SupplierDataTable extends DataTable
         return [
 
             Column::make('id'),
-            Column::make('shop_name')->title('Shop Name'),
-            Column::make('phone')->title('Phone'),
-            Column::computed('balance')->title('Balance'),
-            Column::computed('status'),
+            Column::computed('bill_image')->title('Bill Image')->searchable(false)->orderable(false)->width(100)->addClass('text-center'),
+            Column::computed('supplier_name')->title('Supplier Name'),
+
+            Column::computed('details')->title('Bill Details'),
             Column::computed('action')
                 ->exportable(false)
                 ->printable(false)
@@ -194,6 +205,6 @@ class SupplierDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Supplier_' . date('YmdHis');
+        return 'SupplierBilling_' . date('YmdHis');
     }
 }
