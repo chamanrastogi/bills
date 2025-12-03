@@ -24,6 +24,9 @@ class PurityDataTable extends DataTable
             ->setRowClass(function ($row) {
                 return 'purity-'.$row->id;
             })
+            ->addColumn('category_name', function ($row) {
+                return '<span class="badge badge-'.BADGE[$row->category->id ?? 0].'">'.$row->category->name.'</span>';
+            })
             // Separate status column
             ->addColumn('status', function ($row) {
                 $name = 'purity';
@@ -57,7 +60,7 @@ class PurityDataTable extends DataTable
                         <i data-feather="trash-2"></i>
                     </a>';
             })
-            ->rawColumns(['status', 'action']);
+            ->rawColumns(['status', 'action','category_name']);
     }
 
     /**
@@ -65,7 +68,7 @@ class PurityDataTable extends DataTable
      */
     public function query(Purity $model): QueryBuilder
     {
-        return $model->newQuery()->with('type:id,name');
+        return $model->newQuery()->with('category:id,name');
     }
 
     /**
@@ -162,7 +165,7 @@ class PurityDataTable extends DataTable
     {
         return [
             Column::make('id'),
-            Column::make('type.name')->title('Type'),
+            Column::computed('category_name')->title('Category Name'),
             Column::make('name')->title('Name'),
             Column::computed('status'),
             Column::computed('action')

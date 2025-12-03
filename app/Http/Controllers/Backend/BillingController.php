@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Backend;
 use App\DataTables\BillingsDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Billing;
+use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\SiteSetting;
 use App\Models\Type;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 
 class BillingController extends Controller
@@ -17,14 +18,14 @@ class BillingController extends Controller
     //
     public function index()
     {
-        $types = Type::pluck('name', 'id');
+        $categories = Category::active(0)->pluck('name', 'id');
 
         $customers = Customer::all()->mapWithKeys(function ($customer) {
             return [$customer->id => $customer->name.' ('.$customer->phone.')'];
         });
         $template = SiteSetting::select('tax')->find(1);
 
-        return view('backend.billing.billing', compact('types', 'customers', 'template'));
+        return view('backend.billing.billing', compact('customers', 'template','categories'));
     }
 
     public function cart(Request $request)
@@ -58,8 +59,8 @@ class BillingController extends Controller
             'cart' => json_encode($items),
             'discount' => $discount,
             'discount_amount' => $discount_amount,
-            'tax' => $tax,
-            'tax_amount' => $tax_amount,
+            'tax' => 0,
+            'tax_amount' => 0,
             'grand_total' => $grandTotal,
             'freight_charges' => $freight_charges,
             'payment' => 0,
@@ -195,7 +196,6 @@ class BillingController extends Controller
 
         return DataTables::of($query)
             ->addColumn('check', function (Billing $billing) {
-
                 return '<span class="form-check form-check-primary"><input
                                                     class="form-check-input mixed_child " value="'.$billing->id.'"
                                                     type="checkbox"></span>';

@@ -10,33 +10,37 @@
             <x-form.text-input name="sku" :value="$product->sku ?? ''" required placeholder="Unique SKU Code" />
             <x-form.input-error :messages="$errors->get('sku')" />
         </div>
-
+        {{-- Type --}}
+        <div class="col-sm-4">
+            <x-form.input-label for="category_id" value="Category" />
+            <x-form.select name="category_id" id="category_id" :options="$categories" :selected="$product->type->category->id ?? ''"
+                placeholder="Select Category" />
+            <x-form.input-error :messages="$errors->get('category_id')" />
+        </div>
         {{-- Type --}}
         <div class="col-sm-4">
             <x-form.input-label for="type_id" value="Type" />
-            <x-form.select name="type_id" id="type_id" :options="$types" :selected="$product->type_id ?? ''"
+            <x-form.select name="type_id" id="types_name" :options="[]" :selected="$product->type_id ?? ''"
                 placeholder="Select Type" />
             <x-form.input-error :messages="$errors->get('type_id')" />
-        </div>
-
-        {{-- Purity --}}
-        <div class="col-sm-4">
-            <x-form.input-label for="purity_id" value="Purity" />
-            <x-form.select name="purity_id" id="prurities_name" :options="$purities" :selected="$product->purity_id ?? ''"
-                placeholder="Select Purity (e.g. 22K, 18K)" />
-            <x-form.input-error :messages="$errors->get('purity_id')" />
         </div>
     </div>
 
     {{-- Product Name & Unit --}}
     <div class="row mt-3">
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <x-form.input-label for="name" value="Product Name" />
             <x-form.text-input name="name" :value="$product->name ?? ''" required placeholder="Product Name" />
             <x-form.input-error :messages="$errors->get('name')" />
         </div>
-
-        <div class="col-sm-6">
+        {{-- Purity --}}
+        <div class="col-sm-4">
+            <x-form.input-label for="purity_id" value="Purity" />
+            <x-form.select name="purity_id" id="prurities_name" :options="[]" :selected="$product->purity_id ?? ''"
+                placeholder="Select Purity (e.g. 22K, 18K)" />
+            <x-form.input-error :messages="$errors->get('purity_id')" />
+        </div>
+        <div class="col-sm-4">
             <x-form.input-label for="unit_id" value="Unit" />
             <x-form.select name="unit_id" :options="$units" :selected="$product->unit_id ?? ''" placeholder="Select Unit" />
             <x-form.input-error :messages="$errors->get('unit_id')" />
@@ -105,32 +109,14 @@
         </div>
         <div class="col-sm-3">
             <x-form.input-label for="stock_qty" value="Stock Quantity" />
-            <x-form.text-input type="number" step="0.0001" name="stock_qty" :value="$product->stock_qty ?? '1'" required
+            <x-form.text-input type="number" step="1" name="stock_qty" :value="$product->stock_qty ?? '1'" required
                 placeholder="Available Stock Quantity" />
             <x-form.input-error :messages="$errors->get('stock_qty')" />
         </div>
-@php
-    $price_value = 0;
 
-    if (isset($product)) {
-        if ($product->price > 0) {
-            $price_value = $product->price;
-        } else {
-            $price_value = number_format(
-                (
-                    ($product->rate_per_gram * $product->net_weight + $product->making_charge)
-                    * (1 + $product->gst_percent / 100)
-                    * $product->stock_qty
-                ),
-                2
-            );
-        }
-    }
-@endphp
         <div class="col-sm-3">
             <x-form.input-label for="price" value="Price" />
-            <x-form.text-input   name="price" :value="$price_value"
-                placeholder="Total Price" />
+            <x-form.text-input name="price" :value="$product->price ?? 0" placeholder="Total Price" />
             <x-form.input-error :messages="$errors->get('price')" />
         </div>
 

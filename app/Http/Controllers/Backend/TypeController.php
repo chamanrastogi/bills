@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\DataTables\TypeDataTable;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Type;
 use App\Traits\CommonTrait;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -12,11 +14,10 @@ class TypeController extends Controller
 {
     use CommonTrait;
 
-    public function index()
-    {
-        $types = Type::get();
 
-        return view('backend.types.all_type', compact('types'));
+      public function index(TypeDataTable $dataTable)
+    {
+        return $dataTable->render('backend.types.all_type');
     }
 
     /**
@@ -24,7 +25,8 @@ class TypeController extends Controller
      */
     public function create()
     {
-        return view('backend.types.add_type');
+        $categories = Category::active(0)->pluck('name', 'id');
+        return view('backend.types.add_type', compact('categories'));
     }
 
     /**
@@ -33,11 +35,12 @@ class TypeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-
+            'category_id' => 'required|exists:categories,id',
             'name' => 'required|unique:types|max:200',
         ]);
 
         Type::insert([
+            'category_id' => $request->category_id,
             'name' => $request->name,
         ]);
 
@@ -62,8 +65,8 @@ class TypeController extends Controller
      */
     public function edit(Type $type)
     {
-
-        return view('backend.types.edit_type', compact('type'));
+        $categories = Category::active(0)->pluck('name', 'id');
+        return view('backend.types.edit_type', compact('type', 'categories'));
     }
 
     /**
@@ -72,10 +75,12 @@ class TypeController extends Controller
     public function update(Request $request, Type $type)
     {
         $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
             'name' => 'required|max:200|unique:types,name,'.$type->id,
         ]);
 
         $type->update([
+            'category_id' => $request->category_id,
             'name' => $request->name,
 
         ]);

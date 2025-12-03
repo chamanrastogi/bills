@@ -32,13 +32,10 @@ class GenerateModelsWithMigration extends Command
     protected function configuration(): array
     {
         return [
-            'supplier_billings' => [
-                'supplier_id' => ['type' => 'string', 'options' => ['nullable' => true]],
-                'bill_image' => ['type' => 'string', 'options' => ['nullable' => true]],
-                'payment' => ['type' => 'integer', 'options' => ['default' => 0]],
-                'received' => ['type' => 'integer', 'options' => ['default' => 0]],
-                'payment_mode' => ['type' => 'integer', 'options' => ['default' => 0]],
-                'transaction_id' => ['type' => 'string', 'options' => ['nullable' => true]],
+            'category' => [
+                'id' => ['type' => 'id', 'options' => []],
+                'name' => ['type' => 'string', 'options' => []],
+                'status' => ['type' => 'boolean', 'options' => ['default' => 0]],
             ],
             // Add more models here...
         ];

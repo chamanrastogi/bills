@@ -11,8 +11,8 @@ class Purity extends Model
 
     public $timestamps = false;
 
-    public function type(): BelongsTo
+    public function category(): BelongsTo
     {
-        return $this->belongsTo(Type::class);
+        return $this->belongsTo(Category::class);
     }
 }

@@ -12,14 +12,14 @@
     <div class="row mb-3">
         {{-- Type --}}
         <div class="col-sm-6">
-            <x-form.input-label for="type_id" value="Type" />
+            <x-form.input-label for="category_id" value="Category" />
             <x-form.select
-                name="type_id"
-                :options="$types"
-                :selected="$purity->type_id ?? ''"
-                placeholder="Select Type"
+                name="category_id"
+                :options="$categories"
+                :selected="$purity->category_id ?? ''"
+                placeholder="Select Category"
             />
-            <x-form.input-error :messages="$errors->get('type_id')" />
+            <x-form.input-error :messages="$errors->get('category_id')" />
         </div>
         <div class="col-sm-6">
             <x-form.input-label for="name" value="Name" />

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\DataTables\ProductDataTable;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\ImagePresets;
 use App\Models\Product;
 use App\Models\Purity;
@@ -41,11 +42,12 @@ class ProductController extends Controller
     public function create()
     {
         $purities = [];
+        $categories = Category::active(0)->pluck('name', 'id');
         $types = Type::where('status', 0)->pluck('name', 'id');
         $units = Unit::where('status', 0)->pluck('fname', 'id');
 
 
-        return view('backend.product.add_product', compact('purities', 'types', 'units'));
+        return view('backend.product.add_product', compact('purities', 'categories', 'types', 'units'));
     }
 
     /**
@@ -55,6 +57,7 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|unique:products|max:200',
+            'type_id' => 'required',
             'gross_weight' => 'required|numeric|min:0',
             'net_weight' => 'required|numeric|min:0',
             'making_charge' => 'nullable|numeric|min:0',
@@ -66,16 +69,20 @@ class ProductController extends Controller
         } else {
             $save_url = '';
         }
-        $bill_image = $request->file('bill_image');
-        if ($request->file('bill_image') != null) {
-            $bill_image = $request->file('bill_image');
-            $bill_save_url = $this->imageGenrator($bill_image, $this->image_preset_main, $this->image_preset, $this->path);
-        } else {
-            $bill_save_url = '';
-        }
-        $price = str_replace(',', '', $request->price);
+          if (isset($request->price)) {
+                if ($request->price > 0) {
+                    $price_value = $request->price;
+                } else {
+                    $price_value = number_format(
+                        ($request->rate_per_gram * $request->net_weight + $request->making_charge) *
+                            (1 + $request->gst_percent / 100) *
+                            $request->stock_qty,
+                        2,
+                    );
+                }
+            }
+        $price_value = str_replace(',', '', $price_value);
         product::insert([
-
             'sku' => $request->sku,
             'type_id' => $request->type_id,
             'name' => $request->name,
@@ -88,7 +95,7 @@ class ProductController extends Controller
             'rate_per_gram' => $request->rate_per_gram ?? 0,
             'gst_percent' => $request->gst_percent ?? 0,
             'stock_qty' => $request->stock_qty ?? 1,
-            'price' => $price,
+            'price' => $price_value,
             'pstatus' => $request->pstatus ?? 'in_stock',
 
         ]);
@@ -114,12 +121,14 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
+        $categories = Category::active(0)->pluck('name', 'id');
         $products = Product::all();
-        $purities = Purity::where('status', 0)->where('type_id', $product->type_id)->pluck('name', 'id');
-        $types = Type::where('status', 0)->pluck('name', 'id');
+        $purities = Purity::where('status', 0)->where('id', $product->purity_id)->pluck('name', 'id');
+        $categories = Category::active(0)->pluck('name', 'id');
+        $types = Type::where('status', 0)->where('id', $product->type_id)->pluck('name', 'id');
         $units = Unit::where('status', 0)->pluck('fname', 'id');
 
-        return view('backend.product.edit_product', compact('product', 'purities', 'types', 'units' ));
+        return view('backend.product.edit_product', compact('product', 'purities', 'types', 'units','categories' ));
     }
 
     /**
@@ -130,6 +139,7 @@ class ProductController extends Controller
 
         $validated = $request->validate([
             'name' => 'required',
+            'type_id' => 'required',
             'gross_weight' => 'required|numeric|min:0',
             'net_weight' => 'required|numeric|min:0',
             'making_charge' => 'nullable|numeric|min:0',
@@ -152,12 +162,24 @@ class ProductController extends Controller
         }
 
 
-        $price = str_replace(',', '', $request->price);
+         if (isset($request->price)) {
+                if ($request->price > 0) {
+                    $price_value = $request->price;
+                } else {
+                    $price_value = number_format(
+                        ($request->rate_per_gram * $request->net_weight + $request->making_charge) *
+                            (1 + $request->gst_percent / 100) *
+                            $request->stock_qty,
+                        2,
+                    );
+                }
+            }
+        $price_value = str_replace(',', '', $price_value);
         $product->update([
             'sku' => $request->sku,
             'type_id' => $request->type_id,
             'name' => $request->name,
-            'price' => $price,
+            'price' => $price_value,
             'image' => $save_url,
             'purity_id' => $request->purity_id,
             'unit_id' => $request->unit_id,
@@ -232,12 +254,11 @@ class ProductController extends Controller
 
     public function GetPurity(Request $request)
     {
-        $purities = Purity::where('type_id', $request->type_id)
+        $purities = Purity::where('category_id', $request->category_id)
             ->orderBy('name', 'ASC')
             ->get();
 
-        $html = '<option value="">Select Purity</option>';
-
+        $html = '<option value="">-Select Purity-</option>';
         foreach ($purities as $purity) {
             $html .= '<option value="' . $purity->id . '">' . $purity->name . '</option>';
         }

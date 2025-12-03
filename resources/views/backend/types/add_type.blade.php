@@ -14,7 +14,7 @@
                         <h6 class="card-title fw-bold">Add Type</h6>
 
                          {{-- resources/views/components/backend/backend_component/type-form.blade.php --}}
-                         <x-backend.backend_component.type-form  :isEdit="false" />
+                         <x-backend.backend_component.type-form :$categories  :isEdit="false" />
 
 
                     </div>

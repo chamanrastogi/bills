@@ -12,7 +12,7 @@
                     <div class="card-body">
                         <h6 class="card-title fw-bold">Edit Type</h6>
                         {{-- resources/views/components/backend/backend_component/type-form.blade.php --}}
-                        <x-backend.backend_component.type-form :type="$type" :isEdit="true" />
+                        <x-backend.backend_component.type-form :$categories :type="$type" :isEdit="true" />
 
                     </div>
                 </div>

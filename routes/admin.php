@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Backend\BillingController;
+use App\Http\Controllers\Backend\CategoryController;
 use App\Http\Controllers\Backend\CustomerController;
 use App\Http\Controllers\Backend\PaymentController;
 use App\Http\Controllers\Backend\ProductController;
@@ -37,10 +38,17 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
         Route::post('/delete/admin', 'DeleteAdmin')->name('delete.admin');
     });
 
+       // Category All Routes
+    Route::resource('category', CategoryController::class);
+    Route::post('/category/status', [CategoryController::class, 'StatusUpdate'])->name('category.status');
+    Route::post('/category/delete', [CategoryController::class, 'Delete'])->name('category.delete');
+    Route::post('/category/types', [CategoryController::class, 'GetType'])->name('category.types');
+
     // Type All Routes
     Route::resource('type', TypeController::class);
     Route::post('/type/status', [TypeController::class, 'StatusUpdate'])->name('type.status');
     Route::post('/type/delete', [TypeController::class, 'Delete'])->name('type.delete');
+
 
     // Purities All Routes
     Route::resource('purity', PurityController::class);
@@ -53,6 +61,7 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::post('/products/delete', [ProductController::class, 'Delete'])->name('product.delete');
     Route::post('/products/purity', [ProductController::class, 'GetPurity'])->name('product.purity_units');
     Route::get('/products/type/{type}', [ProductController::class, 'GetProducts'])->name('product.type');
+
 
     // Color All Routes
     Route::resource('units', UnitController::class);

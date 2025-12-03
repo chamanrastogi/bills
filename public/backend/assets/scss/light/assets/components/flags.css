@@ -1,0 +1,23 @@
+/*
+	===============================
+			@Import	Function
+	===============================
+*/
+/*
+	===============================
+			@Import	Mixins
+	===============================
+*/
+.flags-svg {
+  margin-bottom: 50px;
+}
+.flags-svg img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  box-shadow: rgba(145, 158, 171, 0.2) 0px 0px 2px 0px, rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
+}
+.flags-svg .flag-name {
+  margin-top: 10px;
+  letter-spacing: 1px;
+}/*# sourceMappingURL=flags.css.map */

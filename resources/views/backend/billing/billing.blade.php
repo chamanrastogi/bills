@@ -1,4 +1,4 @@
-<x-dashboard-layout>
+<x-main-layout>
     @section('title', breadcrumb())
 
     <!-- Include jQuery -->
@@ -20,8 +20,8 @@
 
                                             <select name="customer" id="customer" class="form-control customer">
                                                 <option value="" disabled selected>Select Customer</option>
-                                                @if(is_array($customers) || $customers instanceof \Illuminate\Support\Collection)
-                                                    @foreach($customers as $key => $value)
+                                                @if (is_array($customers) || $customers instanceof \Illuminate\Support\Collection)
+                                                    @foreach ($customers as $key => $value)
                                                         <option value="{{ $key }}">{{ $value }}</option>
                                                     @endforeach
                                                 @endif
@@ -47,17 +47,15 @@
 
                                     <!-- Services, Product Selection, Quantity -->
                                     <div class="row mb-2">
-
                                         <div class="col-md-4">
-                                            <label for="type" class="form-label">Type</label>
-                                            <select id="type" name="type" class="form-control types">
-                                                <option value="" disabled selected>Select Type</option>
-                                                @if(is_array($types) || $types instanceof \Illuminate\Support\Collection)
-                                                    @foreach($types as $key => $value)
-                                                        <option value="{{ $key }}">{{ $value }}</option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
+                                            <x-form.input-label for="category_id" value="Category" />
+                                            <x-form.select name="category_id" id="category_id" :options="$categories"
+                                                placeholder="Select Category" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <x-form.input-label for="type_id" value="Type" />
+                                            <x-form.select name="type_id" id="type_names" :options="[]"
+                                                placeholder="Select Type" />
                                         </div>
                                         <div class="col-md-4">
                                             <label for="product" class="form-label">Product:</label>
@@ -70,11 +68,13 @@
 
                                         <div class="col-md-2">
                                             <label for="quantity" class="form-label">Quantity:</label>
-                                            <input type="number" id="quantity" class="form-control" min="0.01" step="0.01" value="1">
+                                            <input type="number" id="quantity" class="form-control" min="0.01"
+                                                step="0.01" value="1">
                                         </div>
 
                                         <div class="col-md-2 d-flex align-items-end pb-3 pb-md-0">
-                                            <button type="button" class="btn btn-primary w-100" id="addProductBtn">Add Product</button>
+                                            <button type="button" class="btn btn-primary w-100" id="addProductBtn">Add
+                                                Product</button>
                                         </div>
                                         <div class="col-md-12 mt-2 product-details d-none">
                                             <div class="row">
@@ -84,23 +84,28 @@
                                                 </div>
                                                 <div class="col-md-2">
                                                     <label class="form-label">Gross Wt</label>
-                                                    <input type="number" id="pd_gross" class="form-control" step="0.0001" readonly>
+                                                    <input type="number" id="pd_gross" class="form-control"
+                                                        step="0.0001" readonly>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <label class="form-label">Net Wt</label>
-                                                    <input type="number" id="pd_net" class="form-control" step="0.0001" readonly>
+                                                    <input type="number" id="pd_net" class="form-control"
+                                                        step="0.0001" readonly>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <label class="form-label">Making</label>
-                                                    <input type="number" id="pd_making" class="form-control" step="0.01">
+                                                    <input type="number" id="pd_making" class="form-control"
+                                                        step="0.01">
                                                 </div>
                                                 <div class="col-md-2">
                                                     <label class="form-label">Rate/gram</label>
-                                                    <input type="number" id="pd_rate" class="form-control" step="0.01">
+                                                    <input type="number" id="pd_rate" class="form-control"
+                                                        step="0.01">
                                                 </div>
                                                 <div class="col-md-2">
                                                     <label class="form-label">GST %</label>
-                                                    <input type="number" id="pd_gst" class="form-control" step="0.01">
+                                                    <input type="number" id="pd_gst" class="form-control"
+                                                        step="0.01">
                                                 </div>
                                             </div>
                                             <div class="row mt-2">
@@ -112,7 +117,8 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <label class="form-label">Computed Price</label>
-                                                    <input type="text" id="pd_computed_price" class="form-control" readonly>
+                                                    <input type="text" id="pd_computed_price" class="form-control"
+                                                        readonly>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label">Preview</label>
@@ -121,7 +127,8 @@
                                             </div>
                                         </div>
                                         <div class="col-12">
-                                            <div id="productError" class="text-danger mt-2" style="display:none"></div>
+                                            <div id="productError" class="text-danger mt-2" style="display:none">
+                                            </div>
                                         </div>
                                     </div>
                                     <!-- Bill Table -->
@@ -129,16 +136,16 @@
                                         <table class="table table-bordered">
                                             <thead class="thead-light">
                                                 <tr>
-                                                            <th>Id</th>
-                                                            <th>SKU</th>
-                                                            <th>Image</th>
-                                                            <th>Category</th>
-                                                            <th>Product</th>
-                                                            <th>Unit</th>
-                                                            <th>Price</th>
-                                                            <th>Quantity</th>
-                                                            <th>Total</th>
-                                                            <th>Action</th>
+                                                    <th>Id</th>
+                                                    <th>SKU</th>
+                                                    <th>Image</th>
+                                                    <th>Category</th>
+                                                    <th>Product</th>
+                                                    <th>Unit</th>
+                                                    <th>Price</th>
+                                                    <th>Quantity</th>
+                                                    <th>Total</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="billTable">
@@ -153,39 +160,46 @@
                                             <div class="col-md-4">
                                                 <div class="form-group">
                                                     <label for="discount">Discount (%):</label>
-                                                    <input type="number" id="discount" class="form-control" min="0" max="100" value="0">
-                                                    <small id="discountAmount" class="form-text text-muted">Discount Amount: {{ MONEY }}0</small>
+                                                    <input type="number" id="discount" class="form-control"
+                                                        min="0" max="100" value="0">
+                                                    <small id="discountAmount" class="form-text text-muted">Discount
+                                                        Amount: {{ MONEY }}0</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group">
                                                     <label for="tax">Tax (%):</label>
-                                                    <input type="number" id="tax" class="form-control" min="0" max="100" value="{{ $template->tax }}">
-                                                    <small id="taxAmount" class="form-text text-muted">Tax Amount: {{ MONEY }}0</small>
+                                                    <input type="number" id="tax" class="form-control"
+                                                        min="0" max="100" value="{{ $template->tax }}">
+                                                    <small id="taxAmount" class="form-text text-muted">Tax Amount:
+                                                        {{ MONEY }}0</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group">
                                                     <label for="gst">Gst ({{ MONEY }}):</label>
-                                                    <input type="number" id="gst" class="form-control" min="0" step="0.01" value="0">
-                                                    <small id="gstAmount" class="form-text text-muted">Gst Added: {{ MONEY }}0</small>
+                                                    <input type="number" id="gst" class="form-control"
+                                                        min="0" step="0.01" value="0">
+                                                    <small id="gstAmount" class="form-text text-muted">Gst Added:
+                                                        {{ MONEY }}0</small>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <!-- Update Grand Total and Submit Button Section -->
                                         <h3 id="grandTotal">Grand Total: {{ MONEY }}0</h3>
-                                        <button type="button" class="btn btn-success" id="submitCartBtn">Add to Cart</button>
+                                        <button type="button" class="btn btn-success" id="submitCartBtn">Add to
+                                            Cart</button>
                                     </div>
                                 </div>
-                                </div>
-                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    </div>
     </div>
 
     @section('script')
@@ -210,10 +224,11 @@
             }
             // Function to populate products based on selected type
             function datatable() {
-                const type = $("#type").val();
+                const type = $("#type_names").val();
+                console.log(type);
                 const productSelect = $("#productitems");
 
-                productSelect.html('<option value="" disabled selected>Select Product</option>');
+                productSelect.html('<option value="" disabled selected>-Select Product-</option>');
 
                 if (type) {
                     $.ajax({
@@ -225,7 +240,8 @@
                                 $.each(data, function(index, product) {
                                     // include rich data as data-attributes on the option, include purity
                                     const img = product.image ? product.image : '';
-                                    const unitName = (product.unit && product.unit.name) ? product.unit.name : '';
+                                    const unitName = (product.unit && product.unit.name) ? product.unit
+                                        .name : '';
                                     productSelect.append(
                                         `<option value="${product.id}" data-price="${product.price}" data-sku="${product.sku}" data-unit="${unitName}" data-image="${img}" data-making="${product.making_charge}" data-rate="${product.rate_per_gram}" data-gst="${product.gst_percent}" data-gross="${product.gross_weight}" data-net="${product.net_weight}" data-stock="${product.stock_qty}" data-purity="${product.purity_id}">${product.name} - Per ${unitName}</option>`
                                     );
@@ -245,7 +261,25 @@
             $(document).ready(function() {
                 // gst input handled via updateGrandTotal when its value changes
                 $('#billing_system').hide();
-                $('#type').on('change', function() {
+                $('#category_id').on('change', function() {
+
+                    let category_id = $(this).val();
+                    let _token = '{{ csrf_token() }}';
+
+                    function loadData(url, target) {
+                        $.post(url, {
+                            _token,
+                            category_id
+                        }, function(result) {
+                            $(target).html(result);
+                        });
+                    }
+
+                    loadData("{{ route('category.types') }}", '#type_names');
+
+                });
+                $('#type_names').on('change', function() {
+
                     datatable();
                 });
                 // when product changes populate product details panel
@@ -270,10 +304,14 @@
                     $('#pd_making').val(making);
                     $('#pd_rate').val(rate);
                     $('#pd_gst').val(gst);
-                    $('#pd_image_preview').html(img ? `<img src="${img}" style="max-width:120px;max-height:80px;object-fit:cover">` : '');
+                    $('#pd_image_preview').html(img ?
+                        `<img src="${img}" style="max-width:120px;max-height:80px;object-fit:cover">` : '');
                     // fetch purities for selected type via existing endpoint
                     if ($('#type').val()) {
-                        $.post(`{{ route('product.purity_units') }}`, { type_id: $('#type').val(), _token: '{{ csrf_token() }}' }, function(html) {
+                        $.post(`{{ route('product.purity_units') }}`, {
+                            type_id: $('#type').val(),
+                            _token: '{{ csrf_token() }}'
+                        }, function(html) {
                             $('#pd_purity').html(html);
                             if (purity) {
                                 $('#pd_purity').val(purity);
@@ -291,9 +329,9 @@
                 $('#tax').on('input', function() {
                     updateGrandTotal();
                 });
-                    $('#gst').on('input', function() {
-                        updateGrandTotal();
-                    });
+                $('#gst').on('input', function() {
+                    updateGrandTotal();
+                });
                 $(".customer").on("change", function() {
                     $('#billing_system').show();
                 });
@@ -372,7 +410,9 @@
                         const currentQty = parseFloat(qtyInput.val()) || 0;
                         const newQty = currentQty + quantity;
                         if (stockQty > 0 && newQty > stockQty) {
-                            showProductError(`Cannot add ${quantity}. Only ${stockQty - currentQty} more unit(s) available.`);
+                            showProductError(
+                                `Cannot add ${quantity}. Only ${stockQty - currentQty} more unit(s) available.`
+                            );
                             return;
                         }
                         qtyInput.val(newQty.toFixed(2));
@@ -536,4 +576,4 @@
             });
         </script>
     @stop
-</x-dashboard-layout>
+</x-main-layout>

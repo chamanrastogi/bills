@@ -48,27 +48,39 @@
                  label="Supplier" :submenu="[
                      ['route' => 'supplier.create', 'label' => 'Add Supplier', 'permission' => 'supplier.create'],
                      ['route' => 'supplier.index', 'label' => 'Show Supplier', 'permission' => 'supplier.index'],
-                     ['route' => 'supplier_billings.create', 'label' => 'Add Supplier Billing', 'permission' => 'supplier.index'],
-                     ['route' => 'supplier_billings.index', 'label' => 'Show Supplier Billing', 'permission' => 'supplier.index'],
-                 ]" :activeRoutes="['admin/supplier','admin/supplier_billings']" />
+                     [
+                         'route' => 'supplier_billings.create',
+                         'label' => 'Add Supplier Billing',
+                         'permission' => 'supplier.index',
+                     ],
+                     [
+                         'route' => 'supplier_billings.index',
+                         'label' => 'Show Supplier Billing',
+                         'permission' => 'supplier.index',
+                     ],
+                 ]" :activeRoutes="['admin/supplier', 'admin/supplier_billings']" />
              <x-backend.backend_component.side-menu-item permission="customers.menu" routeId="customer" icon="menu"
                  label="Customer" :submenu="[
                      ['route' => 'customers.create', 'label' => 'Add Customer', 'permission' => 'customers.create'],
                      ['route' => 'customers.index', 'label' => 'Show Customer', 'permission' => 'customers.index'],
                  ]" :activeRoutes="['admin/customers']" />
 
-             <x-backend.backend_component.side-menu-item permission="products.menu" routeId="product" icon="menu"
-                 label="Product" :submenu="[
-                     ['route' => 'products.create', 'label' => 'Add Product', 'permission' => 'products.create'],
-                     ['route' => 'products.index', 'label' => 'Show Product', 'permission' => 'products.index'],
+             <x-backend.backend_component.side-menu-item permission="category.menu" routeId="category" icon="menu"
+                 label="Product Management" :submenu="[
+                     ['route' => 'category.create', 'label' => 'Add Category', 'permission' => 'category.create'],
+                     ['route' => 'category.index', 'label' => 'Show Category', 'permission' => 'category.index'],
                      ['route' => 'type.create', 'label' => 'Add Type', 'permission' => 'type.create'],
                      ['route' => 'type.index', 'label' => 'Show Type', 'permission' => 'type.index'],
                      ['route' => 'purity.create', 'label' => 'Add Purity', 'permission' => 'purity.create'],
                      ['route' => 'purity.index', 'label' => 'Show Purity', 'permission' => 'purity.index'],
                      ['route' => 'units.create', 'label' => 'Add Unit', 'permission' => 'units.create'],
                      ['route' => 'units.index', 'label' => 'Show Unit', 'permission' => 'units.index'],
-
-                 ]" :activeRoutes="['admin/products', 'admin/type', 'admin/purity','admin/units']" />
+                 ]" :activeRoutes="['admin/type', 'admin/purity', 'admin/units', 'admin/category']" />
+             <x-backend.backend_component.side-menu-item permission="products.menu" routeId="product" icon="menu"
+                 label="Product" :submenu="[
+                     ['route' => 'products.create', 'label' => 'Add Product', 'permission' => 'products.create'],
+                     ['route' => 'products.index', 'label' => 'Show Product', 'permission' => 'products.index'],
+                 ]" :activeRoutes="['admin/products']" />
 
 
 

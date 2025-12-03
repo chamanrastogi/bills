@@ -8,9 +8,16 @@
     novalidate
 >
 
-    {{-- Product Type Name --}}
+    {{-- Category Type Name --}}
     <div class="row mb-3">
-        <div class="col-sm-12">
+        <div class="col-6">
+
+            <x-form.input-label for="category_id" value="Category" />
+            <x-form.select name="category_id" :options="$categories" :selected="$type->category_id ?? ''" placeholder="Select Category" />
+            <x-form.input-error :messages="$errors->get('category_id')" />
+
+        </div>
+        <div class="col-6">
             <x-form.input-label for="name" value="Name" />
             <x-form.text-input
                 name="name"

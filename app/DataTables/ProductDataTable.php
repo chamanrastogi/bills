@@ -27,7 +27,7 @@ class ProductDataTable extends DataTable
              ->addColumn('type_name', function ($row) {
                 $name = $row->type->name ?? 'N/A';
 
-                 $badge = ($row->type && strtolower($row->type->name) == 'gold')
+                 $badge = ($row->type->category && strtolower($row->type->category->name) == 'gold')
                     ? 'warning'
                     : 'light-secondary';
 
@@ -38,19 +38,13 @@ class ProductDataTable extends DataTable
 
                 $name = explode(' -', $raw)[0];
 
-                $badge = ($row->type && strtolower($row->type->name) == 'gold')
+                $badge = ($row->purity->category && strtolower($row->purity->category->name) == 'gold')
                     ? 'warning'
                     : 'light-secondary';
 
                 return '<span class="badge badge-' . $badge . '">' . $name . '</span>';
             })
-            ->addColumn('supplier_name', function ($row) {
-                $name = $row->supplier->shop_name ?? 'IN HOUSE';
 
-                $badge = $row->supplier ? 'info' : 'secondary';
-
-                return '<span class="badge badge-' . $badge . '">' . $name . '</span>';
-            })
             // Separate status column
             ->addColumn('status', function ($row) {
                 $name = 'product';
@@ -94,7 +88,7 @@ class ProductDataTable extends DataTable
                         <i data-feather="trash-2"></i>
                     </a>';
             })
-            ->rawColumns(['status', 'action', 'supplier_name', 'details', 'purity_name','type_name']);
+            ->rawColumns(['status', 'action', 'details', 'purity_name','type_name']);
     }
 
     /**
@@ -102,7 +96,7 @@ class ProductDataTable extends DataTable
      */
     public function query(Product $model): QueryBuilder
     {
-        return $model->newQuery()->with('supplier:id,name')->with('type:id,name')->with('purity:id,name');
+        return $model->newQuery()->with('supplier:id,name')->with('type:id,name,category_id')->with('purity:id,name,category_id');
     }
 
     /**
@@ -199,7 +193,6 @@ class ProductDataTable extends DataTable
     {
         return [
             Column::make('id'),
-            Column::computed('supplier_name')->title('Supplier')->searchable(true),
             Column::computed('type_name')->title('Type')->searchable(true),
             Column::computed('purity_name')->title('Purity')->searchable(true),
             Column::make('name')->title('Name')->searchable(true),

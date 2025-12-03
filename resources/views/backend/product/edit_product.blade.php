@@ -13,7 +13,7 @@
                     <div class="card-body">
                         <h6 class="card-title fw-bold">Edit Product </h6>
                         {{-- resources/views/components/backend/backend_component/product-form.blade.php --}}
-                        <x-backend.backend_component.product-form :$product  :$purities :$units :$types
+                        <x-backend.backend_component.product-form  :$product  :$purities :$units :$types :$categories
                             :isEdit="true" />
                         </div>
                 </div>
@@ -34,22 +34,24 @@
         }
         $(document).ready(function() {
 
-            $('#type_id').on('change', function() {
-                var type_id = this.value;
-                var crf = '{{ csrf_token() }}';
-                $.ajax({
-                    url: "{{ route('product.purity_units') }}",
-                    type: "POST",
-                    data: {
-                        _token: crf,
-                        type_id: type_id
-                    },
-                    cache: false,
-                    success: function(result) {
-                        $('#prurities_name').html(result);
-                    }
-                });
-            });
+            $('#category_id').on('change', function() {
+
+                        let category_id = $(this).val();
+                        let _token = '{{ csrf_token() }}';
+
+                        function loadData(url, target) {
+                            $.post(url, {
+                                _token,
+                                category_id
+                            }, function(result) {
+                                $(target).html(result);
+                            });
+                        }
+
+                        loadData("{{ route('product.purity_units') }}", '#prurities_name');
+                        loadData("{{ route('category.types') }}", '#types_name');
+
+                    });
 
 
         });
