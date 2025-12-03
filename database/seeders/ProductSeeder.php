@@ -12,13 +12,12 @@ class ProductSeeder extends Seeder
         DB::table('products')->insert([
             [
                 'id' => 1,
-                'supplier_id' => 2,
                 'sku' => 'GOLD-24K-001',
                 'type_id' => 1,
                 'name' => 'Pure Gold Bar 24K',
                 'price' => 124664.30,
                 'image' => '',
-                'bill_image' => '',
+
                 'purity_id' => 1,
                 'unit_id' => 2,
                 'gross_weight' => 10.0000,
@@ -34,13 +33,12 @@ class ProductSeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'supplier_id' => null,
                 'sku' => 'GOLD-22K-002',
-                'type_id' => 1,
+                'type_id' => 5,
                 'name' => 'Gold Bangle 22K',
                 'price' => 96895.36,
                 'image' => '',
-                'bill_image' => '',
+
                 'purity_id' => 2,
                 'unit_id' => 2,
                 'gross_weight' => 8.0000,
@@ -56,13 +54,12 @@ class ProductSeeder extends Seeder
             ],
             [
                 'id' => 3,
-                'supplier_id' => null,
                 'sku' => 'GOLD-18K-003',
-                'type_id' => 1,
+                'type_id' => 2,
                 'name' => 'Gold Ring 18K',
                 'price' => 56097.42,
                 'image' => '',
-                'bill_image' => '',
+
                 'purity_id' => 3,
                 'unit_id' => 2,
                 'gross_weight' => 6.0000,
@@ -78,13 +75,12 @@ class ProductSeeder extends Seeder
             ],
             [
                 'id' => 4,
-                'supplier_id' => null,
                 'sku' => 'GOLD-14K-004',
-                'type_id' => 1,
+                'type_id' => 4,
                 'name' => 'Gold Necklace 14K',
                 'price' => 87264.00,
                 'image' => '',
-                'bill_image' => '',
+
                 'purity_id' => 4,
                 'unit_id' => 2,
                 'gross_weight' => 12.0000,
@@ -100,13 +96,12 @@ class ProductSeeder extends Seeder
             ],
             [
                 'id' => 5,
-                'supplier_id' => 6,
                 'sku' => 'GOLD-9K-005',
-                'type_id' => 1,
+                'type_id' => 5,
                 'name' => 'Gold Bracelet 9K',
                 'price' => 23376.45,
                 'image' => '',
-                'bill_image' => '',
+
                 'purity_id' => 5,
                 'unit_id' => 2,
                 'gross_weight' => 5.0000,
@@ -122,13 +117,12 @@ class ProductSeeder extends Seeder
             ],
             [
                 'id' => 6,
-                'supplier_id' => 2,
                 'sku' => 'SILVER-925-006',
-                'type_id' => 2,
+                'type_id' => 19,
                 'name' => 'Silver Pendant 925',
                 'price' => 2620.95,
                 'image' => '',
-                'bill_image' => '',
+
                 'purity_id' => 8,
                 'unit_id' => 2,
                 'gross_weight' => 15.0000,
@@ -144,13 +138,12 @@ class ProductSeeder extends Seeder
             ],
             [
                 'id' => 7,
-                'supplier_id' => 3,
                 'sku' => 'SILVER-958-007',
-                'type_id' => 2,
+                'type_id' => 22,
                 'name' => 'Silver Coin 958',
                 'price' => 3494.60,
                 'image' => '',
-                'bill_image' => '',
+
                 'purity_id' => 7,
                 'unit_id' => 2,
                 'gross_weight' => 20.0000,
@@ -166,15 +159,14 @@ class ProductSeeder extends Seeder
             ],
             [
                 'id' => 8,
-                'supplier_id' => 4,
                 'sku' => 'SILVER-999-008',
-                'type_id' => 2,
+                'type_id' => 12,
                 'name' => 'Silver Bar 999',
                 'price' => 4418.75,
                 'image' => '',
-                'bill_image' => '',
+
                 'purity_id' => 6,
-                'unit_id' => 2,
+                'unit_id' => 12,
                 'gross_weight' => 25.0000,
                 'net_weight' => 25.0000,
                 'making_charge' => 50.00,
@@ -188,13 +180,13 @@ class ProductSeeder extends Seeder
             ],
             [
                 'id' => 9,
-                'supplier_id' => null,
+
                 'sku' => 'SILVER-925-009',
-                'type_id' => 2,
+                'type_id' => 18,
                 'name' => 'Silver Earring 925',
                 'price' => 554.49,
                 'image' => '',
-                'bill_image' => '',
+
                 'purity_id' => 8,
                 'unit_id' => 2,
                 'gross_weight' => 3.0000,
@@ -210,13 +202,13 @@ class ProductSeeder extends Seeder
             ],
             [
                 'id' => 10,
-                'supplier_id' => 1,
+
                 'sku' => 'SILVER-958-010',
-                'type_id' => 2,
+                'type_id' => 13,
                 'name' => 'Silver Ring 958',
                 'price' => 739.32,
                 'image' => '',
-                'bill_image' => '',
+
                 'purity_id' => 7,
                 'unit_id' => 2,
                 'gross_weight' => 4.0000,

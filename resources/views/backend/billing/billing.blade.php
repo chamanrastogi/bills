@@ -78,31 +78,40 @@
                                         </div>
                                         <div class="col-md-12 mt-2 product-details d-none">
                                             <div class="row">
+
                                                 <div class="col-md-2">
                                                     <label class="form-label">SKU</label>
                                                     <input type="text" id="pd_sku" class="form-control" readonly>
                                                 </div>
-                                                <div class="col-md-2">
+                                                 <div class="col-md-2">
+                                                    <label class="form-label">Category</label>
+                                                    <input type="text" id="pd_category" class="form-control" readonly>
+                                                </div>
+                                                 <div class="col-md-2">
+                                                    <label class="form-label">Product</label>
+                                                    <input type="text" id="pd_product" class="form-control" readonly>
+                                                </div>
+                                                <div class="col-md-1">
                                                     <label class="form-label">Gross Wt</label>
                                                     <input type="number" id="pd_gross" class="form-control"
                                                         step="0.0001" readonly>
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-1">
                                                     <label class="form-label">Net Wt</label>
                                                     <input type="number" id="pd_net" class="form-control"
                                                         step="0.0001" readonly>
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-1">
                                                     <label class="form-label">Making</label>
                                                     <input type="number" id="pd_making" class="form-control"
                                                         step="0.01">
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-1">
                                                     <label class="form-label">Rate/gram</label>
                                                     <input type="number" id="pd_rate" class="form-control"
                                                         step="0.01">
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-1">
                                                     <label class="form-label">GST %</label>
                                                     <input type="number" id="pd_gst" class="form-control"
                                                         step="0.01">
@@ -111,9 +120,7 @@
                                             <div class="row mt-2">
                                                 <div class="col-md-3">
                                                     <label class="form-label">Purity</label>
-                                                    <select id="pd_purity" class="form-control">
-                                                        <option value="">Select Purity</option>
-                                                    </select>
+                                                    <input type="text" id="pd_purity" class="form-control" readonly>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <label class="form-label">Computed Price</label>
@@ -141,6 +148,7 @@
                                                     <th>Image</th>
                                                     <th>Category</th>
                                                     <th>Product</th>
+                                                    <th>Type</th>
                                                     <th>Unit</th>
                                                     <th>Price</th>
                                                     <th>Quantity</th>
@@ -225,7 +233,6 @@
             // Function to populate products based on selected type
             function datatable() {
                 const type = $("#type_names").val();
-                console.log(type);
                 const productSelect = $("#productitems");
 
                 productSelect.html('<option value="" disabled selected>-Select Product-</option>');
@@ -243,7 +250,7 @@
                                     const unitName = (product.unit && product.unit.name) ? product.unit
                                         .name : '';
                                     productSelect.append(
-                                        `<option value="${product.id}" data-price="${product.price}" data-sku="${product.sku}" data-unit="${unitName}" data-image="${img}" data-making="${product.making_charge}" data-rate="${product.rate_per_gram}" data-gst="${product.gst_percent}" data-gross="${product.gross_weight}" data-net="${product.net_weight}" data-stock="${product.stock_qty}" data-purity="${product.purity_id}">${product.name} - Per ${unitName}</option>`
+                                        `<option value="${product.id}" data-product="${product.name}" data-category="${product.category}" data-price="${product.price}" data-sku="${product.sku}" data-unit="${unitName}" data-image="${img}" data-making="${product.making_charge}" data-rate="${product.rate_per_gram}" data-gst="${product.gst_percent}" data-gross="${product.gross_weight}" data-net="${product.net_weight}" data-stock="${product.stock_qty}" data-purity-name="${product.purity.name}" data-purity="${product.purity.id}">${product.name} - Per ${unitName}</option>`
                                     );
                                 });
                             } else {
@@ -279,7 +286,6 @@
 
                 });
                 $('#type_names').on('change', function() {
-
                     datatable();
                 });
                 // when product changes populate product details panel
@@ -297,27 +303,21 @@
                     const gst = parseFloat(opt.data('gst')) || 0;
                     const img = opt.data('image') || '';
                     const purity = opt.data('purity') || '';
-
+                    const purity_name =  opt.data('purity-name') || '';
+                    const category =  opt.data('category') || '';
+                    const product =  opt.data('product') || '';
                     $('#pd_sku').val(sku);
                     $('#pd_gross').val(gross);
                     $('#pd_net').val(net);
                     $('#pd_making').val(making);
                     $('#pd_rate').val(rate);
                     $('#pd_gst').val(gst);
+                    $('#pd_category').val(category);
+                    $('#pd_product').val(product);
                     $('#pd_image_preview').html(img ?
                         `<img src="${img}" style="max-width:120px;max-height:80px;object-fit:cover">` : '');
                     // fetch purities for selected type via existing endpoint
-                    if ($('#type').val()) {
-                        $.post(`{{ route('product.purity_units') }}`, {
-                            type_id: $('#type').val(),
-                            _token: '{{ csrf_token() }}'
-                        }, function(html) {
-                            $('#pd_purity').html(html);
-                            if (purity) {
-                                $('#pd_purity').val(purity);
-                            }
-                        });
-                    }
+                    $('#pd_purity').val(purity_name);
                     // compute price: rate_per_gram * net_weight + making_charge
                     const computed = (rate * net) + making;
                     $('#pd_computed_price').val('{{ MONEY }}' + computed.toFixed(2));
@@ -346,8 +346,8 @@
 
                 $('#addProductBtn').on('click', function() {
 
-                    const typeText = $('#type option:selected').text();
-                    const productText = $('#productitems option:selected').text();
+                    const typeText = $('#type_names option:selected').text();
+
                     const productValue = $('#productitems').val();
                     const quantity = parseFloat($('#quantity').val()); // Use parseFloat here
 
@@ -359,6 +359,7 @@
                     const selectedOption = $('#productitems option:selected');
                     const productId = selectedOption.val();
                     const priceFromOption = parseFloat(selectedOption.data('price')) || 0;
+                    const productText =  selectedOption.data('product') || '';
                     const sku = selectedOption.data('sku') || '';
                     const image = selectedOption.data('image') || '';
                     const makingFromOption = parseFloat(selectedOption.data('making')) || 0;
@@ -373,7 +374,8 @@
                     const pd_gst = parseFloat($('#pd_gst').val()) || gstFromOption;
                     const pd_gross = parseFloat($('#pd_gross').val()) || grossFromOption;
                     const pd_net = parseFloat($('#pd_net').val()) || netFromOption;
-                    const pd_purity = $('#pd_purity').val() || selectedOption.data('purity') || '';
+                    const pd_purity = selectedOption.data('purity') || '';
+                    const pd_category = $('#pd_category').val() || selectedOption.data('category') || '';
                     const stockQty = parseFloat(selectedOption.data('stock')) || 0;
 
                     // Compute price using rate_per_gram * net_weight + making_charge when available
@@ -428,9 +430,10 @@
             <td>${productId}</td>
             <td>${sku}</td>
             <td>${image ? `<img src="${image}" alt="img" style="width:40px;height:40px;object-fit:cover">` : ''}</td>
-            <td>${typeText}</td>
+            <td>${pd_category}</td>
             <td>${productText}</td>
-            <td>${unitName}</td>
+            <td>${typeText}</td>
+            <td>Per ${unitName}</td>
             <td>{{ MONEY }}${priceFloat.toFixed(2)}</td>
             <td><input type="number" step="0.01" min="0" class="form-control form-control-sm rowQty" value="${quantity.toFixed(2)}" style="width:90px"></td>
             <td class="rowTotal">{{ MONEY }}${total.toFixed(2)}</td>

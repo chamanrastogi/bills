@@ -20,6 +20,9 @@ return new class extends Migration
             $table->string('tax_amount', 100);
             $table->integer('gst');
             $table->integer('grand_total');
+            $table->integer('payment');
+            $table->integer('payment_mode');
+            $table->integer('customer_id');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
         });

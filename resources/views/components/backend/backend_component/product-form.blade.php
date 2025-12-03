@@ -17,10 +17,11 @@
                 placeholder="Select Category" />
             <x-form.input-error :messages="$errors->get('category_id')" />
         </div>
+
         {{-- Type --}}
         <div class="col-sm-4">
             <x-form.input-label for="type_id" value="Type" />
-            <x-form.select name="type_id" id="types_name" :options="[]" :selected="$product->type_id ?? ''"
+            <x-form.select name="type_id" id="types_name" :options="$types" :selected="$product->type_id ?? ''"
                 placeholder="Select Type" />
             <x-form.input-error :messages="$errors->get('type_id')" />
         </div>
@@ -36,7 +37,7 @@
         {{-- Purity --}}
         <div class="col-sm-4">
             <x-form.input-label for="purity_id" value="Purity" />
-            <x-form.select name="purity_id" id="prurities_name" :options="[]" :selected="$product->purity_id ?? ''"
+            <x-form.select name="purity_id" id="prurities_name" :options="$purities" :selected="$product->purity_id ?? ''"
                 placeholder="Select Purity (e.g. 22K, 18K)" />
             <x-form.input-error :messages="$errors->get('purity_id')" />
         </div>

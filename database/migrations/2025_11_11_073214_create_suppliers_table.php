@@ -18,8 +18,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->text('address')->nullable();
             $table->text('gst_no')->nullable();
-            $table->integer('account')->nullable();
-            $table->text('balance')->default(0);
+            $table->text('account')->nullable();
             $table->boolean('status')->default(0);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();

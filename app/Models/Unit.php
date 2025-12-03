@@ -21,4 +21,8 @@ class Unit extends Model
             set: fn (string $value) => strtolower($value),
         );
     }
+     public function scopeActive($query, $status)
+    {
+        return $query->where('status', $status);
+    }
 }

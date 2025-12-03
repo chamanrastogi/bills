@@ -23,7 +23,6 @@ class SupplierFactory extends Factory
             'address' => $this->faker->address,
             'gst_no' => $this->faker->unique()->regexify('[A-Z]{5}[0-9]{4}[A-Z][0-9]Z[A-Z]'),
             'account' => $this->faker->bankAccountNumber,
-            'status' => $this->faker->boolean(70),
         ];
     }
 }

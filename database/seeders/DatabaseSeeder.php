@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
         // \App\Models\Service::factory(50)->create();
          \App\Models\Customer::factory(10)->create();
         \App\Models\Supplier::factory(10)->create();
-        \App\Models\Product::factory(10)->create();
+      //  \App\Models\Product::factory(10)->create();
         //  \App\Models\Billing::factory(5)->create();
 
         //  \App\Models\Payment::factory(10)->create();
@@ -24,9 +24,14 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'admin@g.com',
         //     'password' => bcrypt('12345678'),]);
         $this->call([
-            //   BlogcategorySeeder::class
+             CategorySeeder::class,
              PuritySeeder::class,
-             ProductSeeder::class
+             UnitSeeder::class,
+             ProductSeeder::class,
+             SettingSeeder::class,
+             TypeSeeder::class,
+             UserSeeder::class
+
         ]);
     }
 }

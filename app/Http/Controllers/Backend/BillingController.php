@@ -9,7 +9,7 @@ use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\SiteSetting;
-use App\Models\Type;
+use App\Models\Purity;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 
@@ -19,13 +19,14 @@ class BillingController extends Controller
     public function index()
     {
         $categories = Category::active(0)->pluck('name', 'id');
+        $purities = Purity::active(0)->pluck('name', 'id');
 
         $customers = Customer::all()->mapWithKeys(function ($customer) {
             return [$customer->id => $customer->name.' ('.$customer->phone.')'];
         });
         $template = SiteSetting::select('tax')->find(1);
 
-        return view('backend.billing.billing', compact('customers', 'template','categories'));
+        return view('backend.billing.billing', compact('customers','purities', 'template','categories'));
     }
 
     public function cart(Request $request)

@@ -15,4 +15,8 @@ class Purity extends Model
     {
         return $this->belongsTo(Category::class);
     }
+     public function scopeActive($query, $status)
+    {
+        return $query->where('status', $status);
+    }
 }

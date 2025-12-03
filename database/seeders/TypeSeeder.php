@@ -15,6 +15,7 @@ class TypeSeeder extends Seeder
         $types = [
 
             // Gold (category_id = 1)
+            ['category_id' => 1, 'name' => 'Gold Bar'],
             ['category_id' => 1, 'name' => 'Gold Ring'],
             ['category_id' => 1, 'name' => 'Gold Chain'],
             ['category_id' => 1, 'name' => 'Gold Necklace'],
@@ -27,6 +28,7 @@ class TypeSeeder extends Seeder
             ['category_id' => 1, 'name' => 'Gold Coin'],
 
             // Silver (category_id = 2)
+            ['category_id' => 2, 'name' => 'Silver Bar'],
             ['category_id' => 2, 'name' => 'Silver Ring'],
             ['category_id' => 2, 'name' => 'Silver Chain'],
             ['category_id' => 2, 'name' => 'Silver Necklace'],

@@ -23,4 +23,8 @@ class Supplier extends Model
 
         return $totalBills - $totalPaid;
     }
+     public function scopeActive($query, $status)
+    {
+        return $query->where('status', $status);
+    }
 }

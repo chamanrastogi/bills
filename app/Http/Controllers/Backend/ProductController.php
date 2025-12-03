@@ -273,6 +273,7 @@ class ProductController extends Controller
             ->where('status', 0)
             ->where('pstatus', 'in_stock')
             ->with('unit')
+            ->with('purity')
             ->get()
             ->map(function ($product) {
                 return [
@@ -283,9 +284,13 @@ class ProductController extends Controller
                     'image' => $product->bill_image ?: $product->image,
                     'unit' => [
                         'id' => $product->unit?->id,
-                        'name' => $product->unit?->fname ?? '',
+                        'name' => $product->unit?->name ?? '',
                     ],
-                    'purity_id' => $product->purity_id,
+                    'purity' => [
+                        'id' => $product->purity?->id,
+                        'name' => $product->purity?->name ?? '',
+                    ],
+                    'category' => $product->type->category->name,
                     'gross_weight' => $product->gross_weight,
                     'net_weight' => $product->net_weight,
                     'making_charge' => $product->making_charge,

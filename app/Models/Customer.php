@@ -30,4 +30,8 @@ class Customer extends Model
 
         return $totalBills - $totalPayments - $opening_balance;
     }
+     public function scopeActive($query, $status)
+    {
+        return $query->where('status', $status);
+    }
 }
