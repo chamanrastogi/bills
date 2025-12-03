@@ -110,12 +110,13 @@ class SupplierController extends Controller
     {
          $validated = $request->validate([
             'payment_mode' => 'required',
+            'balance'=>'required|numeric|max:'. $supplier->balance,
         ]);
 
         // Current balance
-        $balance = $supplier->balance; // accessor
+        $balance = $request->balance; // accessor
 
-        if ($balance <= 0) {
+        if ($balance <= 0 ) {
             return back()->with([
                 'message' => 'No pending balance to pay!',
                 'alert-type' => 'info'

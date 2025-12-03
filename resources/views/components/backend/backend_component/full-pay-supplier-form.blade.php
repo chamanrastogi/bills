@@ -14,9 +14,11 @@
         <x-form.input-label for="balance" value="Remaining Balance" />
         <x-form.text-input
             name="balance"
-            :value="number_format($supplier->balance)"
-            readonly
+            :value="$supplier->balance"
+            min="0"
+            max="{{$supplier->balance}}"
         />
+         <x-form.input-error :messages="$errors->get('balance')" />
     </div>
     </div>
     <div class="col-4">
