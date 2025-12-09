@@ -24,10 +24,10 @@ class ProductDataTable extends DataTable
             ->setRowClass(function ($row) {
                 return 'product-' . $row->id;
             })
-             ->addColumn('type_name', function ($row) {
+            ->addColumn('type_name', function ($row) {
                 $name = $row->type->name ?? 'N/A';
 
-                 $badge = ($row->type->category && strtolower($row->type->category->name) == 'gold')
+                $badge = ($row->type->category && strtolower($row->type->category->name) == 'gold')
                     ? 'warning'
                     : 'light-secondary';
 
@@ -60,9 +60,9 @@ class ProductDataTable extends DataTable
             ->addColumn('details', function ($row) {
                 return '
         <div class="product-details">
-
+            <strong class="text-info fw-bold">Stock:</strong> ' . $row->stock_qty . '<br>
             <strong class="text-info fw-bold">Gross:</strong> ' . $row->gross_weight . ' | Net: ' . $row->net_weight . '<br>
-            <strong class="text-success fw-bold">Price:</strong> ' .MONEY . $row->price .  '<br>
+            <strong class="text-success fw-bold">Price:</strong> ' . MONEY . $row->price .  '<br>
             <strong class="text-warning fw-bold">Created At:</strong> ' . $row->created_at->format('d-M-Y') . '<br>
             <strong class="text-danger fw-bold">Updated At:</strong> ' . $row->updated_at->format('d-M-Y') . '
         </div>
@@ -88,7 +88,7 @@ class ProductDataTable extends DataTable
                         <i data-feather="trash-2"></i>
                     </a>';
             })
-            ->rawColumns(['status', 'action', 'details', 'purity_name','type_name']);
+            ->rawColumns(['status', 'action', 'details', 'purity_name', 'type_name']);
     }
 
     /**

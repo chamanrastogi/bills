@@ -22,6 +22,9 @@ class CategoryDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
+         ->setRowClass(function ($row) {
+                return 'category-' . $row->id;
+            })
             ->addColumn('action', 'category.action')
             ->addColumn('created_at', function ($row) {
                 return date('d-m-Y H:i:s A', strtotime($row->created_at));

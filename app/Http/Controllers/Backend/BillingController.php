@@ -12,6 +12,7 @@ use App\Models\SiteSetting;
 use App\Models\Purity;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BillingController extends Controller
 {
@@ -31,43 +32,105 @@ class BillingController extends Controller
 
     public function cart(Request $request)
     {
-        $items = [];
-        // dd($request);
-        // Decode the cart data sent from the frontend
+
+        // Server-side authoritative processing of the cart:
+        // - Validate product existence and stock
+        // - Recompute prices, GST, discounts and tax server-side
+        // - Atomically decrement product stock and insert Billing inside a DB transaction
+
         $cartData = json_decode($request->cart_data, true);
-        // Process the cart data
-        $cartItems = $cartData['cart_items'];  // Array of cart items
-        // dd($cartItems);
-        foreach ($cartItems as $item) {
-
-            $pro = Product::select('price')->find($item['productId']);
-            $item['price'] = $pro->price;
-            $items[] = $item;
+        if (! is_array($cartData) || ! isset($cartData['cart_items']) || ! is_array($cartData['cart_items'])) {
+            return redirect()->back()->with([
+                'message' => 'Invalid cart data submitted',
+                'alert-type' => 'error',
+            ]);
         }
-        // dd($items);
-        $grandTotal = round($cartData['grand_total'], 2);  // Grand total value
-        $discount = $cartData['discount'];
-        $discount_amount = round($cartData['discount_amount'], 2);
-        $tax = $cartData['tax'];
-        $tax_amount = round($cartData['tax_amount'], 2);
-        $customer_id = $cartData['customer_id'];
-        $freight_charges = $cartData['freight_charges'];
-        // Example: Save the cart items in the database, or process the order
 
-        // dd($cartItems);
-        $bill = Billing::insertGetId([
-            'customer_id' => $customer_id,
-            'cart' => json_encode($items),
-            'discount' => $discount,
-            'discount_amount' => $discount_amount,
-            'tax' => 0,
-            'tax_amount' => 0,
-            'grand_total' => $grandTotal,
-            'freight_charges' => $freight_charges,
-            'payment' => 0,
-            'payment_mode' => 0,
-        ]);
-        $customer = Customer::find($customer_id);
+        $cartItems = $cartData['cart_items'];
+        $processedItems = [];
+        $subtotal = 0.0;
+        $gst_total = 0.0;
+
+        DB::beginTransaction();
+        try {
+            foreach ($cartItems as $item) {
+                $productId = $item['productId'] ?? null;
+                $product = Product::find($productId);
+                if (! $product) {
+                    DB::rollBack();
+                    return redirect()->back()->with([
+                        'message' => "Product not found (ID: {$productId})",
+                        'alert-type' => 'error',
+                    ]);
+                }
+
+                $qty = isset($item['quantity']) ? floatval($item['quantity']) : (isset($item['qty']) ? floatval($item['qty']) : 1);
+                $stock = $product->stock_qty ?? 0;
+                if ($stock < $qty) {
+                    DB::rollBack();
+                    return redirect()->back()->with([
+                        'message' => "Insufficient stock for product: {$product->name} (available: {$stock})",
+                        'alert-type' => 'error',
+                    ]);
+                }
+
+                $price = floatval($product->price ?? 0);
+                $gst = floatval($product->gst ?? ($item['gst'] ?? 0));
+
+                $lineBase = $price * $qty;
+                $lineGst = round($lineBase * ($gst / 100), 2);
+                $lineTotal = round($lineBase + $lineGst, 2);
+
+                $subtotal += $lineBase;
+                $gst_total += $lineGst;
+
+                $processedItems[] = [
+                    'productId' => $product->id,
+                    'name' => $product->name,
+                    'sku' => $product->sku ?? null,
+                    'quantity' => $qty,
+                    'price' => $price,
+                    'gst' => $gst,
+                    'line_total' => $lineTotal,
+                ];
+
+                // Decrement stock (will be rolled back if transaction fails)
+                $product->stock_qty = $stock - $qty;
+                $product->save();
+            }
+
+            $discount_percent = floatval($cartData['discount'] ?? 0);
+            $discount_amount = round($subtotal * $discount_percent / 100, 2);
+
+            $tax_percent = floatval($cartData['tax'] ?? 0);
+            $tax_amount = round(($subtotal - $discount_amount) * $tax_percent / 100, 2);
+
+
+            $grandTotal = round($subtotal + $gst_total - $discount_amount + $tax_amount, 2);
+
+            $billingId = Billing::insertGetId([
+                'customer_id' => $cartData['customer_id'] ?? null,
+                'cart' => json_encode($processedItems),
+                'discount' => $discount_percent,
+                'discount_amount' => $discount_amount,
+                'tax' => $tax_percent,
+                'tax_amount' => $tax_amount,
+                'gst' => 0,
+                'grand_total' => $grandTotal,
+                'payment' => 0,
+                'payment_mode' => 0,
+            ]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with([
+                'message' => 'Failed to save cart: '.$e->getMessage(),
+                'alert-type' => 'error',
+            ]);
+        }
+
+        $customer = Customer::find($cartData['customer_id'] ?? null);
         // $data=[
         //     'status' => 'success',
         //     'message' => 'Cart submitted successfully!',
@@ -79,7 +142,10 @@ class BillingController extends Controller
 
         // dd($bill);
 
-        return redirect()->route('billing.show');
+        return redirect()->route('billing.show')->with([
+            'message' => 'Cart submitted successfully',
+            'alert-type' => 'success',
+        ]);
     }
 
     public function getCart(int $id)
@@ -193,7 +259,11 @@ class BillingController extends Controller
 
     public function Ajax_Load(Request $request, Billing $billing)
     {
-        $query = Billing::select('id', 'customer_id', 'cart', 'discount', 'tax', 'freight_charges', 'created_at', 'grand_total')->where('grand_total', '>', 0)->get();
+        // Note: `freight_charges` column may not exist in the `billing` table in all installs.
+        // Select only existing/common columns to avoid SQL errors.
+        $query = Billing::select('id', 'customer_id', 'cart', 'discount', 'tax', 'created_at', 'grand_total')
+            ->where('grand_total', '>', 0)
+            ->get();
 
         return DataTables::of($query)
             ->addColumn('check', function (Billing $billing) {
@@ -218,24 +288,78 @@ class BillingController extends Controller
                 return $customer_details;
             })
             ->addColumn('cart', function (Billing $billing) {
-                $cart = json_decode($billing->cart);
-                $carts = '';
-                $units = '';
-                foreach ($cart as $item) {
+                $cart = json_decode($billing->cart, true);
+                $html = '';
+                if (is_array($cart)) {
+                    foreach ($cart as $item) {
+                        $product = Product::with('unit')->find($item['productId'] ?? null);
+                        if (! $product) {
+                            $html .= '<div class="text-muted">[Product not found]</div>';
+                            continue;
+                        }
 
-                    $product = Product::with('unit')->find(
-                        $item->productId,
-                    );
-                    $units = ($product->unit->name) ? '-Per '.$product->unit->name : '';
-                    $carts .= $product->name.$units.'<br>';
+                        $unitName = ($product->unit && $product->unit->name) ? '-Per '.$product->unit->name : '';
+                        $qty = isset($item['quantity']) ? floatval($item['quantity']) : (isset($item['qty']) ? floatval($item['qty']) : 1);
+                        $price = isset($item['price']) ? floatval($item['price']) : floatval($product->price ?? 0);
+                        $gst = isset($item['gst']) ? floatval($item['gst']) : 0;
+                        $lineBase = $price * $qty;
+                        $lineTotal = $lineBase * (1 + ($gst / 100));
+
+                        // Check current stock
+                        $stock = $product->stock_qty ?? 0;
+                        if ($stock <= 0) {
+                            $stockBadge = '<span class="badge bg-danger ms-2">Out of stock</span>';
+                        } elseif ($qty > $stock) {
+                            $stockBadge = '<span class="badge bg-warning ms-2">Insufficient ('.$stock.')</span>';
+                        } else {
+                            $stockBadge = '<span class="badge bg-success ms-2">In Stock: '.$stock.'</span>';
+                        }
+
+                        $itemSku = $product->sku ?? ($item['sku'] ?? '');
+                        $itemSku = htmlspecialchars($itemSku);
+                        $pName = htmlspecialchars($product->name);
+                        $uName = htmlspecialchars($unitName);
+                        $html .= '<div class="mb-2">';
+                        $html .= '<strong>'.$pName.'</strong> '.$uName.'<br>';
+                        $html .= 'SKU: '.$itemSku;
+                        $html .= ' | Qty: '.number_format($qty, 2);
+                        $html .= ' | Price: '.number_format($price, 2);
+                        $html .= ' | Line: '.number_format($lineTotal, 2);
+                        $html .= ' '.$stockBadge;
+                        $html .= '</div>';
+                    }
                 }
 
-                return $carts;
+                return $html;
             })
             ->addColumn('details', function (Billing $billing) {
-                return '<strong>Dis:</strong>'.$billing->discount.' (%)<br>
-                                            <strong>Tax:</strong>'.$billing->tax.' (%)<br>
-                                        <strong>Fri_ch:</strong>'.$billing->freight_charges.'';
+                // Provide compact billing details including discounts, tax and freight
+                $details = '<strong>Dis:</strong>'.$billing->discount.' (%)<br>';
+                $details .= '<strong>Tax:</strong>'.$billing->tax.' (%)<br>';
+                $details .= '<strong>Fri_ch:</strong>'.($billing->freight_charges ?? 0).'<br>';
+
+                // Additionally include a quick stock-summary for the cart
+                $cart = json_decode($billing->cart, true);
+                if (is_array($cart) && count($cart) > 0) {
+                    $lowStock = 0;
+                    $outStock = 0;
+                    foreach ($cart as $item) {
+                        $product = Product::find($item['productId'] ?? null);
+                        if (! $product) continue;
+                        $qty = isset($item['quantity']) ? floatval($item['quantity']) : 1;
+                        $stock = $product->stock_qty ?? 0;
+                        if ($stock <= 0) $outStock++;
+                        elseif ($qty > $stock) $lowStock++;
+                    }
+                    if ($outStock > 0) {
+                        $details .= '<div class="text-danger">Out of stock items: '.$outStock.'</div>';
+                    }
+                    if ($lowStock > 0) {
+                        $details .= '<div class="text-warning">Insufficient stock items: '.$lowStock.'</div>';
+                    }
+                }
+
+                return $details;
             })
             ->addColumn('created', function (Billing $billing) {
                 return $billing->created_at->format('d-m-Y h:i A');

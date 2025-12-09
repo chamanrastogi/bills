@@ -165,7 +165,7 @@
                                     <!-- Grand Total and Submit Button -->
                                     <div class="text-right">
                                         <div class="row mb-2">
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="discount">Discount (%):</label>
                                                     <input type="number" id="discount" class="form-control"
@@ -174,24 +174,16 @@
                                                         Amount: {{ MONEY }}0</small>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="tax">Tax (%):</label>
+                                                    <label for="tax">Gst Tax (%):</label>
                                                     <input type="number" id="tax" class="form-control"
                                                         min="0" max="100" value="{{ $template->tax }}">
-                                                    <small id="taxAmount" class="form-text text-muted">Tax Amount:
+                                                    <small id="taxAmount" class="form-text text-muted">Gst Tax Amount:
                                                         {{ MONEY }}0</small>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label for="gst">Gst ({{ MONEY }}):</label>
-                                                    <input type="number" id="gst" class="form-control"
-                                                        min="0" step="0.01" value="0">
-                                                    <small id="gstAmount" class="form-text text-muted">Gst Added:
-                                                        {{ MONEY }}0</small>
-                                                </div>
-                                            </div>
+
                                         </div>
 
                                         <!-- Update Grand Total and Submit Button Section -->
@@ -227,7 +219,6 @@
                 $('#grandTotal').text(`Grand Total: {{ MONEY }}${finalTotal.toFixed(2)}`);
                 $('#discountAmount').text(`Discount Amount: {{ MONEY }}${discountAmount.toFixed(2)}`);
                 $('#taxAmount').text(`Tax Amount: {{ MONEY }}${taxAmount.toFixed(2)}`);
-                $('#gstAmount').text(`Gst Added: {{ MONEY }}${gstAmount.toFixed(2)}`);
 
             }
             // Function to populate products based on selected type
@@ -501,7 +492,7 @@
                 $('#submitCartBtn').on('click', function() {
                     const discount = parseFloat($('#discount').val()) || 0;
                     const tax = parseFloat($('#tax').val()) || 0;
-                    const gstAmount = parseFloat($('#gst').val()) || 0;
+                   // const gstAmount = parseFloat($('#gst').val()) || 0;
                     const customerId = $('.customer').val();
                     const cartItems = [];
                     $('#billTable tr').each(function() {
@@ -540,7 +531,7 @@
                     // Calculate discounted total and apply tax
                     const discountedTotal = grandTotal * (1 - (discount / 100));
                     const taxAmount = discountedTotal * (tax / 100);
-                    const finalTotal = discountedTotal + taxAmount + gstAmount;
+                    const finalTotal = discountedTotal + taxAmount ;
 
                     const data = {
                         cart_items: cartItems,
@@ -549,7 +540,6 @@
                         discount_amount: grandTotal - discountedTotal,
                         tax,
                         tax_amount: taxAmount,
-                        gst_amount: gstAmount,
                         customer_id: customerId,
                     };
 

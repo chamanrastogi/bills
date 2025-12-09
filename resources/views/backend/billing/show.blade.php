@@ -20,7 +20,7 @@
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
-                         
+
                         </table>
                         @if ($billings->count() != 0)
                             <div class="ms-3">
@@ -111,7 +111,7 @@
                 ],
                 "drawCallback": function( settings ) {
     feather.replace();
-    
+
 },
                 "lengthMenu": [
                     [10, 25, 50, 100, 1000, 2000, 3000, 10000, -1],
