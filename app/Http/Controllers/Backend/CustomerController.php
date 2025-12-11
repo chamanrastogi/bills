@@ -44,6 +44,7 @@ class CustomerController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'adhar_no' => $request->adhar_no,
+            'gst' => $request->gst,
             'address' => $request->address,
             'opening_balance' => $request->opening_balance,
         ]);
@@ -86,6 +87,7 @@ class CustomerController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'adhar_no' => $request->adhar_no,
+            'gst' => $request->gst,
             'address' => $request->address,
             'opening_balance' => $request->opening_balance,
         ]);

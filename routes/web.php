@@ -29,10 +29,12 @@ Route::get('/clear-cache', function () {
     return '<h1>Cache facade value cleared</h1>';
 });
 
-Route::get('/route-cache', function () {
-    $exitCode = Artisan::call('route:clear');
+Route::get('/re', function () {
+    Artisan::call('migrate:refresh', [
+        '--path' => 'database/migrations/2024_11_12_093838_create_customers_table.php',
+    ]);
 
-    return '<h1>Route facade value cleared</h1>';
+    return '<h1>Recreate with seed</h1>';
 });
 
 Route::get('/', [IndexController::class, 'Home'])->middleware('debugbar.role')->name('home');
