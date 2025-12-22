@@ -5,11 +5,7 @@ namespace App\DataTables;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
-use Yajra\DataTables\Html\Builder as HtmlBuilder;
-use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Yajra\DataTables\Html\Editor\Editor;
-use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
 class CategoryDataTable extends DataTable
@@ -17,14 +13,11 @@ class CategoryDataTable extends DataTable
     /**
      * Build the DataTable class.
      *
-     * @param QueryBuilder $query Results from query() method.
+     * @param  QueryBuilder  $query  Results from query() method.
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-         ->setRowClass(function ($row) {
-                return 'category-' . $row->id;
-            })
             ->addColumn('action', 'category.action')
             ->addColumn('created_at', function ($row) {
                 return date('d-m-Y H:i:s A', strtotime($row->created_at));
@@ -38,10 +31,10 @@ class CategoryDataTable extends DataTable
                 $status = $row->status == 0 ? 'Active' : 'Deactive';
 
                 return '<button type="button"
-                            onClick="statusFunction(' . $row->id . ', \'' . $name . '\')"
-                            class="shadow-none badge badge-light-' . $badge . ' warning changestatus' . $row->id . ' bs-tooltip"
+                            onClick="statusFunction('.$row->id.', \''.$name.'\')"
+                            class="shadow-none badge badge-light-'.$badge.' warning changestatus'.$row->id.' bs-tooltip"
                             data-toggle="tooltip" data-placement="top" title="Status"
-                            data-original-title="Status">' . $status . '</button>';
+                            data-original-title="Status">'.$status.'</button>';
             })
             // Action column (edit + delete only)
             ->addColumn('action', function ($row) {
@@ -49,15 +42,15 @@ class CategoryDataTable extends DataTable
                 $edit = route('category.edit', $row->id);
 
                 return
-                    '<a href="' . $edit . '"
+                    '<a href="'.$edit.'"
                         class="action-btn btn-edit bs-tooltip me-2"
                         data-toggle="tooltip" data-placement="top" title="Edit"
                         data-bs-original-title="Edit">
                         <i data-feather="edit"></i>
                     </a>'
-                    . ' <a href="javascript:void(0)"
-                        onClick="deleteFunction(' . $row->id . ', \'' . $name . '\')"
-                        class="action-btn btn-edit bs-tooltip me-2 delete' . $row->id . '"
+                    .' <a href="javascript:void(0)"
+                        onClick="deleteFunction('.$row->id.', \''.$name.'\')"
+                        class="action-btn btn-edit bs-tooltip me-2 delete'.$row->id.'"
                         data-toggle="tooltip" data-placement="top" title="Delete"
                         data-bs-original-title="Delete">
                         <i data-feather="trash-2"></i>
@@ -95,18 +88,18 @@ class CategoryDataTable extends DataTable
                 // Custom DOM layout
                 'dom' =>
                 // Top section
-                "<'dt--top-section'<'row' " .
-                    "<'col-sm-12 col-md-6 d-flex justify-content-md-start justify-content-center'lB>" .
-                    "<'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-center mt-md-0 mt-3'f>" .
-                    '>>' .
+                "<'dt--top-section'<'row' ".
+                    "<'col-sm-12 col-md-6 d-flex justify-content-md-start justify-content-center'lB>".
+                    "<'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-center mt-md-0 mt-3'f>".
+                    '>>'.
 
                     // Table
-                    "<'table-responsive' tr>" .
+                    "<'table-responsive' tr>".
 
                     // Bottom section
-                    "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center' " .
-                    "<'dt--pages-count mb-sm-0 mb-3'i>" .
-                    "<'dt--pagination'p>" .
+                    "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center' ".
+                    "<'dt--pages-count mb-sm-0 mb-3'i>".
+                    "<'dt--pagination'p>".
                     '>',
 
                 // Export Buttons
@@ -174,11 +167,11 @@ class CategoryDataTable extends DataTable
             Column::computed('status'),
             Column::computed('created_at'),
             Column::computed('updated_at'),
-             Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(60)
-                  ->addClass('text-center'),
+            Column::computed('action')
+                ->exportable(false)
+                ->printable(false)
+                ->width(60)
+                ->addClass('text-center'),
         ];
     }
 
@@ -187,6 +180,6 @@ class CategoryDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Category_' . date('YmdHis');
+        return 'Category_'.date('YmdHis');
     }
 }

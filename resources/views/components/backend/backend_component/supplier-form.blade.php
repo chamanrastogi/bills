@@ -50,7 +50,7 @@
                     :value="$supplier->email ?? ''"
                     placeholder="Email"
                 />
-                <x-form.input-error :messages="$errors->get('email')" />
+               
             </div>
         </div>
 
@@ -62,32 +62,14 @@
                     :value="$supplier->gst_no ?? ''"
                     placeholder="GST Number"
                 />
-                <x-form.input-error :messages="$errors->get('gst_no')" />
+                
             </div>
         </div>
 
 
     </div>
 
- <div class="row pt-3">
-        <div class="col-sm-10">
-            @php
-                $small_img = !empty($supplier->bill_image)
-                    ? preg_replace('/\.(?=[^.]*$)/', '_thumb.', $supplier->bill_image)
-                    : '/upload/no_image.jpg';
-            @endphp
 
-            <x-form.input-label for="bill_image" value="Bill Image" />
-            <x-form.file-input name="bill_image" id="bill_image" onchange="mainThamUrl(this)"
-                placeholder="Main Thumbnail" />
-            <x-form.input-error :messages="$errors->get('bill_image')" />
-            <img src="" id="mainThmb" class="img-thumbnail img-fluid img-responsive w-10 my-3">
-        </div>
-
-        <div class="mt-3 col-sm-2">
-            <img src="{{ asset($small_img) }}" class="img-thumbnail img-fluid img-responsive w-10">
-        </div>
-    </div>
     {{-- Address --}}
     <div class="row mb-3">
         <div class="col-12">
@@ -97,7 +79,7 @@
                 rows="2"
                 placeholder="Address"
             >{{ $supplier->address ?? '' }}</x-form.textarea>
-            <x-form.input-error :messages="$errors->get('address')" />
+           
         </div>
     </div>
 
@@ -111,7 +93,7 @@
                 rows="2"
                 placeholder="Account Details"
             >{{ $supplier->account ?? '' }}</x-form.textarea>
-            <x-form.input-error :messages="$errors->get('account')" />
+           
         </div>
     </div>
 

@@ -20,10 +20,10 @@ class PaymentController extends Controller
     public function Addpayment(Customer $customer)
     {
 
-        $payment_modes = explode(',', MODE);
+        $payment_modes = MODE;
         $customer_id = $customer;
         // dd($customer->balance());
-        $balance = $customer->balance();
+        $balance = abs($customer->balance());
         $customer_name = $customer->name;
 
         return view('backend.payment.add_payment', compact('payment_modes', 'customer_id', 'balance', 'customer_name'));
@@ -82,7 +82,7 @@ class PaymentController extends Controller
     public function edit(Billing $billing, Request $request)
     {
         // dd($billing);
-        $payment_modes = explode(',', MODE);
+        $payment_modes = MODE;
         $customer_id = $request->id;
 
         return view('backend.payment.edit_payment', compact('billing', 'payment_modes', 'customer_id'));

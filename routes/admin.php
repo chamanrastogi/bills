@@ -38,7 +38,7 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
         Route::post('/delete/admin', 'DeleteAdmin')->name('delete.admin');
     });
 
-       // Category All Routes
+    // Category All Routes
     Route::resource('category', CategoryController::class);
     Route::post('/category/status', [CategoryController::class, 'StatusUpdate'])->name('category.status');
     Route::post('/category/delete', [CategoryController::class, 'Delete'])->name('category.delete');
@@ -48,7 +48,6 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::resource('type', TypeController::class);
     Route::post('/type/status', [TypeController::class, 'StatusUpdate'])->name('type.status');
     Route::post('/type/delete', [TypeController::class, 'Delete'])->name('type.delete');
-
 
     // Purities All Routes
     Route::resource('purity', PurityController::class);
@@ -61,7 +60,6 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::post('/products/delete', [ProductController::class, 'Delete'])->name('product.delete');
     Route::post('/products/purity', [ProductController::class, 'GetPurity'])->name('product.purity_units');
     Route::get('/products/type/{type}', [ProductController::class, 'GetProducts'])->name('product.type');
-
 
     // Color All Routes
     Route::resource('units', UnitController::class);
@@ -85,12 +83,12 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::post('/supplier/status', [SupplierController::class, 'StatusUpdate'])->name('supplier.status');
     Route::post('/supplier/delete', [SupplierController::class, 'Delete'])->name('supplier.delete');
     Route::get('/supplier/{supplier}/full-pay', [SupplierController::class, 'getFullPay'])
-    ->name('supplier.fullPay.form');
+        ->name('supplier.fullPay.form');
 
     Route::post('/supplier/{supplier}/full-pay', [SupplierController::class, 'fullPay'])
-    ->name('supplier.fullPay');
+        ->name('supplier.fullPay');
 
-     // Supplier Billing All Routes
+    // Supplier Billing All Routes
     Route::resource('supplier_billings', SupplierBillingController::class);
     Route::post('/supplier_billings/status', [SupplierBillingController::class, 'StatusUpdate'])->name('supplier_billings.status');
     Route::post('/supplier_billings/delete', [SupplierBillingController::class, 'Delete'])->name('supplier_billings.delete');
@@ -112,6 +110,8 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
         Route::get('/billing/showall', 'Showall')->name('billing.showall');
         Route::get('/billings/ajax_load', 'Ajax_Load')->name('billing.ajax_load');
         Route::get('/billings/datatable', 'datatable')->name('billing.datatable');
+        Route::get('/getcustomer/{id}', 'GetCustomer')->name('billing.customer');
+        Route::get('/getcustomerbalance/{id}', 'GetCustomerBalance')->name('billing.customer.balance');
         // Route::patch('/update/site/setting/{id}', 'UpdateSiteSetting')->name('update.site.setting');
 
     });

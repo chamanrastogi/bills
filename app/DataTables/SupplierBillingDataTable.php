@@ -3,13 +3,11 @@
 namespace App\DataTables;
 
 use App\Models\SupplierBilling;
-use COM;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
+use Illuminate\Support\Str;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
-
 use Yajra\DataTables\Html\Column;
-
 use Yajra\DataTables\Services\DataTable;
 
 class SupplierBillingDataTable extends DataTable
@@ -17,7 +15,7 @@ class SupplierBillingDataTable extends DataTable
     /**
      * Build the DataTable class.
      *
-     * @param QueryBuilder $query Results from query() method.
+     * @param  QueryBuilder  $query  Results from query() method.
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
@@ -25,7 +23,8 @@ class SupplierBillingDataTable extends DataTable
 
         return $dataTable
             ->setRowClass(function ($row) {
-                return 'supplier_billing-' . $row->id;
+                return Str::snake(class_basename($row)).'-'.$row->id;
+
             })
             ->addColumn('bill_image', function ($row) {
 
@@ -35,48 +34,47 @@ class SupplierBillingDataTable extends DataTable
                 // Download button only if real image exists
                 $downloadBtn = '';
                 if ($row->bill_image) {
-                    $downloadBtn = '<a href="' . $image . '" download class="action-btn btn-edit bs-tooltip me-2" data-toggle="tooltip" data-placement="top" title="Download">
+                    $downloadBtn = '<a href="'.$image.'" download class="action-btn btn-edit bs-tooltip me-2" data-toggle="tooltip" data-placement="top" title="Download">
                 <i data-feather="download-cloud"></i></a>';
                 }
 
-                return '<img src="' . $image . '" class="img-thumbnail img-fluid" style="max-width: 80px; max-height: 80px;">' . $downloadBtn . '';
+                return '<img src="'.$image.'" class="img-thumbnail img-fluid" style="max-width: 80px; max-height: 80px;">'.$downloadBtn.'';
             })
-
 
             ->addColumn('supplier_name', function ($row) {
                 $name = $row->supplier->shop_name ?? 'IN HOUSE';
 
                 $badge = $row->supplier ? 'info' : 'secondary';
 
-                return '<span class="badge badge-' . $badge . '">' . $name . '</span>';
+                return '<span class="badge badge-'.$badge.'">'.$name.'</span>';
             })
             // Separate status column
 
             ->addColumn('details', function ($row) {
                 return '
         <div class="product-details">
-            <strong class="text-info fw-bold">Payment Mode:</strong> ' . MODE[$row->payment_mode] .  '<br>
-            <strong class="text-success fw-bold">Bill Amount:</strong> ' . MONEY . $row->bill_amount .  '<br>
-            <strong class="text-secondary fw-bold">Paid Amount:</strong> ' . MONEY . $row->paid .  '<br>
-            <strong class="text-warning fw-bold">Created At:</strong> ' . $row->created_at->format('d-M-Y') . '<br>
-            <strong class="text-danger fw-bold">Updated At:</strong> ' . $row->updated_at->format('d-M-Y') . '
+            <strong class="text-info fw-bold">Payment Mode:</strong> '.MODE[$row->payment_mode].'<br>
+            <strong class="text-success fw-bold">Bill Amount:</strong> '.MONEY.$row->bill_amount.'<br>
+            <strong class="text-secondary fw-bold">Paid Amount:</strong> '.MONEY.$row->paid.'<br>
+            <strong class="text-warning fw-bold">Created At:</strong> '.$row->created_at->format('d-M-Y').'<br>
+            <strong class="text-danger fw-bold">Updated At:</strong> '.$row->updated_at->format('d-M-Y').'
         </div> ';
             })
             // Action column (edit + delete only)
             ->addColumn('action', function ($row) {
-                $name = 'SupplierBilling';
+                $name = Str::snake(class_basename($row));
                 $edit = route('supplier_billings.edit', $row->id);
 
                 return
-                    '<a href="' . $edit . '"
+                    '<a href="'.$edit.'"
                         class="action-btn btn-edit bs-tooltip me-2"
                         data-toggle="tooltip" data-placement="top" title="Edit"
                         data-bs-original-title="Edit">
                         <i data-feather="edit"></i>
                     </a>'
-                    . ' <a href="javascript:void(0)"
-                        onClick="deleteFunction(' . $row->id . ', \'' . $name . '\')"
-                        class="action-btn btn-edit bs-tooltip me-2 delete' . $row->id . '"
+                    .' <a href="javascript:void(0)"
+                        onClick="deleteFunction('.$row->id.', \''.$name.'\')"
+                        class="action-btn btn-edit bs-tooltip me-2 delete'.$row->id.'"
                         data-toggle="tooltip" data-placement="top" title="Delete"
                         data-bs-original-title="Delete">
                         <i data-feather="trash-2"></i>
@@ -113,18 +111,18 @@ class SupplierBillingDataTable extends DataTable
                 // Custom DOM layout
                 'dom' =>
                 // Top section
-                "<'dt--top-section'<'row' " .
-                    "<'col-sm-12 col-md-6 d-flex justify-content-md-start justify-content-center'lB>" .
-                    "<'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-center mt-md-0 mt-3'f>" .
-                    '>>' .
+                "<'dt--top-section'<'row' ".
+                    "<'col-sm-12 col-md-6 d-flex justify-content-md-start justify-content-center'lB>".
+                    "<'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-center mt-md-0 mt-3'f>".
+                    '>>'.
 
                     // Table
-                    "<'table-responsive' tr>" .
+                    "<'table-responsive' tr>".
 
                     // Bottom section
-                    "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center' " .
-                    "<'dt--pages-count mb-sm-0 mb-3'i>" .
-                    "<'dt--pagination'p>" .
+                    "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center' ".
+                    "<'dt--pages-count mb-sm-0 mb-3'i>".
+                    "<'dt--pagination'p>".
                     '>',
 
                 // Export Buttons
@@ -205,6 +203,6 @@ class SupplierBillingDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'SupplierBilling_' . date('YmdHis');
+        return 'SupplierBilling_'.date('YmdHis');
     }
 }

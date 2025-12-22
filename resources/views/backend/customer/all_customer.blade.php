@@ -52,7 +52,7 @@
                                                     "<br><span class='fw-bold text-danger'>Cr:</span> " .
                                                     $customer->bills()->sum('payment') .
                                                     "<br><span class='fw-bold text-danger'>Bal: </span> " .
-                                                    $customer->balance() !!}
+                                                    abs($customer->balance()) !!}
                                             </td>
 
                                             <td class="text-center">

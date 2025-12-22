@@ -18,7 +18,8 @@
                                         <div class="col-md-6">
                                             <label for="customer" class="form-label">Customer:</label>
 
-                                            <select name="customer" id="customer" class="form-control customer">
+                                            <select name="customer" id="customer" class="form-control customer"
+                                                onchange="checkBalance(this.value)">
                                                 <option value="" disabled selected>Select Customer</option>
                                                 @if (is_array($customers) || $customers instanceof \Illuminate\Support\Collection)
                                                     @foreach ($customers as $key => $value)
@@ -26,8 +27,43 @@
                                                     @endforeach
                                                 @endif
                                             </select>
+
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-center">
+                                            <a href="{{ route('customers.create') }}" class="btn btn-info">Add
+                                                Customer</a>
                                         </div>
                                     </div>
+                                    <div id="balance-section" style="display: none;">
+                                        <div class="row mt-3">
+                                            <div class="col-md-8">
+                                                <p>Customer Balance: <span id="customer-balance">0</span></p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="checkbox" id="pay-balance" /> Pay old balance
+                                            </div>
+                                        </div>
+                                        <div id="payment-fields" style="display: none;">
+                                            <div class="row mt-3">
+                                                <div class="col-md-12">
+                                                    <label for="payment-amount">Payment Amount:</label>
+                                                    <input type="number" id="payment-amount" class="form-control"
+                                                        min="0" step="0.01">
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                     <div class="row pt-3" id="paymode" style="display: none;">
+                                                 <div class="col-md-12">
+                                                    <label for="payment-mode">Payment Mode:</label>
+
+                                                    <x-form.select name="payment_mode" id="payment-mode"
+                                                        :options="MODE" :selected="0"
+                                                        placeholder="Select Payment Mode" />
+                                                </div>
+                                            </div>
                                 </div>
                             </div>
                         </div>
@@ -83,13 +119,15 @@
                                                     <label class="form-label">SKU</label>
                                                     <input type="text" id="pd_sku" class="form-control" readonly>
                                                 </div>
-                                                 <div class="col-md-2">
+                                                <div class="col-md-2">
                                                     <label class="form-label">Category</label>
-                                                    <input type="text" id="pd_category" class="form-control" readonly>
+                                                    <input type="text" id="pd_category" class="form-control"
+                                                        readonly>
                                                 </div>
-                                                 <div class="col-md-2">
+                                                <div class="col-md-2">
                                                     <label class="form-label">Product</label>
-                                                    <input type="text" id="pd_product" class="form-control" readonly>
+                                                    <input type="text" id="pd_product" class="form-control"
+                                                        readonly>
                                                 </div>
                                                 <div class="col-md-1">
                                                     <label class="form-label">Gross Wt</label>
@@ -120,7 +158,8 @@
                                             <div class="row mt-2">
                                                 <div class="col-md-3">
                                                     <label class="form-label">Purity</label>
-                                                    <input type="text" id="pd_purity" class="form-control" readonly>
+                                                    <input type="text" id="pd_purity" class="form-control"
+                                                        readonly>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <label class="form-label">Computed Price</label>
@@ -187,9 +226,68 @@
                                         </div>
 
                                         <!-- Update Grand Total and Submit Button Section -->
-                                        <h3 id="grandTotal">Grand Total: {{ MONEY }}0</h3>
-                                        <button type="button" class="btn btn-success" id="submitCartBtn">Add to
-                                            Cart</button>
+                                        <div id="totals-section" class="card p-3 mb-3"
+                                            style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
+                                            <div class="row mb-2">
+                                                <div class="col-12">
+                                                    <strong>Product Total:</strong>
+                                                </div>
+                                                <div class="col-12 text-end">
+                                                    <span id="productTotal">{{ MONEY }}0</span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-12">
+                                                    <strong>Discount (%):</strong>
+                                                </div>
+                                                <div class="col-12 text-end">
+                                                    <span id="discountPercent">0%</span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-12">
+                                                    <strong>GST Tax (%):</strong>
+                                                </div>
+                                                <div class="col-12 text-end">
+                                                    <span id="gstPercent">0%</span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-12">
+                                                    <strong>Old Balance:</strong>
+                                                </div>
+                                                <div class="col-12 text-end">
+                                                    <span id="oldBalanceDisplay">{{ MONEY }}0</span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-12">
+                                                    <strong>Total Due:</strong>
+                                                </div>
+                                                <div class="col-12 text-end">
+                                                    <span id="totalDue">{{ MONEY }}0</span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-12">
+                                                    <strong>Payment:</strong>
+                                                </div>
+                                                <div class="col-12 text-end">
+                                                    <span id="paymentDisplay">{{ MONEY }}0</span>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <strong>Net Balance:</strong>
+                                                </div>
+                                                <div class="col-12 text-end">
+                                                    <span id="netBalance">{{ MONEY }}0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-success" id="submitCartBtn"
+                                            disabled>Add to Cart</button>
                                     </div>
                                 </div>
                             </div>
@@ -204,7 +302,60 @@
 
     @section('script')
         <script>
+            $('.customer').select2({
+                placeholder: 'Select an option'
+            });
+
+            function checkBalance(customerId) {
+                if (!customerId) {
+                    $('#balance-section').hide();
+                    oldBalance = 0;
+                    updateGrandTotal();
+                    return;
+                }
+                $.ajax({
+                    url: '{{ route('billing.customer', ':id') }}'.replace(':id', customerId),
+                    method: 'GET',
+                    success: function(data) {
+                        if (data.status && data.customer.balance > 0) {
+                            oldBalance = parseFloat(data.customer.balance);
+                            $('#customer-balance').text(data.customer.balance);
+                            $('#payment-amount').attr('max', data.customer.balance);
+                            $('#balance-section').show();
+                            $('#paymode').show();
+                        } else {
+                            oldBalance = 0;
+                            $('#balance-section').hide();
+                        }
+                        updateGrandTotal();
+                    },
+                    error: function(xhr) {
+                        alert('Unable to fetch customer balance');
+                        oldBalance = 0;
+                        updateGrandTotal();
+                    }
+                });
+            }
+
+            $('#pay-balance').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('#payment-fields').show();
+                    paymentAmount = parseFloat($('#payment-amount').val()) || 0;
+                } else {
+                    $('#payment-fields').hide();
+                    paymentAmount = 0;
+                }
+                updateGrandTotal();
+            });
+
+            $('#payment-amount').on('input', function() {
+                paymentAmount = parseFloat($(this).val()) || 0;
+                updateGrandTotal();
+            });
+
             let grandTotal = 0;
+            let oldBalance = 0;
+            let paymentAmount = 0;
 
             function updateGrandTotal() {
                 const discount = parseFloat($('#discount').val()) || 0;
@@ -213,13 +364,28 @@
 
                 const discountedTotal = grandTotal * (1 - (discount / 100));
                 const taxAmount = discountedTotal * (tax / 100);
-                const finalTotal = discountedTotal + taxAmount + gstAmount; // Add GST amount
-                const discountAmount = grandTotal - discountedTotal;
+                const productTotal = discountedTotal + taxAmount + gstAmount; // Product total after discount and tax
+                const includeOldBalance = $('#pay-balance').is(':checked');
+                const totalDue = productTotal + (includeOldBalance ? oldBalance : 0);
+                const netBalance = totalDue - paymentAmount;
 
-                $('#grandTotal').text(`Grand Total: {{ MONEY }}${finalTotal.toFixed(2)}`);
-                $('#discountAmount').text(`Discount Amount: {{ MONEY }}${discountAmount.toFixed(2)}`);
-                $('#taxAmount').text(`Tax Amount: {{ MONEY }}${taxAmount.toFixed(2)}`);
+                $('#productTotal').text(`{{ MONEY }}${productTotal.toFixed(2)}`);
+                $('#discountPercent').text(`${discount}%`);
+                $('#gstPercent').text(`${tax}%`);
+                $('#oldBalanceDisplay').text(`{{ MONEY }}${oldBalance.toFixed(2)}`);
+                $('#totalDue').text(`{{ MONEY }}${totalDue.toFixed(2)}`);
+                $('#paymentDisplay').text(`{{ MONEY }}${paymentAmount.toFixed(2)}`);
+                $('#netBalance').text(`{{ MONEY }}${netBalance.toFixed(2)}`);
+                $('#discountAmount').text(
+                `Discount Amount: {{ MONEY }}${ (grandTotal - discountedTotal).toFixed(2) }`);
+                $('#taxAmount').text(`Gst Tax Amount: {{ MONEY }}${taxAmount.toFixed(2)}`);
 
+                // Enable/disable submit button based on product total
+                if (grandTotal > 0) {
+                    $('#submitCartBtn').prop('disabled', false);
+                } else {
+                    $('#submitCartBtn').prop('disabled', true);
+                }
             }
             // Function to populate products based on selected type
             function datatable() {
@@ -257,6 +423,7 @@
             }
 
             $(document).ready(function() {
+                const getCustomerUrl = "{{ route('billing.customer', ':id') }}";
                 // gst input handled via updateGrandTotal when its value changes
                 $('#billing_system').hide();
                 $('#category_id').on('change', function() {
@@ -294,9 +461,9 @@
                     const gst = parseFloat(opt.data('gst')) || 0;
                     const img = opt.data('image') || '';
                     const purity = opt.data('purity') || '';
-                    const purity_name =  opt.data('purity-name') || '';
-                    const category =  opt.data('category') || '';
-                    const product =  opt.data('product') || '';
+                    const purity_name = opt.data('purity-name') || '';
+                    const category = opt.data('category') || '';
+                    const product = opt.data('product') || '';
                     $('#pd_sku').val(sku);
                     $('#pd_gross').val(gross);
                     $('#pd_net').val(net);
@@ -324,7 +491,31 @@
                     updateGrandTotal();
                 });
                 $(".customer").on("change", function() {
-                    $('#billing_system').show();
+                    const customerId = $(this).val();
+
+                    if (!customerId) {
+                        $('#billing_system').hide();
+                        return;
+                    }
+                    const url = getCustomerUrl.replace(':id', customerId);
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json',
+                        beforeSend: function() {
+                            $('#billing_system').hide();
+                        },
+                        success: function(response) {
+                            if (response.status) {
+                                $('#billing_system').show();
+                                // Example: populate fields
+
+                            }
+                        },
+                        error: function(xhr) {
+                            alert(xhr.responseJSON?.message ?? 'Unable to fetch customer');
+                        }
+                    });
                 });
 
                 function showProductError(msg) {
@@ -350,7 +541,7 @@
                     const selectedOption = $('#productitems option:selected');
                     const productId = selectedOption.val();
                     const priceFromOption = parseFloat(selectedOption.data('price')) || 0;
-                    const productText =  selectedOption.data('product') || '';
+                    const productText = selectedOption.data('product') || '';
                     const sku = selectedOption.data('sku') || '';
                     const image = selectedOption.data('image') || '';
                     const makingFromOption = parseFloat(selectedOption.data('making')) || 0;
@@ -436,7 +627,6 @@
                     $('#quantity').val(1);
 
                     // Update displayed grand total
-                    $('#grandTotal').text(`Grand Total: {{ MONEY }}${grandTotal.toFixed(2)}`);
                     updateGrandTotal();
                 });
 
@@ -474,7 +664,6 @@
                         newGrand += rt;
                     });
                     grandTotal = newGrand;
-                    $('#grandTotal').text(`Grand Total: {{ MONEY }}${grandTotal.toFixed(2)}`);
                     updateGrandTotal();
                 });
 
@@ -485,14 +674,14 @@
 
                     grandTotal -= rowTotal;
                     grandTotal = Math.max(0, grandTotal); // Ensure grandTotal doesn't go below 0
-                    $('#grandTotal').text(`Grand Total: {{ MONEY }}${grandTotal.toFixed(2)}`);
                     row.remove();
                     updateGrandTotal();
                 });
                 $('#submitCartBtn').on('click', function() {
                     const discount = parseFloat($('#discount').val()) || 0;
                     const tax = parseFloat($('#tax').val()) || 0;
-                   // const gstAmount = parseFloat($('#gst').val()) || 0;
+                    const balancePay = parseFloat($('#paymentDisplay').val()) || 0;
+                    // const gstAmount = parseFloat($('#gst').val()) || 0;
                     const customerId = $('.customer').val();
                     const cartItems = [];
                     $('#billTable tr').each(function() {
@@ -531,7 +720,7 @@
                     // Calculate discounted total and apply tax
                     const discountedTotal = grandTotal * (1 - (discount / 100));
                     const taxAmount = discountedTotal * (tax / 100);
-                    const finalTotal = discountedTotal + taxAmount ;
+                    const finalTotal = discountedTotal + taxAmount;
 
                     const data = {
                         cart_items: cartItems,
@@ -541,7 +730,13 @@
                         tax,
                         tax_amount: taxAmount,
                         customer_id: customerId,
+                        customer_balance: balancePay,
                     };
+
+                    if ($('#pay-balance').is(':checked')) {
+                        data.payment = parseFloat($('#payment-amount').val()) || 0;
+                        data.payment_mode = $('#payment-mode').val();
+                    }
 
                     const form = $('<form>', {
                         action: '{{ route('cart.submit') }}',

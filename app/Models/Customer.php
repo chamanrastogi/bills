@@ -26,9 +26,9 @@ class Customer extends Model
     {
         $totalBills = $this->bills()->sum('grand_total');
         $opening_balance = $this->opening_balance;
-        $totalPayments = $this->bills()->sum('payment');
+        $totalPayments = $this->bills()->sum('payment','grand_total');
 
-        return $totalBills - $totalPayments - $opening_balance;
+        return ($totalBills +$opening_balance) - $totalPayments ;
     }
      public function scopeActive($query, $status)
     {

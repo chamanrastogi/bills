@@ -38,50 +38,62 @@ class SettingController extends Controller
     // End Method
     public function UpdateSiteSetting(Request $request, $id)
     {
+        $site = SiteSetting::findOrFail($id);
 
-        $site_id = $id;
-
+        // Validate
         $validated = $request->validate([
-            'site_title' => 'required',
-            'app_name' => 'required',
-            'declaration' => 'required',
-            'message' => 'required',
+            'site_title' => 'required|string|max:255',
+            'app_name' => 'required|string|max:255',
+
+            'email' => 'nullable|email|max:100',
+            'support_phone' => 'nullable|string|max:50',
+
+            'tax' => 'nullable|numeric|min:0|max:50',
+
+            'gst' => 'nullable|string|max:255',
+            'address' => 'nullable|string',
+
+            // Bank info
+            'bank_name' => 'nullable|string|max:150',
+            'bank_holder_name' => 'nullable|string|max:150',
+            'bank_ifsc' => 'nullable|string|max:50',
+            'bank_account' => 'nullable|string|max:100',
+            'bank_branch' => 'nullable|string|max:150',
+            'pan_no' => 'nullable|string|max:50',
+
+            // Declaration & message
+            'declaration' => 'required|string',
+            'message' => 'required|string|max:255',
+
+            // Upload validations
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'favicon' => 'nullable|image|mimes:jpg,jpeg,png,webp,ico|max:2048',
+            'bank_qr_code' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
-        if ($request->file('logo')) {
-            $image = $request->file('logo');
-            $name_gen = hexdec(uniqid()).'.'.$image->getClientOriginalExtension();
-            $image = $request->file('logo');
-            $save_url = $this->imageGenrator($image, $this->image_preset_main, $this->image_preset, $this->path);
-        } else {
-            $save_url = SiteSetting::find($site_id)->logo;
-        }
 
-        if ($request->file('favicon')) {
-            $image = $request->file('favicon');
-            $name_gen = hexdec(uniqid()).'.'.$image->getClientOriginalExtension();
-            $image = $request->file('favicon');
-            $save_url2 = $this->imageGenrator($image, $this->image_preset_main, $this->image_preset, $this->path);
-        } else {
-            $save_url2 = SiteSetting::find($site_id)->favicon;
-        }
+        // Handle image uploads with fallback
+        $save_logo = $request->file('logo')
+            ? $this->imageGenrator($request->file('logo'), $this->image_preset_main, $this->image_preset, $this->path)
+            : $site->logo;
 
-        if ($request->file('bank_qr_code')) {
-            $image = $request->file('bank_qr_code');
-            $name_gen = hexdec(uniqid()).'.'.$image->getClientOriginalExtension();
-            $image = $request->file('bank_qr_code');
-            $save_url_map = $this->imageGenrator($image, $this->image_preset_main, $this->image_preset, $this->path);
-        } else {
-            $save_url_map = SiteSetting::find($site_id)->bank_qr_code;
-        }
-        SiteSetting::findOrFail($site_id)->update([
+        $save_favicon = $request->file('favicon')
+            ? $this->imageGenrator($request->file('favicon'), $this->image_preset_main, $this->image_preset, $this->path)
+            : $site->favicon;
+
+        $save_bank_qr = $request->file('bank_qr_code')
+            ? $this->imageGenrator($request->file('bank_qr_code'), $this->image_preset_main, $this->image_preset, $this->path)
+            : $site->bank_qr_code;
+
+        // Update database
+        $site->update([
             'site_title' => $request->site_title,
             'support_phone' => $request->support_phone,
             'app_name' => $request->app_name,
             'address' => $request->address,
             'email' => $request->email,
             'tax' => $request->tax,
-            'logo' => $save_url,
-            'favicon' => $save_url2,
+            'logo' => $save_logo,
+            'favicon' => $save_favicon,
             'gst' => $request->gst,
             'bank_name' => $request->bank_name,
             'bank_account' => $request->bank_account,
@@ -91,15 +103,13 @@ class SettingController extends Controller
             'pan_no' => $request->pan_no,
             'declaration' => $request->declaration,
             'message' => $request->message,
-            'bank_qr_code' => $save_url_map,
+            'bank_qr_code' => $save_bank_qr,
         ]);
 
-        $notification = [
-            'message' => 'SiteSetting Updated  Successfully',
+        return redirect()->back()->with([
+            'message' => 'SiteSetting Updated Successfully',
             'alert-type' => 'success',
-        ];
-
-        return redirect()->back()->with($notification);
+        ]);
     } // End Method
 
     public function myshow($table)

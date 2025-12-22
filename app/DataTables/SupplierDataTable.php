@@ -21,7 +21,7 @@ class SupplierDataTable extends DataTable
 
         return $dataTable
             ->setRowClass(function ($row) {
-                return 'supplier-' . $row->id;
+                return 'supplier-'.$row->id;
             })
             // Separate status column
             ->addColumn('status', function ($row) {
@@ -30,25 +30,25 @@ class SupplierDataTable extends DataTable
                 $status = $row->status == 0 ? 'Active' : 'Deactive';
 
                 return '<button type="button"
-                            onClick="statusFunction(' . $row->id . ', \'' . $name . '\')"
-                            class="shadow-none badge badge-light-' . $badge . ' warning changestatus' . $row->id . ' bs-tooltip"
+                            onClick="statusFunction('.$row->id.', \''.$name.'\')"
+                            class="shadow-none badge badge-light-'.$badge.' warning changestatus'.$row->id.' bs-tooltip"
                             data-toggle="tooltip" data-placement="top" title="Status"
-                            data-original-title="Status">' . $status . '</button>';
+                            data-original-title="Status">'.$status.'</button>';
             })
             ->addColumn('balance', function ($row) {
 
                 // If no dues
                 if ($row->balance <= 0) {
-                    return '' . MONEY . ' ' . number_format($row->balance) . '';
+                    return ''.MONEY.' '.number_format($row->balance).'';
                 }
 
                 // If due, clickable balance to full-pay page
                 $url = route('supplier.fullPay.form', $row->id);
 
-                return '<a href="' . $url . '"
+                return '<a href="'.$url.'"
                 class="badge bg-info text-dark"
                 >
-                ' . MONEY . ' ' . number_format($row->balance) . '
+                '.MONEY.' '.number_format($row->balance).'
             </a>';
             })
             // Action column (edit + delete only)
@@ -57,15 +57,15 @@ class SupplierDataTable extends DataTable
                 $edit = route('supplier.edit', $row->id);
 
                 return
-                    '<a href="' . $edit . '"
+                    '<a href="'.$edit.'"
                         class="action-btn btn-edit bs-tooltip me-2"
                         data-toggle="tooltip" data-placement="top" title="Edit"
                         data-bs-original-title="Edit">
                         <i data-feather="edit"></i>
                     </a>'
-                    . ' <a href="javascript:void(0)"
-                        onClick="deleteFunction(' . $row->id . ', \'' . $name . '\')"
-                        class="action-btn btn-edit bs-tooltip me-2 delete' . $row->id . '"
+                    .' <a href="javascript:void(0)"
+                        onClick="deleteFunction('.$row->id.', \''.$name.'\')"
+                        class="action-btn btn-edit bs-tooltip me-2 delete'.$row->id.'"
                         data-toggle="tooltip" data-placement="top" title="Delete"
                         data-bs-original-title="Delete">
                         <i data-feather="trash-2"></i>
@@ -102,18 +102,18 @@ class SupplierDataTable extends DataTable
                 // Custom DOM layout
                 'dom' =>
                 // Top section
-                "<'dt--top-section'<'row' " .
-                    "<'col-sm-12 col-md-6 d-flex justify-content-md-start justify-content-center'lB>" .
-                    "<'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-center mt-md-0 mt-3'f>" .
-                    '>>' .
+                "<'dt--top-section'<'row' ".
+                    "<'col-sm-12 col-md-6 d-flex justify-content-md-start justify-content-center'lB>".
+                    "<'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-center mt-md-0 mt-3'f>".
+                    '>>'.
 
                     // Table
-                    "<'table-responsive' tr>" .
+                    "<'table-responsive' tr>".
 
                     // Bottom section
-                    "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center' " .
-                    "<'dt--pages-count mb-sm-0 mb-3'i>" .
-                    "<'dt--pagination'p>" .
+                    "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center' ".
+                    "<'dt--pages-count mb-sm-0 mb-3'i>".
+                    "<'dt--pagination'p>".
                     '>',
 
                 // Export Buttons
@@ -180,6 +180,7 @@ class SupplierDataTable extends DataTable
             Column::make('shop_name')->title('Shop Name'),
             Column::make('phone')->title('Phone'),
             Column::computed('balance')->title('Balance'),
+            Column::make('address')->title('Address'),
             Column::computed('status'),
             Column::computed('action')
                 ->exportable(false)
@@ -194,6 +195,6 @@ class SupplierDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Supplier_' . date('YmdHis');
+        return 'Supplier_'.date('YmdHis');
     }
 }

@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('phone');
             $table->string('adhar_no')->nullable();
             $table->string('address')->nullable();
-            $table->string('gst')->nullable();
             $table->integer('opening_balance')->default(0);
             $table->boolean('status')->default(0);
             $table->timestamp('created_at')->useCurrent();

@@ -144,26 +144,26 @@
                                                                 </div>
 
                                                                 <div class="col-xl-8 col-lg-7 col-md-6 col-sm-4">
-                                                                    <p class="inv-customer-name">{{ $customer?->name }}
+                                                                    <p class="inv-customer-name">{{ $customer->name }}
                                                                     </p>
-                                                                    <p class="inv-street-addr">{{ $customer?->address }}
+                                                                    <p class="inv-street-addr">{{ $customer->address }}
                                                                     </p>
-                                                                    <p class="inv-email-address">{{ $customer?->email }}
+                                                                    <p class="inv-email-address">{{ $customer->email }}
                                                                     </p>
-                                                                    <p class="inv-email-address">{{ $customer?->phone }}
+                                                                    <p class="inv-email-address">{{ $customer->phone }}
                                                                     </p>
                                                                 </div>
 
                                                                 <div
                                                                     class="col-xl-4 col-lg-5 col-md-6 col-sm-8 col-12 order-sm-0 order-1 text-sm-end">
-                                                                    <p class="inv-customer-name">{{ $customer?->name }}
+                                                                    <p class="inv-customer-name">{{ $customer->name }}
                                                                     </p>
                                                                     <p class="inv-street-addr">
-                                                                        {{ $customer?->billing_address ? $customer?->billing_address : $customer?->address }}
+                                                                        {{ $customer->billing_address ? $customer->billing_address : $customer->address }}
                                                                     </p>
-                                                                    <p class="inv-email-address">{{ $customer?->email }}
+                                                                    <p class="inv-email-address">{{ $customer->email }}
                                                                     </p>
-                                                                    <p class="inv-email-address">{{ $customer?->phone }}
+                                                                    <p class="inv-email-address">{{ $customer->phone }}
                                                                     </p>
                                                                 </div>
 

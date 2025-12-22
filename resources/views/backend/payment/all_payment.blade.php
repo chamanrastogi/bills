@@ -20,10 +20,8 @@
                                     <tr>
                                         <th>-</th>
                                         <th>ID</th>
-                                       
                                         <th>Payment Mode</th>
                                         <th>Amount</th>
-
                                         <th>Created</th>
                                         <th class="text-center">Action</th>
                                     </tr>
@@ -34,18 +32,13 @@
                                     @endphp
                                     @foreach ($payments as $payment)
                                     @php
-                                    
-                                        $modes =explode(",",MODE);
-                                           
+                                        $modes =MODE;
                                     @endphp
                                         <tr class="payment-{{ $payment->id }}">
                                             <td style="width:1%"><span class="form-check form-check-primary"><input
                                                         class="form-check-input mixed_child "
                                                         value="{{ $payment->id }}" type="checkbox"></span></td>
                                             <td>{{ $pay++ }}</td>
-
-
-                                            
                                             <td>{{ $modes[$payment->payment_mode] }}</td>
                                             <td>{{ $payment->payment }}</td>
 

@@ -8,11 +8,12 @@ use App\Models\Billing;
 use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Product;
-use App\Models\SiteSetting;
 use App\Models\Purity;
-use Yajra\DataTables\Facades\DataTables;
+use App\Models\SiteSetting;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class BillingController extends Controller
 {
@@ -27,7 +28,7 @@ class BillingController extends Controller
         });
         $template = SiteSetting::select('tax')->find(1);
 
-        return view('backend.billing.billing', compact('customers','purities', 'template','categories'));
+        return view('backend.billing.billing', compact('customers', 'purities', 'template', 'categories'));
     }
 
     public function cart(Request $request)
@@ -50,7 +51,10 @@ class BillingController extends Controller
         $processedItems = [];
         $subtotal = 0.0;
         $gst_total = 0.0;
-
+        $payment_mode = $cartData['payment_mode'] ?? 0;
+        $grandTotal= $cartData['grand_total'];
+        $payment = $cartData['payment'] ?? 0;
+        $payment =  $grandTotal + $payment;
         DB::beginTransaction();
         try {
             foreach ($cartItems as $item) {
@@ -58,6 +62,7 @@ class BillingController extends Controller
                 $product = Product::find($productId);
                 if (! $product) {
                     DB::rollBack();
+
                     return redirect()->back()->with([
                         'message' => "Product not found (ID: {$productId})",
                         'alert-type' => 'error',
@@ -68,6 +73,7 @@ class BillingController extends Controller
                 $stock = $product->stock_qty ?? 0;
                 if ($stock < $qty) {
                     DB::rollBack();
+
                     return redirect()->back()->with([
                         'message' => "Insufficient stock for product: {$product->name} (available: {$stock})",
                         'alert-type' => 'error',
@@ -105,8 +111,7 @@ class BillingController extends Controller
             $tax_percent = floatval($cartData['tax'] ?? 0);
             $tax_amount = round(($subtotal - $discount_amount) * $tax_percent / 100, 2);
 
-
-            $grandTotal = round($subtotal + $gst_total - $discount_amount + $tax_amount, 2);
+            //$grandTotal = round($subtotal + $gst_total - $discount_amount + $tax_amount, 2);
 
             $billingId = Billing::insertGetId([
                 'customer_id' => $cartData['customer_id'] ?? null,
@@ -117,13 +122,14 @@ class BillingController extends Controller
                 'tax_amount' => $tax_amount,
                 'gst' => 0,
                 'grand_total' => $grandTotal,
-                'payment' => 0,
-                'payment_mode' => 0,
+                'payment' => $payment ?? 0,
+                'payment_mode' => $payment_mode ?? 0,
             ]);
 
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+
             return redirect()->back()->with([
                 'message' => 'Failed to save cart: '.$e->getMessage(),
                 'alert-type' => 'error',
@@ -257,12 +263,32 @@ class BillingController extends Controller
         return $dataTable->render('backend.billing.index');
     }
 
+    public function GetCustomer(int $id): JsonResponse
+    {
+
+        $customer = Customer::select('id', 'opening_balance')->find($id);
+
+        if (! $customer) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Customer not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'customer' => [
+                'id' => $customer->id,
+                'balance' => abs($customer->balance()),
+            ],
+        ]);
+    }
+
     public function Ajax_Load(Request $request, Billing $billing)
     {
         // Note: `freight_charges` column may not exist in the `billing` table in all installs.
         // Select only existing/common columns to avoid SQL errors.
-        $query = Billing::select('id', 'customer_id', 'cart', 'discount', 'tax', 'created_at', 'grand_total')
-            ->where('grand_total', '>', 0)
+        $query = Billing::where('grand_total', '>', 0)
             ->get();
 
         return DataTables::of($query)
@@ -289,12 +315,16 @@ class BillingController extends Controller
             })
             ->addColumn('cart', function (Billing $billing) {
                 $cart = json_decode($billing->cart, true);
+                $grand_total = $billing->grand_total;
+                $payment = $billing->payment;
+                $payment_mode = MODE[$billing->payment_mode];
                 $html = '';
                 if (is_array($cart)) {
                     foreach ($cart as $item) {
                         $product = Product::with('unit')->find($item['productId'] ?? null);
                         if (! $product) {
                             $html .= '<div class="text-muted">[Product not found]</div>';
+
                             continue;
                         }
 
@@ -302,8 +332,8 @@ class BillingController extends Controller
                         $qty = isset($item['quantity']) ? floatval($item['quantity']) : (isset($item['qty']) ? floatval($item['qty']) : 1);
                         $price = isset($item['price']) ? floatval($item['price']) : floatval($product->price ?? 0);
                         $gst = isset($item['gst']) ? floatval($item['gst']) : 0;
-                        $lineBase = $price * $qty;
-                        $lineTotal = $lineBase * (1 + ($gst / 100));
+
+                        $grandTotal = $grand_total;
 
                         // Check current stock
                         $stock = $product->stock_qty ?? 0;
@@ -323,8 +353,10 @@ class BillingController extends Controller
                         $html .= '<strong>'.$pName.'</strong> '.$uName.'<br>';
                         $html .= 'SKU: '.$itemSku;
                         $html .= ' | Qty: '.number_format($qty, 2);
-                        $html .= ' | Price: '.number_format($price, 2);
-                        $html .= ' | Line: '.number_format($lineTotal, 2);
+                        $html .= ' | Price: '.number_format($grand_total, 2);
+                        $html .= ' | Old Pay: '.abs($payment -$grandTotal);
+                        $html .= ' | Mode: '.$payment_mode;
+                        $html .= ' | Total Pay: '.number_format($payment, 2);
                         $html .= ' '.$stockBadge;
                         $html .= '</div>';
                     }
@@ -345,11 +377,16 @@ class BillingController extends Controller
                     $outStock = 0;
                     foreach ($cart as $item) {
                         $product = Product::find($item['productId'] ?? null);
-                        if (! $product) continue;
+                        if (! $product) {
+                            continue;
+                        }
                         $qty = isset($item['quantity']) ? floatval($item['quantity']) : 1;
                         $stock = $product->stock_qty ?? 0;
-                        if ($stock <= 0) $outStock++;
-                        elseif ($qty > $stock) $lowStock++;
+                        if ($stock <= 0) {
+                            $outStock++;
+                        } elseif ($qty > $stock) {
+                            $lowStock++;
+                        }
                     }
                     if ($outStock > 0) {
                         $details .= '<div class="text-danger">Out of stock items: '.$outStock.'</div>';

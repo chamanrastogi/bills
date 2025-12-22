@@ -3,12 +3,14 @@
 namespace App\Traits;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 trait CommonTrait
 {
     public function StatusUpdate(Request $request)
     {
-        $modelClass = 'App\\Models\\'.(($request->table));
+        $name = Str::studly($request->table);
+        $modelClass = 'App\\Models\\'.(($name));
         $table = $modelClass::find($request->id);
         $table->update([
             'status' => ($table->status == 1) ? 0 : 1,
@@ -19,7 +21,8 @@ trait CommonTrait
 
     public function delete(Request $request)
     {
-        $modelClass = 'App\\Models\\'.(($request->table));
+        $name = Str::studly($request->table);
+        $modelClass = 'App\\Models\\'.(($name));
         if (is_array($request->id)) {
             $table = $modelClass::whereIn('id', $request->id);
         } else {

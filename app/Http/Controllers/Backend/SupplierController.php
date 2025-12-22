@@ -16,6 +16,7 @@ class SupplierController extends Controller
     public $path = 'upload/supplier/thumbnail/';
 
     public $image_preset;
+
     public $image_preset_main;
 
     use CommonTrait;
@@ -26,6 +27,7 @@ class SupplierController extends Controller
         $this->image_preset = ImagePresets::whereIn('id', [4, 12])->get();
         $this->image_preset_main = ImagePresets::find(11);
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -48,9 +50,9 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required',
+            'shop_name' => 'required',
+            'phone' => 'required|digits:10',
         ]);
-
 
         Supplier::create([
             'shop_name' => $request->shop_name,
@@ -82,8 +84,10 @@ class SupplierController extends Controller
      */
     public function update(Request $request, Supplier $supplier)
     {
-
-
+        $validated = $request->validate([
+            'shop_name' => 'required',
+            'phone' => 'required|digits:10',
+        ]);
         $supplier->update([
             'shop_name' => $request->shop_name,
             'phone' => $request->phone,
@@ -108,32 +112,32 @@ class SupplierController extends Controller
 
     public function fullPay(Request $request, Supplier $supplier)
     {
-         $validated = $request->validate([
+        $validated = $request->validate([
             'payment_mode' => 'required',
-            'balance'=>'required|numeric|max:'. $supplier->balance,
+            'balance' => 'required|numeric|max:'.$supplier->balance,
         ]);
 
         // Current balance
         $balance = $request->balance; // accessor
 
-        if ($balance <= 0 ) {
+        if ($balance <= 0) {
             return back()->with([
                 'message' => 'No pending balance to pay!',
-                'alert-type' => 'info'
+                'alert-type' => 'info',
             ]);
         }
 
         SupplierBilling::create([
             'supplier_id' => $supplier->id,
             'bill_amount' => 0,       // no new bill
-            'paid'        => $balance, // full settlement
+            'paid' => $balance, // full settlement
             'payment_mode' => 1,       // default mode (or take from request)
-            'transaction_id' => 'FULLPAY-' . time(),
+            'transaction_id' => 'FULLPAY-'.time(),
         ]);
 
         return back()->with([
             'message' => 'Supplier fully paid successfully!',
-            'alert-type' => 'success'
+            'alert-type' => 'success',
         ]);
     }
 }
