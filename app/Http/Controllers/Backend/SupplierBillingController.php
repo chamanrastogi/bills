@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Supplier;
 use App\Models\ImagePresets;
 use App\Models\SupplierBilling;
+use App\Models\SupplierBillingItem;
+use App\Models\Type;
+use App\Models\Purity;
 use App\Traits\CommonTrait;
 use App\Traits\ImageGenTrait;
 use Illuminate\Http\Request;
@@ -43,7 +46,10 @@ class SupplierBillingController extends Controller
     public function create()
     {
         $supplier = Supplier::where('status', 0)->pluck('shop_name', 'id');
-        return view('backend.supplier_billings.add_supplier_billings', compact('supplier'));
+        $types = Type::active(0)->pluck('name', 'id');
+        $purities = Purity::active(0)->pluck('name', 'id');
+
+        return view('backend.supplier_billings.add_supplier_billings', compact('supplier', 'types', 'purities'));
     }
 
     /**
@@ -52,10 +58,14 @@ class SupplierBillingController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'supplier_id'    => 'nullable|string',
-            'bill_amount'    => 'required|numeric|min:0',
-            'payment_mode'   => 'required|integer',
-            'paid'           => 'required|numeric|min:0|lte:bill_amount',
+            'supplier_id'           => 'nullable|string',
+            'payment_mode'          => 'required|integer',
+            'paid'                  => 'required|numeric|min:0',
+            'items'                 => 'required|array|min:1',
+            'items.*.metal_type_id' => 'nullable|integer|exists:types,id',
+            'items.*.purity_id'     => 'required|integer|exists:purities,id',
+            'items.*.total_weight'  => 'required|numeric|min:0.001',
+            'items.*.rate_per_gram' => 'required|numeric|min:0',
         ]);
 
         $image = $request->file('bill_image');
@@ -66,16 +76,44 @@ class SupplierBillingController extends Controller
             $save_url = '';
         }
         // -----------------------------
-        // 2. Save Record
+        // 2. Calculate pricing from items
         // -----------------------------
-        SupplierBilling::create([
-            'supplier_id'    => $request->supplier_id,
+        $billAmount = 0;
+        $itemsData = [];
+
+        foreach ($validated['items'] as $item) {
+            $weight = (float) $item['total_weight'];
+            $rate = (float) $item['rate_per_gram'];
+            $lineTotal = round($weight * $rate, 2);
+            $billAmount += $lineTotal;
+
+            $itemsData[] = [
+                'metal_type_id' => $item['metal_type_id'] ?? null,
+                'purity_id'     => $item['purity_id'],
+                'total_weight'  => $weight,
+                'rate_per_gram' => $rate,
+                'line_total'    => $lineTotal,
+            ];
+        }
+
+        // Ensure paid does not exceed calculated bill amount
+        $paid = min((float) $validated['paid'], $billAmount);
+
+        // -----------------------------
+        // 3. Save Record + line items
+        // -----------------------------
+        $supplierBilling = SupplierBilling::create([
+            'supplier_id'    => $validated['supplier_id'] ?? null,
             'bill_image'     => $save_url,
-            'bill_amount'    => $request->bill_amount,
-            'paid'           => $request->paid,
-            'payment_mode'   => $request->payment_mode,
+            'bill_amount'    => $billAmount,
+            'paid'           => $paid,
+            'payment_mode'   => $validated['payment_mode'],
             'transaction_id' => $request->transaction_id,
         ]);
+
+        foreach ($itemsData as $row) {
+            $supplierBilling->items()->create($row);
+        }
 
         // -----------------------------
         // 3. Notification
@@ -94,7 +132,10 @@ class SupplierBillingController extends Controller
     {
 
         $supplier = Supplier::where('status', 0)->pluck('shop_name', 'id');
-        return view('backend.supplier_billings.edit_supplier_billings', compact('supplier_billing', 'supplier'));
+        $types = Type::active(0)->pluck('name', 'id');
+        $purities = Purity::active(0)->pluck('name', 'id');
+
+        return view('backend.supplier_billings.edit_supplier_billings', compact('supplier_billing', 'supplier', 'types', 'purities'));
     }
 
     /**
