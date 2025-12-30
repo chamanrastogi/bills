@@ -10,7 +10,6 @@ use App\Models\SupplierBilling;
 use App\Models\SupplierBillingItem;
 use App\Models\Type;
 use App\Models\Purity;
-use App\Models\Product;
 use App\Traits\CommonTrait;
 use App\Traits\ImageGenTrait;
 use Illuminate\Http\Request;
@@ -49,9 +48,8 @@ class SupplierBillingController extends Controller
         $supplier = Supplier::where('status', 0)->pluck('shop_name', 'id');
         $types = Type::active(0)->pluck('name', 'id');
         $purities = Purity::active(0)->pluck('name', 'id');
-        $products = Product::with(['Type', 'Purity'])->get();
 
-        return view('backend.supplier_billings.add_supplier_billings', compact('supplier', 'types', 'purities', 'products'));
+        return view('backend.supplier_billings.add_supplier_billings', compact('supplier', 'types', 'purities'));
     }
 
     /**
@@ -64,7 +62,8 @@ class SupplierBillingController extends Controller
             'payment_mode'          => 'required|integer',
             'paid'                  => 'required|numeric|min:0',
             'items'                 => 'required|array|min:1',
-            'items.*.product_id'    => 'required|integer|exists:products,id',
+            'items.*.metal_type_id' => 'nullable|integer|exists:types,id',
+            'items.*.purity_id'     => 'required|integer|exists:purities,id',
             'items.*.total_weight'  => 'required|numeric|min:0.001',
             'items.*.rate_per_gram' => 'required|numeric|min:0',
         ]);
@@ -89,7 +88,8 @@ class SupplierBillingController extends Controller
             $billAmount += $lineTotal;
 
             $itemsData[] = [
-                'product_id'    => $item['product_id'],
+                'metal_type_id' => $item['metal_type_id'] ?? null,
+                'purity_id'     => $item['purity_id'],
                 'total_weight'  => $weight,
                 'rate_per_gram' => $rate,
                 'line_total'    => $lineTotal,
@@ -134,9 +134,8 @@ class SupplierBillingController extends Controller
         $supplier = Supplier::where('status', 0)->pluck('shop_name', 'id');
         $types = Type::active(0)->pluck('name', 'id');
         $purities = Purity::active(0)->pluck('name', 'id');
-        $products = Product::with(['Type', 'Purity'])->get();
 
-        return view('backend.supplier_billings.edit_supplier_billings', compact('supplier_billing', 'supplier', 'types', 'purities', 'products'));
+        return view('backend.supplier_billings.edit_supplier_billings', compact('supplier_billing', 'supplier', 'types', 'purities'));
     }
 
     /**

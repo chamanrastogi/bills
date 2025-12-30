@@ -41,7 +41,6 @@
                     <tr>
                         <th>Metal Type</th>
                         <th>Purity</th>
-                        <th>Product</th>
                         <th>Total Weight (g)</th>
                         <th>Rate / Gram</th>
                         <th>Line Total</th>
@@ -49,66 +48,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if ($isEdit && isset($billing))
-                        @foreach ($billing->items as $idx => $item)
-                            @php
-                                $product = $item->product;
-                                $typeId = $product?->type_id;
-                                $purityId = $product?->purity_id;
-                            @endphp
-                            <tr>
-                                <td>
-                                    <select class="form-control supplier-item-type-filter">
-                                        <option value="">Select Metal Type</option>
-                                        @foreach ($types ?? [] as $id => $name)
-                                            <option value="{{ $id }}" @selected($id == $typeId)>{{ $name }}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="form-control supplier-item-purity-filter">
-                                        <option value="">Select Purity</option>
-                                        @foreach ($purities ?? [] as $id => $name)
-                                            <option value="{{ $id }}" @selected($id == $purityId)>{{ $name }}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="form-control supplier-item-product-select"
-                                        name="items[{{ $idx }}][product_id]">
-                                        <option value="">Select Product</option>
-                                        @foreach ($products ?? [] as $productOption)
-                                            <option value="{{ $productOption->id }}"
-                                                data-type-id="{{ $productOption->type_id }}"
-                                                data-purity-id="{{ $productOption->purity_id }}"
-                                                data-rate="{{ $productOption->rate_per_gram ?? 0 }}"
-                                                @selected($productOption->id === $item->product_id)>
-                                                {{ $productOption->name }} ({{ $productOption->sku }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" step="0.001" min="0" class="form-control item-weight"
-                                        name="items[{{ $idx }}][total_weight]" value="{{ $item->total_weight }}"
-                                        placeholder="Weight in grams">
-                                </td>
-                                <td>
-                                    <input type="number" step="0.01" min="0" class="form-control item-rate"
-                                        name="items[{{ $idx }}][rate_per_gram]" value="{{ $item->rate_per_gram }}"
-                                        placeholder="Rate per gram">
-                                </td>
-                                <td>
-                                    <input type="hidden" class="item-total" name="items[{{ $idx }}][line_total]"
-                                        value="{{ $item->line_total }}">
-                                    <span class="item-total-display">{{ number_format($item->line_total, 2) }}</span>
-                                </td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-outline-danger remove-item-row">X</button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @endif
+                    {{-- Rows will be injected via JS --}}
                 </tbody>
             </table>
         </div>
@@ -118,7 +58,8 @@
         </button>
 
         <x-form.input-error :messages="$errors->get('items')" class="mt-2" />
-        <x-form.input-error :messages="$errors->get('items.*.product_id')" class="mt-1" />
+        <x-form.input-error :messages="$errors->get('items.*.metal_type_id')" class="mt-1" />
+        <x-form.input-error :messages="$errors->get('items.*.purity_id')" class="mt-1" />
         <x-form.input-error :messages="$errors->get('items.*.total_weight')" class="mt-1" />
         <x-form.input-error :messages="$errors->get('items.*.rate_per_gram')" class="mt-1" />
     </div>
@@ -177,7 +118,7 @@
     <template id="supplier-item-row-template">
         <tr>
             <td>
-                <select class="form-control supplier-item-type-filter">
+                <select class="form-control" data-name-template="items[__INDEX__][metal_type_id]">
                     <option value="">Select Metal Type</option>
                     @foreach ($types ?? [] as $id => $name)
                         <option value="{{ $id }}">{{ $name }}</option>
@@ -185,23 +126,10 @@
                 </select>
             </td>
             <td>
-                <select class="form-control supplier-item-purity-filter">
+                <select class="form-control" data-name-template="items[__INDEX__][purity_id]" required>
                     <option value="">Select Purity</option>
                     @foreach ($purities ?? [] as $id => $name)
                         <option value="{{ $id }}">{{ $name }}</option>
-                    @endforeach
-                </select>
-            </td>
-            <td>
-                <select class="form-control supplier-item-product-select" data-name-template="items[__INDEX__][product_id]">
-                    <option value="">Select Product</option>
-                    @foreach ($products ?? [] as $product)
-                        <option value="{{ $product->id }}"
-                            data-type-id="{{ $product->type_id }}"
-                            data-purity-id="{{ $product->purity_id }}"
-                            data-rate="{{ $product->rate_per_gram ?? 0 }}">
-                            {{ $product->name }} ({{ $product->sku }})
-                        </option>
                     @endforeach
                 </select>
             </td>

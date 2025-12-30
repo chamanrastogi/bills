@@ -17,9 +17,14 @@ class SupplierBillingItem extends Model
         return $this->belongsTo(SupplierBilling::class);
     }
 
-    public function product(): BelongsTo
+    public function metalType(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Type::class, 'metal_type_id');
+    }
+
+    public function purity(): BelongsTo
+    {
+        return $this->belongsTo(Purity::class);
     }
 }
 
