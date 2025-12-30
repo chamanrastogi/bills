@@ -16,12 +16,8 @@ return new class extends Migration
             $table->foreignId('supplier_billing_id')
                 ->constrained('supplier_billings')
                 ->onDelete('cascade');
-            $table->foreignId('metal_type_id')
-                ->nullable()
-                ->constrained('types')
-                ->nullOnDelete();
-            $table->foreignId('purity_id')
-                ->constrained('purities')
+            $table->foreignId('product_id')
+                ->constrained('products')
                 ->cascadeOnDelete();
             $table->decimal('total_weight', 10, 3)->default(0);
             $table->decimal('rate_per_gram', 10, 2)->default(0);

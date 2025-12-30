@@ -20,7 +20,7 @@
                     <div class="card-body">
                         <h6 class="card-title fw-bold">Add {{ $title }}</h6>
                         {{-- Located at: resources/views/components/backend/backend_component/supplier_billings-form.blade.php --}}
-                        <x-backend.backend_component.supplier_billings-form :isEdit="false" :$supplier :$types :$purities />
+                        <x-backend.backend_component.supplier_billings-form :isEdit="false" :$supplier :$types :$purities :$products />
                     </div>
                 </div>
             </div>
@@ -30,6 +30,35 @@
         <script>
             (function() {
                 let rowIndex = 0;
+
+                function filterProducts(row) {
+                    const typeSelect = row.querySelector('.supplier-item-type-filter');
+                    const puritySelect = row.querySelector('.supplier-item-purity-filter');
+                    const productSelect = row.querySelector('.supplier-item-product-select');
+                    if (!productSelect) return;
+
+                    const typeId = typeSelect ? typeSelect.value : '';
+                    const purityId = puritySelect ? puritySelect.value : '';
+
+                    Array.from(productSelect.options).forEach(function(option) {
+                        if (!option.value) return; // skip placeholder
+                        const optType = option.dataset.typeId || '';
+                        const optPurity = option.dataset.purityId || '';
+
+                        const matchType = !typeId || optType === typeId;
+                        const matchPurity = !purityId || optPurity === purityId;
+
+                        option.hidden = !(matchType && matchPurity);
+                    });
+
+                    // Reset selection if current option is now hidden
+                    if (productSelect.selectedOptions.length) {
+                        const current = productSelect.selectedOptions[0];
+                        if (current.hidden) {
+                            productSelect.value = '';
+                        }
+                    }
+                }
 
                 function recalcRowTotals(row) {
                     const weight = parseFloat(row.querySelector('.item-weight')?.value || 0);
@@ -57,6 +86,36 @@
                 }
 
                 function attachRowEvents(row) {
+                    const typeFilter = row.querySelector('.supplier-item-type-filter');
+                    const purityFilter = row.querySelector('.supplier-item-purity-filter');
+                    const productSelect = row.querySelector('.supplier-item-product-select');
+
+                    if (typeFilter) {
+                        typeFilter.addEventListener('change', function() {
+                            filterProducts(row);
+                        });
+                    }
+
+                    if (purityFilter) {
+                        purityFilter.addEventListener('change', function() {
+                            filterProducts(row);
+                        });
+                    }
+
+                    if (productSelect) {
+                        productSelect.addEventListener('change', function() {
+                            const selected = productSelect.selectedOptions[0];
+                            if (!selected) return;
+                            const rate = parseFloat(selected.dataset.rate || '0');
+                            const rateInput = row.querySelector('.item-rate');
+                            if (rateInput && !rateInput.value) {
+                                rateInput.value = rate.toFixed(2);
+                            }
+                            recalcRowTotals(row);
+                            recalcBillAmount();
+                        });
+                    }
+
                     row.querySelectorAll('.item-weight, .item-rate').forEach(function(input) {
                         input.addEventListener('input', function() {
                             recalcRowTotals(row);
