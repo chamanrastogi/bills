@@ -1,5 +1,5 @@
 <x-dashboard-layout>
-    @section('title', breadcrumb())
+    @section('title', 'Show Customer')
 
     <div class="page-content">
         <div class="row">

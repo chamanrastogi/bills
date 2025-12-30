@@ -10,8 +10,12 @@
 
 
     @php
-        $template = App\Models\SiteSetting::find(1);
-        $modes = MODE;
+
+        $cart = json_decode($billing['cart']);
+        $i = 1;
+        $customer = App\Models\Customer::find($billing['customer_id']);
+        $bill = App\Models\Billing::find($billing['id']);
+        $subtotal = 0;
 
     @endphp
 
@@ -87,11 +91,10 @@
                                                                 <div class="col-sm-6 text-sm-end">
                                                                     <p class="inv-list-number mt-sm-3 pb-sm-2 mt-4">
                                                                         <span class="inv-title">Invoice : </span> <span
-                                                                            class="inv-number"></span>
+                                                                            class="inv-number">#000{{ $id }}</span>
                                                                     </p>
                                                                     <p class="inv-created-date mt-sm-5 mt-3"><span
-                                                                            class="inv-title text-info">Invoice Date :
-                                                                        </span>
+                                                                            class="inv-title text-info">Invoice Date : </span>
                                                                         <span
                                                                             class="inv-date">{{ date('d M Y') }}</span>
                                                                     </p>
@@ -149,43 +152,53 @@
 
                                                         <div class="inv--product-table-section">
                                                             <div class="table-responsive">
-                                                                <table class="table">
+                                                                <table class="table table-bordered table-striped">
                                                                     <thead>
                                                                         <tr>
-                                                                            <th scope="col">Date</th>
-                                                                            <th scope="col">Particular</th>
-                                                                            <th scope="col">Type</th>
-                                                                            <th scope="col">Debit</th>
-                                                                            <th scope="col">Credit</th>
-
+                                                                            <th scope="col">S.No</th>
+                                                                            <th scope="col">Category</th>
+                                                                            <th scope="col">Product / SKU</th>
+                                                                            <th scope="col">Unit</th>
+                                                                            <th scope="col">Gross</th>
+                                                                            <th scope="col">Net</th>
+                                                                            <th class="text-end" scope="col">Qty</th>
+                                                                            <th class="text-end" scope="col">Rate</th>
+                                                                            <th class="text-end" scope="col">GST %</th>
+                                                                            <th class="text-end" scope="col">GST Amt</th>
+                                                                            <th class="text-end" scope="col">Making</th>
+                                                                            <th class="text-end" scope="col">Amount</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                        @foreach ($mergedResults as $result)
+                                                                        @foreach ($cart as $item)
+                                                                            @php
+                                                                                $product = App\Models\Product::with('unit','type')
+                                                                                    ->find($item->productId ?? ($item->product_id ?? null));
+                                                                                $productPrice = floatval($item->price ?? ($product->price ?? 0));
+                                                                                $quantity = floatval($item->quantity ?? ($item->qty ?? 1));
+                                                                                $gstPercent = floatval($item->gst ?? ($product->gst ?? 0));
+                                                                                $lineBase = $productPrice * $quantity;
+                                                                                $gstAmount = round($lineBase * ($gstPercent / 100), 2);
+                                                                                $making = floatval($item->making ?? ($product->making_charge ?? 0));
+                                                                                $lineTotal = round($lineBase + $gstAmount + $making, 2);
+                                                                                $subtotal += $lineBase + $making;
+                                                                            @endphp
                                                                             <tr>
-                                                                                <td>{{ \Carbon\Carbon::parse($result['billing_created_at'])->format('d-m-Y') }}
-                                                                                </td>
-                                                                                <td>{{ ($result['grand_total']>0)? 'Sales' : $modes[$result['payment_mode']] }}</td>
-                                                                                <td>{{ ($result['grand_total']>0)? 'Sales' : 'Recipt' }}</td>
+                                                                                <td>{{ $i++ }}</td>
+                                                                                <td>{{ $product->category->name ?? '-' }}</td>
                                                                                 <td>
-                                                                                    @if ($result['debit_credit'] == 'Dr')
-                                                                                        {{ MONEY }}
-                                                                                        {{ number_format($result['grand_total'], 2) }}
-                                                                                    @else
-                                                                                        -
-                                                                                    @endif
+                                                                                    <strong>{{ $product->name ?? ($item->name ?? '-') }}</strong>
+                                                                                    <div class="text-muted small">{{ $product->sku ?? ($item->sku ?? '') }}</div>
                                                                                 </td>
-                                                                                <td>
-                                                                                    @if ($result['debit_credit'] == 'Cr')
-                                                                                        {{ MONEY }}
-                                                                                        {{ number_format($result['payment'], 2) }}
-                                                                                    @else
-                                                                                        -
-                                                                                    @endif
-                                                                                </td>
-                                                                                {{-- <td>{{ $modes[$result['payment_mode']] }}</td> --}}
-
-
+                                                                                <td>{{ $product->unit->name ?? '-' }}</td>
+                                                                                <td>{{ isset($product->gross_weight) ? number_format($product->gross_weight, 3) : '-' }}</td>
+                                                                                <td>{{ isset($product->net_weight) ? number_format($product->net_weight, 3) : '-' }}</td>
+                                                                                <td class="text-end">{{ number_format($quantity, 3) }}</td>
+                                                                                <td class="text-end">{{ number_format($productPrice, 2) }}</td>
+                                                                                <td class="text-end">{{ number_format($gstPercent, 2) }}</td>
+                                                                                <td class="text-end">{{ number_format($gstAmount, 2) }}</td>
+                                                                                <td class="text-end">{{ number_format($making, 2) }}</td>
+                                                                                <td class="text-end">{{ number_format($lineTotal, 2) }}</td>
                                                                             </tr>
                                                                         @endforeach
                                                                     </tbody>
@@ -200,36 +213,51 @@
                                                                     <div class="text-sm-end">
                                                                         <div class="row">
                                                                             <div class="col-sm-8 col-7">
-                                                                                <p>Total Billing :</p>
+                                                                                <p>Sub Total :</p>
                                                                             </div>
                                                                             <div class="col-sm-4 col-5">
-                                                                                <p>{{MONEY}} {{number_format($customer->bills()->sum('grand_total'),2)}}
-                                                                                </p>
+                                                                                <p>{{ MONEY }}{{ number_format($subtotal, 2) }}</p>
                                                                             </div>
-
-
-
-
-                                                                            <!-- Tax Calculation -->
 
                                                                             <div class="col-sm-8 col-7">
-                                                                                <p>Payments :</p>
+                                                                                <p>GST Total :</p>
                                                                             </div>
                                                                             <div class="col-sm-4 col-5">
-                                                                                <p>{{MONEY}} {{number_format($customer->bills()->sum('payment'),2)}}
-                                                                                </p>
+                                                                                <p>{{ MONEY }}{{ number_format($billing['gst'] ?? 0, 2) }}</p>
                                                                             </div>
 
-
-                                                                            <!-- Grand Total Calculation with Discount and Tax -->
-
-                                                                            <div
-                                                                                class="col-sm-8 col-7 grand-total-title">
-                                                                                <p class="fw-bold">Closting Balance :</p>
+                                                                            <!-- Discount Calculation -->
+                                                                            <div class="col-sm-8 col-7">
+                                                                                <p>Discount {{ $billing['discount'] ?? 0 }}% :</p>
                                                                             </div>
-                                                                            <div
-                                                                                class="col-sm-4 col-5 grand-total-amount">
-                                                                                <p> {{MONEY}} {{number_format($customer->balance(),2)}}</p>
+                                                                            <div class="col-sm-4 col-5">
+                                                                                <p>{{ MONEY }}{{ number_format($billing['discount_amount'] ?? 0, 2) }}</p>
+                                                                            </div>
+
+                                                                            <!-- Tax Calculation -->
+                                                                            @if (floatval($billing['tax'] ?? 0) > 0)
+                                                                                <div class="col-sm-8 col-7">
+                                                                                    <p>Tax {{ $billing['tax'] }}% :</p>
+                                                                                </div>
+                                                                                <div class="col-sm-4 col-5">
+                                                                                    <p>{{ MONEY }}{{ number_format($billing['tax_amount'] ?? 0, 2) }}</p>
+                                                                                </div>
+                                                                            @endif
+
+                                                                            @if (floatval($billing['freight_charges'] ?? 0) > 0)
+                                                                                <div class="col-sm-8 col-7">
+                                                                                    <p>Freight Charges :</p>
+                                                                                </div>
+                                                                                <div class="col-sm-4 col-5">
+                                                                                    <p>{{ MONEY }}{{ number_format($billing['freight_charges'] ?? 0, 2) }}</p>
+                                                                                </div>
+                                                                            @endif
+
+                                                                            <div class="col-sm-8 col-7 grand-total-title">
+                                                                                <p class="fw-bold">Grand Total :</p>
+                                                                            </div>
+                                                                            <div class="col-sm-4 col-5 grand-total-amount">
+                                                                                <p>{{ MONEY }}{{ number_format($billing['grand_total'] ?? 0, 2) }}</p>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -284,7 +312,22 @@
                                                             </div>
 
                                                         </div>
+                                                        <div class="inv--note">
+                                                            <div class="row mt-4">
+                                                                <div class="col-sm-12 col-12 order-sm-0 order-1  text-center">
+                                                                    <h6 class="fw-bolder">Declaration</h6>
+                                                                    <p class="fw-light">{{ $template->declaration }}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <hr>
+                                                            <div class="row mt-4">
+                                                                <div class="col-sm-12 col-12 order-sm-0 order-1 text-center">
+                                                                    <p>{{ $template->message }}</p>
+                                                                </div>
+                                                            </div>
 
+                                                        </div>
 
                                                     </div>
                                                 </div>

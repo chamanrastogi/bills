@@ -21,7 +21,9 @@ return new class extends Migration
             $table->integer('gst');
             $table->integer('grand_total');
             $table->integer('payment');
-            $table->integer('payment_mode');
+            $table->integer('payment_mode')->default(0);
+            $table->integer('transaction_no')->nullable();
+            $table->integer('old_payment')->nullable();
             $table->integer('customer_id');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();

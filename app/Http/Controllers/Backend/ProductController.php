@@ -272,6 +272,7 @@ class ProductController extends Controller
         $products = Product::where('type_id', $type)
             ->where('status', 0)
             ->where('pstatus', 'in_stock')
+            ->where('stock_qty' ,'>',0)
             ->with('unit')
             ->with('purity')
             ->get()

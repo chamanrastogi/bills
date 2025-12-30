@@ -21,6 +21,12 @@ class CustomerController extends Controller
         return view('backend.customer.all_customer', compact('customers'));
     }
 
+    public function balance()
+    {
+        $customers = Customer::latest()->get()->filter(fn ($c) => $c->balance() != 0);
+
+        return view('backend.customer.all_customer', compact('customers'));
+    }
     /**
      * Show the form for creating a new resource.
      */

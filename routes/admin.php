@@ -67,6 +67,7 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::post('/units/delete', [UnitController::class, 'Delete'])->name('unit.delete');
 
     // Customer All Routes
+    Route::get('/customers/balance', [CustomerController::class, 'balance'])->name('customer.balance');
     Route::resource('customers', CustomerController::class);
     Route::post('/customers/status', [CustomerController::class, 'StatusUpdate'])->name('customer.status');
     Route::post('/customers/delete', [CustomerController::class, 'Delete'])->name('customer.delete');
@@ -97,7 +98,6 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::controller(SettingController::class)->group(function () {
         Route::get('/site/setting', 'SiteSetting')->name('site.setting');
         Route::patch('/update/site/setting/{id}', 'UpdateSiteSetting')->name('update.site.setting');
-
     });
     Route::controller(BillingController::class)->group(function () {
         Route::get('/billing', 'index')->name('billing.index');

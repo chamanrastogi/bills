@@ -39,8 +39,6 @@ class PaymentController extends Controller
 
         ]);
 
-        // dd($customer);
-
         Billing::insertGetId([
             'customer_id' => $customer->id,
             'cart' => '',
@@ -49,9 +47,10 @@ class PaymentController extends Controller
             'tax' => 0,
             'tax_amount' => 0,
             'grand_total' => 0,
-            'freight_charges' => 0,
+            'gst' => 0,
             'payment' => $request->payment,
             'payment_mode' => $request->payment_mode,
+            'transaction_no'=> $request->transaction_no
         ]);
         $notification = [
             'message' => 'Payment Added Successfully',
@@ -103,6 +102,7 @@ class PaymentController extends Controller
         $billing->update([
             'payment' => $request->payment,
             'payment_mode' => $request->payment_mode,
+            'transaction_no' => $request->transaction_no,
         ]);
 
         $notification = [

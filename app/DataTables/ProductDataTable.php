@@ -33,6 +33,10 @@ class ProductDataTable extends DataTable
 
                 return '<span class="shadow-none badge badge-'.$badge.'">'.$name.'</span>';
             })
+            ->addColumn('stock_qty', function ($row) {
+               // $raw = $row->stock_qty ?? 'N/A';
+                  return '<span class="badge badge-info">'.$row->stock_qty.'</span>';
+            })
             ->addColumn('purity_name', function ($row) {
                 $raw = $row->purity->name ?? 'N/A';
 
@@ -88,7 +92,7 @@ class ProductDataTable extends DataTable
                         <i data-feather="trash-2"></i>
                     </a>';
             })
-            ->rawColumns(['status', 'action', 'details', 'purity_name', 'type_name']);
+            ->rawColumns(['status', 'action', 'stock_qty', 'details', 'purity_name', 'type_name']);
     }
 
     /**
@@ -195,6 +199,7 @@ class ProductDataTable extends DataTable
             Column::make('id'),
             Column::computed('type_name')->title('Type')->searchable(true),
             Column::computed('purity_name')->title('Purity')->searchable(true),
+            Column::computed('stock_qty')->title('Qty')->searchable(true),
             Column::make('name')->title('Name')->searchable(true),
             Column::computed('details')->title('Product Details')->orderable(false)->searchable(false),
             Column::computed('status'),

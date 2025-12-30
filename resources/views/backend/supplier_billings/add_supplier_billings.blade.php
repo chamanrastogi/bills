@@ -19,8 +19,6 @@
                 <div class="card">
                     <div class="card-body">
                         <h6 class="card-title fw-bold">Add {{ $title }}</h6>
-
-                        {{-- Auto-generated form component --}}
                         {{-- Located at: resources/views/components/backend/backend_component/supplier_billings-form.blade.php --}}
                         <x-backend.backend_component.supplier_billings-form :isEdit="false" :$supplier />
                     </div>

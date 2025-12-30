@@ -24,12 +24,12 @@
                         </table>
                         @if ($billings->count() != 0)
                             <div class="ms-3">
-                               <div class="form-check form-check-primary form-check-inline">
-                                        <input class="form-check-input" type="checkbox" id="form-check-default">
-                                        <label class="form-check-label" for="form-check-default">
-                                            Checked All
-                                        </label>
-                                    </div>
+                                <div class="form-check form-check-primary form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="form-check-default">
+                                    <label class="form-check-label" for="form-check-default">
+                                        Checked All
+                                    </label>
+                                </div>
                                 <button id="deleteall" onClick="deleteAllFunction('Billing')"
                                     class="btn btn-danger mb-2 me-4">
                                     <span class="btn-text-inner">Delete Selected</span>
@@ -43,7 +43,7 @@
 
     </div>
 
-    @if ($billings->count() != 0)
+
     <script type="text/javascript">
         $(document).ready(function() {
             $('#billing_ajax').DataTable({
@@ -87,7 +87,7 @@
                 },
                 "columns": [{
                         "data": "check"
-                    },{
+                    }, {
                         "data": "id"
                     },
                     {
@@ -109,10 +109,10 @@
                         "data": "action"
                     },
                 ],
-                "drawCallback": function( settings ) {
-    feather.replace();
+                "drawCallback": function(settings) {
+                    feather.replace();
 
-},
+                },
                 "lengthMenu": [
                     [10, 25, 50, 100, 1000, 2000, 3000, 10000, -1],
                     [10, 25, 50, 100, 1000, 2000, 3000, 10000]
@@ -121,116 +121,116 @@
             });
         })
     </script>
-        <script type="text/javascript">
-            function deleteAllFunction(table) {
-                // Get all checkboxes with the specified class name
-                var checkboxes = document.querySelectorAll('.mixed_child');
-                // Initialize an array to store checked checkbox values
-                var checkedValues = [];
-                // Iterate through each checkbox
+    <script type="text/javascript">
+        function deleteAllFunction(table) {
+            // Get all checkboxes with the specified class name
+            var checkboxes = document.querySelectorAll('.mixed_child');
+            // Initialize an array to store checked checkbox values
+            var checkedValues = [];
+            // Iterate through each checkbox
+            checkboxes.forEach(function(checkbox) {
+                // Check if the checkbox is checked
+                if (checkbox.checked) {
+                    // Add the value to the array
+                    checkedValues.push(checkbox.value);
+                }
+            });
+            if (checkedValues.length === 0) {
+                // Display an alert if none are checked
+                toastr.warning("Please check at least one checkbox.");
+            } else {
+                // Output the array to the console (you can do whatever you want with the array)
                 checkboxes.forEach(function(checkbox) {
                     // Check if the checkbox is checked
                     if (checkbox.checked) {
                         // Add the value to the array
                         checkedValues.push(checkbox.value);
+                        var elems = document.querySelector('.billing-' + checkbox.value);
+                        elems.remove();
                     }
                 });
-                if (checkedValues.length === 0) {
-                    // Display an alert if none are checked
-                    toastr.warning("Please check at least one checkbox.");
-                } else {
-                    // Output the array to the console (you can do whatever you want with the array)
-                    checkboxes.forEach(function(checkbox) {
-                        // Check if the checkbox is checked
-                        if (checkbox.checked) {
-                            // Add the value to the array
-                            checkedValues.push(checkbox.value);
-                            var elems = document.querySelector('.billing-' + checkbox.value);
-                            elems.remove();
-                        }
-                    });
-                    // console.log("Checked Checkbox Values: ", checkedValues);
-                    var crf = '{{ csrf_token() }}';
-                    $.post("{{ route('billing.delete') }}", {
-                        _token: crf,
-                        id: checkedValues,
-                        table: table
-                    }, function(data) {
-                        toastr.success("Selected Data Deleted");
-                    });
-                }
+                // console.log("Checked Checkbox Values: ", checkedValues);
+                var crf = '{{ csrf_token() }}';
+                $.post("{{ route('billing.delete') }}", {
+                    _token: crf,
+                    id: checkedValues,
+                    table: table
+                }, function(data) {
+                    toastr.success("Selected Data Deleted");
+                });
             }
+        }
 
 
 
-            function deleteFunction(id, table) {
+        function deleteFunction(id, table) {
 
-                // event.preventDefault(); // prevent form submit
-                // var form = event.target.form; // storing the form
-                const swalWithBootstrapButtons = Swal.mixin({
-                    customClass: {
-                        confirmButton: 'btn btn-success',
-                        cancelButton: 'btn btn-danger'
-                    },
-                    buttonsStyling: false
+            // event.preventDefault(); // prevent form submit
+            // var form = event.target.form; // storing the form
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+            })
+
+            document.querySelector('.delete' + id).addEventListener('click', function() {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, cancel!',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        swalWithBootstrapButtons.fire(
+                            'Deleted!',
+                            'Your file has been deleted.',
+                            'success'
+                        )
+                        var elems = document.querySelector('.billing-' + id);
+                        elems.remove();
+                        var crf = '{{ csrf_token() }}';
+                        $.post("{{ route('billing.delete') }}", {
+                            _token: crf,
+                            id: id,
+                            table: table
+                        }, function(data) {
+                            toastr.success("Entry no " + id + " Deleted");
+                        });
+
+
+                    } else if (
+                        /* Read more about handling dismissals below */
+                        result.dismiss === Swal.DismissReason.cancel
+                    ) {
+                        swalWithBootstrapButtons.fire(
+                            'Cancelled',
+                            'Your data is safe :)',
+                            'error'
+                        )
+                    }
                 })
-
-                document.querySelector('.delete' + id).addEventListener('click', function() {
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Yes, delete it!',
-                        cancelButtonText: 'No, cancel!',
-                        reverseButtons: true
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            swalWithBootstrapButtons.fire(
-                                'Deleted!',
-                                'Your file has been deleted.',
-                                'success'
-                            )
-                            var elems = document.querySelector('.billing-' + id);
-                            elems.remove();
-                            var crf = '{{ csrf_token() }}';
-                            $.post("{{ route('billing.delete') }}", {
-                                _token: crf,
-                                id: id,
-                                table: table
-                            }, function(data) {
-                                toastr.success("Entry no " + id + " Deleted");
-                            });
-
-
-                        } else if (
-                            /* Read more about handling dismissals below */
-                            result.dismiss === Swal.DismissReason.cancel
-                        ) {
-                            swalWithBootstrapButtons.fire(
-                                'Cancelled',
-                                'Your data is safe :)',
-                                'error'
-                            )
-                        }
-                    })
-                })
+            })
 
 
 
-            }
-        </script>
-    @endif
-    @section('script')
-    <script>
-        $(document).ready(function() {
-            // When the "Select All" checkbox is clicked
-            $('#form-check-default').change(function() {
-                console.log('cj');
-                // Check or uncheck all checkboxes based on the "Select All" checkbox
-                $('.mixed_child').prop('checked', $(this).prop('checked'));
-            });
-        });
+        }
     </script>
-@stop
+
+    @section('script')
+        <script>
+            $(document).ready(function() {
+                // When the "Select All" checkbox is clicked
+                $('#form-check-default').change(function() {
+                    console.log('cj');
+                    // Check or uncheck all checkboxes based on the "Select All" checkbox
+                    $('.mixed_child').prop('checked', $(this).prop('checked'));
+                });
+            });
+        </script>
+    @stop
 </x-dashboard-layout>

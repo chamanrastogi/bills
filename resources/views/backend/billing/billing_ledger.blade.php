@@ -21,35 +21,43 @@
                     <div class="card-body">
                         <h6 class="card-title fw-bold">Ledger</h6>
 
-                        {{ Form::open([
-                            'route' => ['billing.payments', $customer],
-                            'class' => 'forms-sample needs-validation',
-                            'method' => 'post',
-                            'novalidate' => 'novalidate',
-                            'files' => true,
-                        ]) }}
+                        <x-form.form
+                            :route="route('billing.payments', $customer)"
+                            method="POST"
+                            enctype="multipart/form-data"
+                            class="forms-sample needs-validation"
+                            novalidate
+                        >
 
+                            <div class="row">
+                                <div class="col-6 mb-3">
 
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="mb-3">
-                                    {!! Form::label('daterange', 'Date Range', ['class' => 'form-label']) !!}
-                                    {!! Form::text('daterange', Carbon\Carbon::now()->format('d-m-Y'), [
-                                        'class' => 'form-control',
-                                        'id' => 'rangeCalendarFlatpickrs',
-                                        'required' => 'required',
-                                        'placeholder' => 'Date Range',
-                                    ]) !!}
-                                    @error('end')
-                                        <span class="text-danger pt-3">{{ $message }}</span>
-                                    @enderror
+                                    <x-form.input-label
+                                        for="daterange"
+                                        value="Date Range"
+                                    />
+
+                                    <x-form.text-input
+                                        name="daterange"
+                                        id="rangeCalendarFlatpickrs"
+                                        :value="\Carbon\Carbon::now()->format('d-m-Y')"
+                                        placeholder="Date Range"
+                                        required
+                                    />
+
+                                    <x-form.input-error
+                                        :messages="$errors->get('daterange')"
+                                    />
+
                                 </div>
                             </div>
-                        </div>
-                        {!! Form::submit('Submit', [
-                            'class' => 'btn btn-outline-primary btn-icon-text mb-2 mb-md-0',
-                        ]) !!}
-                        {{ Form::close() }}
+
+                            {{-- Submit Button --}}
+                            <x-form.button type="submit" class="btn-outline-primary">
+                                Submit
+                            </x-form.button>
+
+                        </x-form.form>
 
                     </div>
                 </div>
@@ -62,13 +70,13 @@
 
     @section('script')
     <script src="{{ asset('backend/assets/src/plugins/src/flatpickr/flatpickr.js') }}"></script>
-    
+
     <script>
         $(document).ready(function() {
-            var f1 = flatpickr(document.getElementById('rangeCalendarFlatpickrs'), {              
-                mode: "range"             
+            var f1 = flatpickr(document.getElementById('rangeCalendarFlatpickrs'), {
+                mode: "range"
             });
-           
+
 
         });
     </script>

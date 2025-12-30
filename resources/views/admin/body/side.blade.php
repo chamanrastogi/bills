@@ -63,6 +63,12 @@
                  label="Customer" :submenu="[
                      ['route' => 'customers.create', 'label' => 'Add Customer', 'permission' => 'customers.create'],
                      ['route' => 'customers.index', 'label' => 'Show Customer', 'permission' => 'customers.index'],
+
+                     [
+                         'route' => 'customer.balance',
+                         'label' => 'Show Customer Balance',
+                         'permission' => 'customer.balance',
+                     ],
                  ]" :activeRoutes="['admin/customers']" />
 
              <x-backend.backend_component.side-menu-item permission="category.menu" routeId="category" icon="menu"

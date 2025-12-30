@@ -35,6 +35,19 @@
             <x-form.input-error :messages="$errors->get('payment')" />
         </div>
     </div>
+    <div class="col-sm-12">
+        <div class="mb-3">
+            <x-form.input-label for="transaction_no" value="Transaction No" />
+            <x-form.text-input
+                type="text"
+                name="transaction_no"
+                :value="$billing->transaction_no ?? ''"
+
+                placeholder="Transaction No"
+            />
+
+        </div>
+    </div>
 
     {{-- Submit Button --}}
     <x-form.button type="submit">

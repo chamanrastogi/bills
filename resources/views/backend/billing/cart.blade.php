@@ -6,6 +6,8 @@
     @section('style')
         <link rel="stylesheet" href="{{ asset('backend/assets/src/assets/css/light/apps/invoice-preview.css') }}">
         <link rel="stylesheet" href="{{ asset('backend/assets/src/assets/css/dark/apps/invoice-preview.css') }}">
+
+
     @stop
 
 
@@ -64,67 +66,13 @@
                                                         <div class="inv--head-section inv--detail-section">
 
                                                             <div class="invoice-header text-center">
-                                                                <div class="h4 text-dark">{{ $template->site_title }}
-                                                                </div>
-                                                                <div class="p"> {{ $template->address }}</div>
+                                                                <img class="pb-3"
+                                                                    src="{{ asset($template->logo) }}" alt="company">
+
+                                                                <div class="h5"> {{ $template->address }}</div>
+                                                                  <div class="h4 text-dark btn bg-white border border-">{{ $template->site_title }}</div>
                                                             </div>
-                                                            <hr>
 
-
-                                                            <div class="row">
-
-                                                                <div class="col-sm-6 col-12 mr-auto">
-                                                                    <p class="inv-email-address">
-                                                                        <span class="text-info">GSTIN No :</span>
-                                                                        09BBJPA6980N1Z1
-                                                                    </p>
-
-                                                                    <p class="inv-email-address">
-                                                                        <span class="text-info">Invoice No :</span>
-                                                                        B2B316
-                                                                    </p>
-
-                                                                    <p class="inv-email-address">
-                                                                        <span class="text-info">Invoice Date :</span>
-                                                                        31-Aug-2024
-                                                                    </p>
-
-                                                                    <p class="inv-email-address">
-                                                                        <span class="text-info">State :</span>
-                                                                        Uttar Pradesh (09)
-                                                                    </p>
-
-                                                                    <p class="inv-email-address">
-                                                                        <span class="text-info">Date of Supply :</span>
-                                                                        31-Aug-2024
-                                                                    </p>
-
-
-                                                                </div>
-
-                                                                <div class="col-sm-6 text-sm-end">
-                                                                    <p>
-                                                                        <span class="fw-bold">IRN No :</span>
-                                                                        <span>19b3c011c08f34ef22ff86ea...
-                                                                            (truncated)</span>
-                                                                    </p>
-
-                                                                    <p>
-                                                                        <span class="fw-bold">ACK No :</span>
-                                                                        <span>142415551004600</span>
-                                                                    </p>
-
-                                                                    <p>
-                                                                        <span class="fw-bold">ACK Date :</span>
-                                                                        <span>2024-08-31</span>
-                                                                    </p>
-
-                                                                    <p>
-                                                                        <span class="fw-bold">Place of Supply :</span>
-                                                                        <span>Madhya Pradesh</span>
-                                                                    </p>
-                                                                </div>
-                                                            </div>
 
                                                         </div>
 
@@ -134,24 +82,38 @@
 
                                                                 <div
                                                                     class="col-xl-8 col-lg-7 col-md-6 col-sm-4 align-self-center">
-                                                                    <p class="inv-to">Details of Receiver | Bill To</p>
+                                                                    <p class="inv-to">Pro. Vimal Soni (Imiliya Wale)</p>
                                                                 </div>
 
-                                                                <div
+                                                                 <div
                                                                     class="col-xl-4 col-lg-5 col-md-6 col-sm-8 align-self-center order-sm-0 order-1 text-sm-end mt-sm-0 mt-5">
-                                                                    <h6 class=" inv-title">Details of Consignee :
-                                                                        Shipped to</h6>
+                                                                    <h6 class=" inv-title">Customer Details</h6>
                                                                 </div>
-
                                                                 <div class="col-xl-8 col-lg-7 col-md-6 col-sm-4">
-                                                                    <p class="inv-customer-name">{{ $customer?->name }}
+
+                                                                    <p class="inv-email-address">
+                                                                        <span class="text-info">GSTIN No :</span>
+                                                                        {{ $template->gst }}
                                                                     </p>
-                                                                    <p class="inv-street-addr">{{ $customer?->address }}
+                                                                     <p class="inv-email-address">
+                                                                        <span class="text-info">Pan No :</span>
+                                                                        {{ $template->pan_no }}
                                                                     </p>
-                                                                    <p class="inv-email-address">{{ $customer?->email }}
+                                                                    <p class="inv-email-address">
+                                                                        <span class="text-info">Invoice No :</span>
+                                                                        {{ $id }}
                                                                     </p>
-                                                                    <p class="inv-email-address">{{ $customer?->phone }}
+
+                                                                    <p class="inv-email-address">
+                                                                        <span class="text-info">Invoice Date :</span>
+                                                                        {{ date('d-M-Y') }}
                                                                     </p>
+                                                                    <p class="inv-email-address">
+                                                                        <span class="text-info">Contact No :</span>
+                                                                        {{ $template->support_phone }}
+                                                                    </p>
+
+
                                                                 </div>
 
                                                                 <div
@@ -161,9 +123,11 @@
                                                                     <p class="inv-street-addr">
                                                                         {{ $customer?->billing_address ? $customer?->billing_address : $customer?->address }}
                                                                     </p>
-                                                                    <p class="inv-email-address">{{ $customer?->email }}
+                                                                    <p class="inv-email-address">
+                                                                        {{ $customer?->email }}
                                                                     </p>
-                                                                    <p class="inv-email-address">{{ $customer?->phone }}
+                                                                    <p class="inv-email-address">
+                                                                        {{ $customer?->phone }}
                                                                     </p>
                                                                 </div>
 
@@ -178,7 +142,8 @@
                                                                         <tr>
                                                                             <th scope="col">S.No</th>
                                                                             {{-- <th scope="col">Category</th> --}}
-                                                                            <th scope="col" class="px-3 text-start">Description of Goods</th>
+                                                                            <th scope="col" class="px-3 text-start">
+                                                                                Product Name</th>
                                                                             <th scope="col" class="px-2">Unit</th>
                                                                             {{-- <th scope="col">Gross</th> --}}
                                                                             <th scope="col">Net</th>
@@ -230,6 +195,7 @@
                                                                                     2,
                                                                                 );
                                                                                 $subtotal += $lineBase + $making;
+                                                                                $productGrandTotal = $item->grandTotal;
                                                                             @endphp
                                                                             <tr>
                                                                                 <td>{{ $i++ }}</td>
@@ -238,7 +204,11 @@
                                                                                 <td>
                                                                                     <strong>{{ $product->name ?? ($item->name ?? '-') }}</strong>
                                                                                     <div class="text-muted small">
-                                                                                        {{ $product->sku ?? ($item->sku ?? '') }}
+                                                                                        {{ $product->sku ?? ($item->sku ?? '') }}<br>
+                                                                                        <span
+                                                                                            class="fw-bold">Making</span>:{{ $item->making ?? 0 }}<br>
+                                                                                        <span
+                                                                                            class="fw-bold">GST:</span>{{ $item->gst ?? 0 }}%<br>
                                                                                     </div>
                                                                                 </td>
                                                                                 <td>{{ $product->unit->name ?? '-' }}
@@ -263,7 +233,7 @@
                                                                                     {{ number_format($making, 2) }}
                                                                                 </td> --}}
                                                                                 <td class="text-end">
-                                                                                    {{ number_format($lineTotal, 2) }}
+                                                                                    {{ number_format($productGrandTotal, 2) }}
                                                                                 </td>
                                                                             </tr>
                                                                         @endforeach
@@ -282,22 +252,31 @@
                                                                                 <p>Sub Total :</p>
                                                                             </div>
                                                                             <div class="col-sm-4 col-5">
-                                                                                <p>{{ MONEY }}{{ number_format($subtotal, 2) }}
+                                                                                <p>{{ MONEY }}{{ number_format($billing['grand_total'], 2) }}
                                                                                 </p>
                                                                             </div>
-
+                                                                         @if (floatval($billing['tax'] ?? 0) > 0)
                                                                             <div class="col-sm-8 col-7">
-                                                                                <p>GST Total :</p>
+                                                                                <p>CGST :({{ number_format($billing['tax'] /2 ?? 0, 1) }}%):</p>
                                                                             </div>
                                                                             <div class="col-sm-4 col-5">
-                                                                                <p>{{ MONEY }}{{ number_format($billing['gst'] ?? 0, 2) }}
+                                                                                <p>-
                                                                                 </p>
                                                                             </div>
 
+                                                                               <div class="col-sm-8 col-7">
+                                                                                <p>SGST :({{ number_format($billing['tax'] /2  ?? 0, 1) }}%)</p>
+                                                                            </div>
+                                                                            <div class="col-sm-4 col-5">
+                                                                                <p>-
+                                                                                </p>
+                                                                            </div>
+                                                                             @endif
                                                                             <!-- Discount Calculation -->
                                                                             <div class="col-sm-8 col-7">
                                                                                 <p>Discount
-                                                                                    {{ $billing['discount'] ?? 0 }}% :
+                                                                                    ({{ $billing['discount'] ?? 0 }}%)
+                                                                                    :
                                                                                 </p>
                                                                             </div>
                                                                             <div class="col-sm-4 col-5">
@@ -305,23 +284,24 @@
                                                                                 </p>
                                                                             </div>
 
-                                                                            <!-- Tax Calculation -->
-                                                                            @if (floatval($billing['tax'] ?? 0) > 0)
-                                                                                <div class="col-sm-8 col-7">
-                                                                                    <p>Tax {{ $billing['tax'] }}% :</p>
-                                                                                </div>
-                                                                                <div class="col-sm-4 col-5">
-                                                                                    <p>{{ MONEY }}{{ number_format($billing['tax_amount'] ?? 0, 2) }}
-                                                                                    </p>
-                                                                                </div>
-                                                                            @endif
 
-                                                                            @if (floatval($billing['freight_charges'] ?? 0) > 0)
+
+                                                                            {{-- @if (floatval($billing['freight_charges'] ?? 0) > 0)
                                                                                 <div class="col-sm-8 col-7">
                                                                                     <p>Freight Charges :</p>
                                                                                 </div>
                                                                                 <div class="col-sm-4 col-5">
                                                                                     <p>{{ MONEY }}{{ number_format($billing['freight_charges'] ?? 0, 2) }}
+                                                                                    </p>
+                                                                                </div>
+                                                                            @endif --}}
+
+                                                                            @if ($billing['payment'] != $billing['grand_total'])
+                                                                                <div class="col-sm-8 col-7">
+                                                                                    <p>Old Payment :</p>
+                                                                                </div>
+                                                                                <div class="col-sm-4 col-5">
+                                                                                    <p>{{ MONEY }}{{ number_format($billing['payment'] - $billing['grand_total'] ?? 0, 2) }}
                                                                                     </p>
                                                                                 </div>
                                                                             @endif
@@ -332,7 +312,7 @@
                                                                             </div>
                                                                             <div
                                                                                 class="col-sm-4 col-5 grand-total-amount">
-                                                                                <p>{{ MONEY }}{{ number_format($billing['grand_total'] ?? 0, 2) }}
+                                                                                <p>{{ MONEY }}{{ number_format($billing['payment'] ?? 0, 2) }}
                                                                                 </p>
                                                                             </div>
                                                                         </div>
@@ -390,26 +370,16 @@
                                                         </div>
 
                                                         <div class="inv--note">
-                                                            <hr>
-                                                            <div class="row mt-4">
-                                                                <div
-                                                                    class="col-sm-12 col-12 order-sm-0 order-1  text-left">
-                                                                    <h6 class="fw-bolder">Declaration</h6>
-                                                                    <p class="fw-light">{!! $template->declaration !!}
-                                                                    </p>
-                                                                </div>
-                                                            </div>
+
                                                             <hr>
                                                             <div class="row mt-4">
                                                                 <div class="col-6 ">
                                                                     <div style="height:40px;"></div>
-                                                                    <div>Goods Received By<br>Receiver's Signature</div>
+                                                                    <div>Goods Received By<br>Customer's Signature</div>
                                                                 </div>
 
                                                                 <div class="col-6 text-end">
-                                                                    <div style="height:40px;"></div>
-                                                                    <div>Certified that the particulars are correct<br>
-                                                                        <strong>for NEW JEWAR KOTHI</strong><br>
+                                                                    <div>Authorised / Certified Seal and Signature<br>
                                                                         <em>Authorised Signatory</em>
                                                                     </div>
                                                                 </div>
