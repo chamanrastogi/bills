@@ -30,6 +30,7 @@
     </div>
 
     @section('script')
-
+        {{-- Reuse the same JS as add view for calculations / dynamic rows --}}
+        @includeWhen(true, 'backend.supplier_billings.partials.items-script')
     @stop
 </x-main-layout>
