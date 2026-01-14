@@ -67,7 +67,6 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::post('/units/delete', [UnitController::class, 'Delete'])->name('unit.delete');
 
     // Customer All Routes
-    Route::get('/customers/balance', [CustomerController::class, 'balance'])->name('customer.balance');
     Route::resource('customers', CustomerController::class);
     Route::post('/customers/status', [CustomerController::class, 'StatusUpdate'])->name('customer.status');
     Route::post('/customers/delete', [CustomerController::class, 'Delete'])->name('customer.delete');
@@ -90,6 +89,9 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
         ->name('supplier.fullPay');
 
     // Supplier Billing All Routes
+    Route::get('/reports/supplier-billing-items', [SupplierBillingController::class, 'supplierBillingItems'])->name('reports.supplier-billing-items');
+    Route::get('/reports/get-types-purities/{category}', [SupplierBillingController::class, 'getTypesPuritiesByCategory'])->name('reports.get-types-purities');
+    Route::get('/admin/reports/supplier-billing-items/summary', [SupplierBillingController::class, 'unitSummary'])->name('reports.supplier-billing-items.summary');
     Route::resource('supplier_billings', SupplierBillingController::class);
     Route::post('/supplier_billings/status', [SupplierBillingController::class, 'StatusUpdate'])->name('supplier_billings.status');
     Route::post('/supplier_billings/delete', [SupplierBillingController::class, 'Delete'])->name('supplier_billings.delete');
@@ -98,6 +100,7 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::controller(SettingController::class)->group(function () {
         Route::get('/site/setting', 'SiteSetting')->name('site.setting');
         Route::patch('/update/site/setting/{id}', 'UpdateSiteSetting')->name('update.site.setting');
+
     });
     Route::controller(BillingController::class)->group(function () {
         Route::get('/billing', 'index')->name('billing.index');

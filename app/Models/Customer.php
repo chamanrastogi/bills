@@ -26,11 +26,12 @@ class Customer extends Model
     {
         $totalBills = $this->bills()->sum('grand_total');
         $opening_balance = $this->opening_balance;
-        $totalPayments = $this->bills()->sum('payment','grand_total');
+        $totalPayments = $this->bills()->sum('payment', 'grand_total');
 
-        return ($totalBills +$opening_balance) - $totalPayments ;
+        return ($totalBills + $opening_balance) - $totalPayments;
     }
-     public function scopeActive($query, $status)
+
+    public function scopeActive($query, $status)
     {
         return $query->where('status', $status);
     }

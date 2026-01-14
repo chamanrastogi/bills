@@ -136,12 +136,12 @@
                                                 <div class="col-md-3 py-2">
                                                     <label class="form-label">Gross Wt</label>
                                                     <input type="number" id="pd_gross" class="form-control"
-                                                        step="0.0001" >
+                                                        step="0.0001" readonly>
                                                 </div>
                                                 <div class="col-md-3 py-2">
                                                     <label class="form-label">Net Wt</label>
                                                     <input type="number" id="pd_net" class="form-control"
-                                                        step="0.0001" >
+                                                        step="0.0001" readonly>
                                                 </div>
                                                 <div class="col-md-2 py-2">
                                                     <label class="form-label">Making</label>
@@ -304,487 +304,474 @@
     </div>
 
     @section('script')
-<script>
-    $('.customer').select2({
-        placeholder: 'Select an option'
-    });
+        <script>
+            $('.customer').select2({
+                placeholder: 'Select an option'
+            });
 
-    // --- Helper: Format Money (Optional usage) ---
-    const currencySymbol = '{{ MONEY }}';
-
-    // --- 1. Customer Balance Logic ---
-    function checkBalance(customerId) {
-        if (!customerId) {
-            $('#balance-section').hide();
-            oldBalance = 0;
-            updateGrandTotal();
-            return;
-        }
-        $.ajax({
-            url: '{{ route('billing.customer', ':id') }}'.replace(':id', customerId),
-            method: 'GET',
-            success: function(data) {
-                if (data.status && data.customer.balance > 0) {
-                    oldBalance = parseFloat(data.customer.balance);
-                    $('#customer-balance').text(data.customer.balance);
-                    $('#payment-amount').attr('max', data.customer.balance);
-                    $('#balance-section').show();
-                    $('#paymode').show();
-                } else {
-                    oldBalance = 0;
+            function checkBalance(customerId) {
+                if (!customerId) {
                     $('#balance-section').hide();
-                }
-                updateGrandTotal();
-            },
-            error: function(xhr) {
-                alert('Unable to fetch customer balance');
-                oldBalance = 0;
-                updateGrandTotal();
-            }
-        });
-    }
-
-    $('#pay-balance').on('change', function() {
-        if ($(this).is(':checked')) {
-            $('#payment-fields').show();
-            paymentAmount = parseFloat($('#payment-amount').val()) || 0;
-        } else {
-            $('#payment-fields').hide();
-            paymentAmount = 0;
-        }
-        updateGrandTotal();
-    });
-
-    $('#payment-amount').on('input', function() {
-        paymentAmount = parseFloat($(this).val()) || 0;
-        updateGrandTotal();
-    });
-
-    // --- 2. Grand Total Calculation ---
-    let grandTotal = 0;
-    let oldBalance = 0;
-    let paymentAmount = 0;
-
-    function updateGrandTotal() {
-        const discount = parseFloat($('#discount').val()) || 0;
-        const tax = parseFloat($('#tax').val()) || 0;
-        const gstAmount = parseFloat($('#gst').val()) || 0;
-
-        const discountedTotal = grandTotal * (1 - (discount / 100));
-        const taxAmount = discountedTotal * (tax / 100);
-        const productTotal = discountedTotal + taxAmount + gstAmount;
-        const includeOldBalance = $('#pay-balance').is(':checked');
-        const totalDue = productTotal + (includeOldBalance ? oldBalance : 0);
-        const netBalance = totalDue - paymentAmount;
-
-        $('#productTotal').text(`${currencySymbol}${productTotal.toFixed(2)}`);
-        $('#discountPercent').text(`${discount}%`);
-        $('#gstPercent').text(`${tax}%`);
-        $('#oldBalanceDisplay').text(`${currencySymbol}${oldBalance.toFixed(2)}`);
-        $('#totalDue').text(`${currencySymbol}${totalDue.toFixed(2)}`);
-        $('#paymentDisplay').text(`${currencySymbol}${paymentAmount.toFixed(2)}`);
-        $('#netBalance').val(netBalance.toFixed(2));
-        $('#netBalance').attr('max', totalDue.toFixed(2));
-        $('#discountAmount').text(`Discount Amount: ${currencySymbol}${(grandTotal - discountedTotal).toFixed(2)}`);
-        $('#taxAmount').text(`Gst Tax Amount: ${currencySymbol}${taxAmount.toFixed(2)}`);
-
-        // Enable/disable submit button
-        if (grandTotal > 0) {
-            $('#submitCartBtn').prop('disabled', false);
-        } else {
-            $('#submitCartBtn').prop('disabled', true);
-        }
-    }
-
-    // --- 3. Dynamic Price Calculation Helper ---
-    // This calculates the price based on the INPUT fields, not the select option
-    function calculateDynamicPrice() {
-        const net = parseFloat($('#pd_net').val()) || 0;
-        const rate = parseFloat($('#pd_rate').val()) || 0;
-        const making = parseFloat($('#pd_making').val()) || 0;
-
-        // Logic: (Rate * Net Weight) + Making Charge
-        // If Rate is 0, it falls back to the product base price logic later,
-        // but usually for jewelry: Price = (Rate * Net) + Making
-        let computed = 0;
-        if (rate > 0 || making > 0) {
-            computed = (rate * net) + making;
-        } else {
-             // Fallback if rate/making are 0, usually just base price from select
-             // We handle this in the 'Add Product' click if computed is 0
-             const opt = $('#productitems option:selected');
-             computed = parseFloat(opt.data('price')) || 0;
-        }
-
-        $('#pd_computed_price').val(currencySymbol + computed.toFixed(2));
-    }
-
-    function datatable() {
-        const type = $("#type_names").val();
-        const productSelect = $("#productitems");
-
-        productSelect.html('<option value="" disabled selected>-Select Product-</option>');
-
-        if (type) {
-            $.ajax({
-                url: `{{ route('product.type', ['type' => ':type']) }}`.replace(':type', type),
-                method: 'GET',
-                success: function(data) {
-                    if (Array.isArray(data) && data.length > 0) {
-                        $.each(data, function(index, product) {
-                            const img = product.image ? product.image : '';
-                            const unitName = (product.unit && product.unit.name) ? product.unit.name : '';
-                            productSelect.append(
-                                `<option value="${product.id}"
-                                    data-product="${product.name}"
-                                    data-category="${product.category}"
-                                    data-price="${product.price}"
-                                    data-sku="${product.sku}"
-                                    data-unit="${unitName}"
-                                    data-image="${img}"
-                                    data-making="${product.making_charge}"
-                                    data-rate="${product.rate_per_gram}"
-                                    data-gst="0"
-                                    data-gross="${product.gross_weight}"
-                                    data-net="${product.net_weight}"
-                                    data-stock="${product.stock_qty}"
-                                    data-purity-name="${product.purity.name}"
-                                    data-purity="${product.purity.id}">
-                                    ${product.name} - Per ${unitName} - Qty ${product.stock_qty}
-                                </option>`
-                            );
-                        });
-                    } else {
-                        productSelect.append('<option value="" disabled>No products available</option>');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching products:", error);
-                    productSelect.append('<option value="" disabled>Error loading products</option>');
-                }
-            });
-        }
-    }
-
-    $(document).ready(function() {
-        const getCustomerUrl = "{{ route('billing.customer', ':id') }}";
-        $('#billing_system').hide();
-
-        // --- Category & Type Selection ---
-        $('#category_id').on('change', function() {
-            let category_id = $(this).val();
-            let _token = '{{ csrf_token() }}';
-            $.post("{{ route('category.types') }}", { _token, category_id }, function(result) {
-                $('#type_names').html(result);
-            });
-        });
-
-        $('#type_names').on('change', function() {
-            datatable();
-        });
-
-        // --- Product Selection Change ---
-        $('#productitems').on('change', function() {
-            const opt = $('#productitems option:selected');
-            if (!opt || !opt.val()) {
-                $('.product-details').addClass('d-none');
-                return;
-            }
-            // Populate inputs with default data from DB
-            const sku = opt.data('sku') || '';
-            const gross = parseFloat(opt.data('gross')) || 0;
-            const net = parseFloat(opt.data('net')) || 0;
-            const making = parseFloat(opt.data('making')) || 0;
-            const rate = parseFloat(opt.data('rate')) || 0;
-            const gst = parseFloat(opt.data('gst')) || 0;
-            const img = opt.data('image') || '';
-            const purity = opt.data('purity') || '';
-            const purity_name = opt.data('purity-name') || '';
-            const category = opt.data('category') || '';
-            const product = opt.data('product') || '';
-
-            $('#pd_sku').val(sku);
-            $('#pd_gross').val(gross); // Set initial Gross
-            $('#pd_net').val(net);     // Set initial Net
-            $('#pd_making').val(making);
-            $('#pd_rate').val(rate);
-            $('#pd_gst').val(0);
-            $('#pd_category').val(category);
-            $('#pd_product').val(product);
-            $('#pd_purity').val(purity_name);
-
-            $('#pd_image_preview').html(img ?
-                `<img src="${img}" style="max-width:120px;max-height:80px;object-fit:cover">` : '');
-
-            $('.product-details').removeClass('d-none');
-
-            // Calculate price based on these initial values
-            calculateDynamicPrice();
-        });
-
-        // --- Live Calculation on Input Change ---
-        // NEW: Listen to Gross, Net, Making, and Rate changes
-        $('#pd_gross, #pd_net, #pd_making, #pd_rate').on('input', function() {
-            calculateDynamicPrice();
-        });
-
-        $('#discount, #tax, #gst').on('input', function() {
-            updateGrandTotal();
-        });
-
-        $(".customer").on("change", function() {
-            const customerId = $(this).val();
-            $('#paymode').show();
-            if (!customerId) {
-                $('#billing_system').hide();
-                return;
-            }
-            const url = getCustomerUrl.replace(':id', customerId);
-            $.ajax({
-                url: url,
-                type: 'GET',
-                dataType: 'json',
-                beforeSend: function() { $('#billing_system').hide(); },
-                success: function(response) {
-                    if (response.status) { $('#billing_system').show(); }
-                },
-                error: function(xhr) {
-                    alert(xhr.responseJSON?.message ?? 'Unable to fetch customer');
-                }
-            });
-        });
-
-        function showProductError(msg) { $('#productError').text(msg).show(); }
-        function clearProductError() { $('#productError').text('').hide(); }
-
-        // --- Add Product to Cart Logic ---
-        $('#addProductBtn').on('click', function() {
-            const selectedOption = $('#productitems option:selected');
-            const productId = selectedOption.val();
-
-            if (!productId) {
-                alert('Please select a product.');
-                return;
-            }
-
-            const typeText = $('#type_names option:selected').text();
-            const productText = selectedOption.data('product') || '';
-            const sku = selectedOption.data('sku') || '';
-            const image = selectedOption.data('image') || '';
-            const unitName = selectedOption.data('unit') || '';
-            const stockQty = parseFloat(selectedOption.data('stock')) || 0;
-            const quantity = parseFloat($('#quantity').val());
-
-            // --- IMPORTANT: Get values directly from Inputs, not data attributes ---
-            const pd_gross = parseFloat($('#pd_gross').val()) || 0;
-            const pd_net = parseFloat($('#pd_net').val()) || 0;
-            const pd_making = parseFloat($('#pd_making').val()) || 0;
-            const pd_rate = parseFloat($('#pd_rate').val()) || 0;
-            const pd_gst = parseFloat($('#pd_gst').val()) || 0;
-            const pd_category = $('#pd_category').val();
-            const pd_purity = selectedOption.data('purity') || '';
-
-            // Determine Price
-            let computedPrice = parseFloat(selectedOption.data('price')) || 0;
-            // If Rate and Net exist, use the formula
-            if (pd_rate > 0 || pd_making > 0) {
-                computedPrice = (pd_rate * pd_net) + pd_making;
-            }
-            const priceFloat = computedPrice;
-
-            // Validations
-            if (!productText || isNaN(priceFloat) || isNaN(quantity) || quantity <= 0) {
-                showProductError('Please select a valid product and quantity.');
-                return;
-            }
-            if (stockQty > 0 && quantity > stockQty) {
-                showProductError(`Only ${stockQty} unit(s) available in stock.`);
-                return;
-            }
-
-            // Calculate Line Totals
-            const lineBase = priceFloat * quantity;
-            const lineTotal = lineBase * (1 + (pd_gst / 100));
-            grandTotal += lineTotal;
-
-            // Check if product exists in table
-            const existingRow = $(`#billTable tr[data-product-id='${productId}']`);
-
-            // Note: If you want to allow different weights for the same product ID,
-            // you might need to remove this existing check or match by weight too.
-            // For now, we assume same ID merges quantity.
-            if (existingRow.length) {
-                const qtyInput = existingRow.find('.rowQty');
-                const currentQty = parseFloat(qtyInput.val()) || 0;
-                const newQty = currentQty + quantity;
-
-                if (stockQty > 0 && newQty > stockQty) {
-                    showProductError(`Cannot add ${quantity}. Only ${stockQty - currentQty} more unit(s) available.`);
-                    grandTotal -= lineTotal; // revert total addition
+                    oldBalance = 0;
+                    updateGrandTotal();
                     return;
                 }
-
-                // Update existing row (Note: updating weight on existing row is tricky if they differ, usually you'd overwrite or add new row)
-                // Here we simply update quantity and recalculate total based on ORIGINAL added price
-                qtyInput.val(newQty.toFixed(2)).trigger('change');
-                clearProductError();
-                $('#quantity').val(1);
-                // Revert grandTotal calculation here because trigger('change') handles it
-                grandTotal -= lineTotal;
-                return;
-            }
-
-            // Append new row
-            // We save pd_gross and pd_net in data attributes
-            $('#billTable').append(`
-                <tr data-product-id="${productId}"
-                    data-price="${priceFloat}"
-                    data-sku="${sku}"
-                    data-unit="${unitName}"
-                    data-image="${image}"
-                    data-making="${pd_making}"
-                    data-rate="${pd_rate}"
-                    data-gst="${pd_gst}"
-                    data-gross="${pd_gross}"
-                    data-net="${pd_net}"
-                    data-purity="${pd_purity}"
-                    data-stock="${stockQty}">
-                    <td>${productId}</td>
-                    <td>${sku}</td>
-                    <td>${image ? `<img src="${image}" style="width:40px;height:40px;object-fit:cover">` : ''}</td>
-                    <td>${pd_category}</td>
-                    <td>${productText} <br><small class="text-muted">Net: ${pd_net} | Gross: ${pd_gross}</small></td>
-                    <td>${typeText}</td>
-                    <td>Per ${unitName}</td>
-                    <td>${currencySymbol}${priceFloat.toFixed(2)}</td>
-                    <td><input type="number" step="0.01" min="0" class="form-control form-control-sm rowQty" value="${quantity.toFixed(2)}" style="width:90px"></td>
-                    <td class="rowTotal" data-total="${lineTotal.toFixed(2)}">${currencySymbol}${lineTotal.toFixed(2)}</td>
-                    <td><button class="btn btn-danger btn-sm removeProductBtn">Remove</button></td>
-                </tr>
-            `);
-
-            clearProductError();
-            $('#quantity').val(1);
-            updateGrandTotal();
-        });
-
-        // --- Row Quantity Change ---
-        $('#billTable').on('change', '.rowQty', function() {
-            const input = $(this);
-            let newQty = parseFloat(input.val()) || 0;
-            if (newQty < 0) newQty = 0;
-            const row = input.closest('tr');
-            const stock = parseFloat(row.data('stock')) || 0;
-
-            if (stock > 0 && newQty > stock) {
-                showProductError(`Only ${stock} unit(s) available in stock.`);
-                input.val(stock.toFixed(2));
-                newQty = stock;
-            } else {
-                clearProductError();
-            }
-
-            const unitPrice = parseFloat(row.data('price')) || 0;
-            const gstRow = parseFloat(row.data('gst')) || 0;
-            const lineBase = unitPrice * newQty;
-            const lineTotal = lineBase * (1 + (gstRow / 100));
-
-            row.find('.rowTotal')
-               .text(`${currencySymbol}${lineTotal.toFixed(2)}`)
-               .data('total', lineTotal.toFixed(2)); // Update data attribute too
-
-            // Recalculate Grand Total
-            let newGrand = 0;
-            $('#billTable tr').each(function() {
-                const r = $(this);
-                const t = parseFloat(r.find('.rowTotal').data('total')) || 0;
-                // Or recalculate:
-                // const q = parseFloat(r.find('.rowQty').val()) || 0;
-                // const p = parseFloat(r.data('price')) || 0;
-                // const g = parseFloat(r.data('gst')) || 0;
-                // newGrand += (p * q) * (1 + (g/100));
-                newGrand += t;
-            });
-            grandTotal = newGrand;
-            updateGrandTotal();
-        });
-
-        // --- Remove Product ---
-        $('#billTable').on('click', '.removeProductBtn', function() {
-            const row = $(this).closest('tr');
-            const rowTotal = parseFloat(row.find('.rowTotal').data('total')) || 0;
-            grandTotal -= rowTotal;
-            grandTotal = Math.max(0, grandTotal);
-            row.remove();
-            updateGrandTotal();
-        });
-
-        // --- Submit Cart ---
-        $('#submitCartBtn').on('click', function() {
-            const discount = parseFloat($('#discount').val()) || 0;
-            const tax = parseFloat($('#tax').val()) || 0;
-            const balancePay = parseFloat($('#netBalance').val()) || 0;
-            const oldBalanceVal = parseFloat(oldBalance) || 0; // Use global variable
-            const customerId = $('.customer').val();
-            const cartItems = [];
-
-            $('#billTable tr').each(function() {
-                const row = $(this);
-
-                // Read values from data attributes (which contain our custom inputs)
-                cartItems.push({
-                    productId: row.data('product-id'),
-                    sku: row.data('sku'),
-                    name: row.find('td').eq(4).text(), // grabs text including Net/Gross label
-                    unit: row.data('unit'),
-                    price: parseFloat(row.data('price')) || 0,
-                    quantity: parseFloat(row.find('.rowQty').val()) || 0,
-                    image: row.data('image'),
-                    making: parseFloat(row.data('making')) || 0,
-                    rate: parseFloat(row.data('rate')) || 0,
-                    gst: parseFloat(row.data('gst')) || 0,
-                    gross: parseFloat(row.data('gross')) || 0, // Gets the custom Gross Wt
-                    net: parseFloat(row.data('net')) || 0,     // Gets the custom Net Wt
-                    purity: row.data('purity'),
-                    grandTotalAmount: parseFloat(row.find('.rowTotal').data('total')) || 0,
+                $.ajax({
+                    url: '{{ route('billing.customer', ':id') }}'.replace(':id', customerId),
+                    method: 'GET',
+                    success: function(data) {
+                        if (data.status && data.customer.balance > 0) {
+                            oldBalance = parseFloat(data.customer.balance);
+                            $('#customer-balance').text(data.customer.balance);
+                            $('#payment-amount').attr('max', data.customer.balance);
+                            $('#balance-section').show();
+                            $('#paymode').show();
+                        } else {
+                            oldBalance = 0;
+                            $('#balance-section').hide();
+                        }
+                        updateGrandTotal();
+                    },
+                    error: function(xhr) {
+                        alert('Unable to fetch customer balance');
+                        oldBalance = 0;
+                        updateGrandTotal();
+                    }
                 });
-            });
-
-            const discountedTotal = grandTotal * (1 - (discount / 100));
-            const taxAmount = discountedTotal * (tax / 100);
-            const finalTotal = discountedTotal + taxAmount;
-
-            const data = {
-                cart_items: cartItems,
-                grand_total: finalTotal,
-                discount,
-                discount_amount: grandTotal - discountedTotal,
-                tax,
-                tax_amount: taxAmount,
-                customer_id: customerId,
-                oldBalance: oldBalanceVal,
-                customer_balance: balancePay,
-            };
-
-            if ($('#pay-balance').is(':checked')) {
-                data.payment = parseFloat($('#payment-amount').val()) || 0;
             }
-            data.payment_mode = $('#payment-mode').val();
-            data.transaction_no = $('#transaction_no').val();
 
-            const form = $('<form>', {
-                action: '{{ route('cart.submit') }}',
-                method: 'POST',
-                style: 'display: none',
+            $('#pay-balance').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('#payment-fields').show();
+                    paymentAmount = parseFloat($('#payment-amount').val()) || 0;
+                } else {
+                    $('#payment-fields').hide();
+                    paymentAmount = 0;
+                }
+                updateGrandTotal();
             });
-            form.append($('<input>', { type: 'hidden', name: '_token', value: '{{ csrf_token() }}' }));
-            form.append($('<input>', { type: 'hidden', name: 'cart_data', value: JSON.stringify(data) }));
 
-            $('body').append(form);
-            form.submit();
-            return false;
-        });
-    });
-</script>
-@stop
+            $('#payment-amount').on('input', function() {
+                paymentAmount = parseFloat($(this).val()) || 0;
+                updateGrandTotal();
+            });
+
+            let grandTotal = 0;
+            let oldBalance = 0;
+            let paymentAmount = 0;
+
+            function updateGrandTotal() {
+                const discount = parseFloat($('#discount').val()) || 0;
+                const tax = parseFloat($('#tax').val()) || 0;
+                const gstAmount = parseFloat($('#gst').val()) || 0;
+
+                const discountedTotal = grandTotal * (1 - (discount / 100));
+                const taxAmount = discountedTotal * (tax / 100);
+                const productTotal = discountedTotal + taxAmount + gstAmount; // Product total after discount and tax
+                const includeOldBalance = $('#pay-balance').is(':checked');
+                const totalDue = productTotal + (includeOldBalance ? oldBalance : 0);
+                const netBalance = totalDue - paymentAmount;
+
+                $('#productTotal').text(`{{ MONEY }}${productTotal.toFixed(2)}`);
+                $('#discountPercent').text(`${discount}%`);
+                $('#gstPercent').text(`${tax}%`);
+                $('#oldBalanceDisplay').text(`{{ MONEY }}${oldBalance.toFixed(2)}`);
+                $('#totalDue').text(`{{ MONEY }}${totalDue.toFixed(2)}`);
+                $('#paymentDisplay').text(`{{ MONEY }}${paymentAmount.toFixed(2)}`);
+                $('#netBalance').val(netBalance.toFixed(2));
+                $('#netBalance').attr('max', totalDue.toFixed(2));
+                $('#discountAmount').text(
+                    `Discount Amount: {{ MONEY }}${ (grandTotal - discountedTotal).toFixed(2) }`);
+                $('#taxAmount').text(`Gst Tax Amount: {{ MONEY }}${taxAmount.toFixed(2)}`);
+
+                // Enable/disable submit button based on product total
+                if (grandTotal > 0) {
+                    $('#submitCartBtn').prop('disabled', false);
+                } else {
+                    $('#submitCartBtn').prop('disabled', true);
+                }
+            }
+            // Function to populate products based on selected type
+            function datatable() {
+                const type = $("#type_names").val();
+                const productSelect = $("#productitems");
+
+                productSelect.html('<option value="" disabled selected>-Select Product-</option>');
+
+                if (type) {
+                    $.ajax({
+                        url: `{{ route('product.type', ['type' => ':type']) }}`.replace(':type',
+                            type),
+                        method: 'GET',
+                        success: function(data) {
+                            if (Array.isArray(data) && data.length > 0) {
+                                $.each(data, function(index, product) {
+                                    // include rich data as data-attributes on the option, include purity
+                                    const img = product.image ? product.image : '';
+                                    const unitName = (product.unit && product.unit.name) ? product.unit
+                                        .name : '';
+                                    productSelect.append(
+                                        `<option value="${product.id}" data-product="${product.name}" data-category="${product.category}" data-price="${product.price}" data-sku="${product.sku}" data-unit="${unitName}" data-image="${img}" data-making="${product.making_charge}" data-rate="${product.rate_per_gram}" data-gst="0" data-gross="${product.gross_weight}" data-net="${product.net_weight}" data-stock="${product.stock_qty}" data-purity-name="${product.purity.name}" data-purity="${product.purity.id}">${product.name} - Per ${unitName} - Qty ${product.stock_qty}</option>`
+                                    );
+                                });
+                            } else {
+                                productSelect.append('<option value="" disabled>No products available</option>');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error fetching products:", error);
+                            productSelect.append('<option value="" disabled>Error loading products</option>');
+                        }
+                    });
+                }
+            }
+
+            $(document).ready(function() {
+                const getCustomerUrl = "{{ route('billing.customer', ':id') }}";
+                // gst input handled via updateGrandTotal when its value changes
+                $('#billing_system').hide();
+                $('#category_id').on('change', function() {
+
+                    let category_id = $(this).val();
+                    let _token = '{{ csrf_token() }}';
+
+                    function loadData(url, target) {
+                        $.post(url, {
+                            _token,
+                            category_id
+                        }, function(result) {
+                            $(target).html(result);
+                        });
+                    }
+
+                    loadData("{{ route('category.types') }}", '#type_names');
+
+                });
+                $('#type_names').on('change', function() {
+                    datatable();
+                });
+                // when product changes populate product details panel
+                $('#productitems').on('change', function() {
+                    const opt = $('#productitems option:selected');
+                    if (!opt || !opt.val()) {
+                        $('.product-details').addClass('d-none');
+                        return;
+                    }
+                    const sku = opt.data('sku') || '';
+                    const gross = parseFloat(opt.data('gross')) || 0;
+                    const net = parseFloat(opt.data('net')) || 0;
+                    const making = parseFloat(opt.data('making')) || 0;
+                    const rate = parseFloat(opt.data('rate')) || 0;
+                    const gst = parseFloat(opt.data('gst')) || 0;
+                    const img = opt.data('image') || '';
+                    const purity = opt.data('purity') || '';
+                    const purity_name = opt.data('purity-name') || '';
+                    const category = opt.data('category') || '';
+                    const product = opt.data('product') || '';
+                    $('#pd_sku').val(sku);
+                    $('#pd_gross').val(gross);
+                    $('#pd_net').val(net);
+                    $('#pd_making').val(making);
+                    $('#pd_rate').val(rate);
+                    $('#pd_gst').val(0);
+                    $('#pd_category').val(category);
+                    $('#pd_product').val(product);
+                    $('#pd_image_preview').html(img ?
+                        `<img src="${img}" style="max-width:120px;max-height:80px;object-fit:cover">` : '');
+                    // fetch purities for selected type via existing endpoint
+                    $('#pd_purity').val(purity_name);
+                    // compute price: rate_per_gram * net_weight + making_charge
+                    const computed = (rate * net) + making;
+                    $('#pd_computed_price').val('{{ MONEY }}' + computed.toFixed(2));
+                    $('.product-details').removeClass('d-none');
+                });
+                $('#discount').on('input', function() {
+                    updateGrandTotal();
+                });
+                $('#tax').on('input', function() {
+                    updateGrandTotal();
+                });
+                $('#gst').on('input', function() {
+                    updateGrandTotal();
+                });
+                $(".customer").on("change", function() {
+                    const customerId = $(this).val();
+                    $('#paymode').show();
+                    if (!customerId) {
+                        $('#billing_system').hide();
+                        return;
+                    }
+                    const url = getCustomerUrl.replace(':id', customerId);
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json',
+                        beforeSend: function() {
+                            $('#billing_system').hide();
+                        },
+                        success: function(response) {
+                            if (response.status) {
+                                $('#billing_system').show();
+                                // Example: populate fields
+
+                            }
+                        },
+                        error: function(xhr) {
+                            alert(xhr.responseJSON?.message ?? 'Unable to fetch customer');
+                        }
+                    });
+                });
+
+                function showProductError(msg) {
+                    $('#productError').text(msg).show();
+                }
+
+                function clearProductError() {
+                    $('#productError').text('').hide();
+                }
+
+                $('#addProductBtn').on('click', function() {
+
+                    const typeText = $('#type_names option:selected').text();
+
+                    const productValue = $('#productitems').val();
+                    const quantity = parseFloat($('#quantity').val()); // Use parseFloat here
+
+                    if (!productValue) {
+                        alert('Please select a product.');
+                        return;
+                    }
+
+                    const selectedOption = $('#productitems option:selected');
+                    const productId = selectedOption.val();
+                    const priceFromOption = parseFloat(selectedOption.data('price')) || 0;
+                    const productText = selectedOption.data('product') || '';
+                    const sku = selectedOption.data('sku') || '';
+                    const image = selectedOption.data('image') || '';
+                    const makingFromOption = parseFloat(selectedOption.data('making')) || 0;
+                    const rateFromOption = parseFloat(selectedOption.data('rate')) || 0;
+                    const gstFromOption = parseFloat(selectedOption.data('gst')) || 0;
+                    const grossFromOption = parseFloat(selectedOption.data('gross')) || 0;
+                    const netFromOption = parseFloat(selectedOption.data('net')) || 0;
+
+                    // Allow user to adjust details in the product-details panel; fall back to option data
+                    const pd_making = parseFloat($('#pd_making').val()) || makingFromOption;
+                    const pd_rate = parseFloat($('#pd_rate').val()) || rateFromOption;
+                    const pd_gst = parseFloat($('#pd_gst').val()) || gstFromOption;
+                    const pd_gross = parseFloat($('#pd_gross').val()) || grossFromOption;
+                    const pd_net = parseFloat($('#pd_net').val()) || netFromOption;
+                    const pd_purity = selectedOption.data('purity') || '';
+                    const pd_category = $('#pd_category').val() || selectedOption.data('category') || '';
+                    const stockQty = parseFloat(selectedOption.data('stock')) || 0;
+
+                    // Compute price using rate_per_gram * net_weight + making_charge when available
+                    let computedPrice = priceFromOption;
+                    if (pd_rate > 0 && pd_net > 0) {
+                        computedPrice = (pd_rate * pd_net) + pd_making;
+                    }
+                    const priceFloat = computedPrice;
+
+                    if (!productText || isNaN(priceFloat) || isNaN(quantity) || quantity <= 0) {
+                        showProductError('Please select a valid product and quantity.');
+                        return;
+                    }
+
+                    // Validate against stock before adding
+                    if (stockQty > 0 && quantity > stockQty) {
+                        showProductError(`Only ${stockQty} unit(s) available in stock.`);
+                        return;
+                    }
+
+                    // Calculate total based on decimal quantity and per-item GST
+                    const lineBase = priceFloat * quantity;
+                    const lineTotal = lineBase * (1 + (pd_gst / 100));
+                    const total = lineTotal;
+                    grandTotal += total;
+
+                    // Extract unit name from the selected option's data attribute
+                    const unitName = selectedOption.data('unit') || '';
+
+                    // If product already exists in table, increase quantity (enforce stock)
+                    const existingRow = $(`#billTable tr[data-product-id='${productId}']`);
+                    if (existingRow.length) {
+                        const qtyInput = existingRow.find('.rowQty');
+                        const currentQty = parseFloat(qtyInput.val()) || 0;
+                        const newQty = currentQty + quantity;
+                        if (stockQty > 0 && newQty > stockQty) {
+                            showProductError(
+                                `Cannot add ${quantity}. Only ${stockQty - currentQty} more unit(s) available.`
+                            );
+                            return;
+                        }
+                        qtyInput.val(newQty.toFixed(2));
+                        qtyInput.trigger('change');
+                        clearProductError();
+                        $('#quantity').val(1);
+                        return;
+                    }
+
+                    // Append a new row to the bill table including sku, image and stock
+                    $('#billTable').append(`
+        <tr data-product-id="${productId}" data-price="${priceFloat}" data-sku="${sku}" data-unit="${unitName}" data-image="${image}" data-making="${pd_making}" data-rate="${pd_rate}" data-gst="0" data-gross="${pd_gross}" data-net="${pd_net}" data-purity="${pd_purity}" data-stock="${stockQty}">
+            <td>${productId}</td>
+            <td>${sku}</td>
+            <td>${image ? `<img src="${image}" alt="img" style="width:40px;height:40px;object-fit:cover">` : ''}</td>
+            <td>${pd_category}</td>
+            <td>${productText}</td>
+            <td>${typeText}</td>
+            <td>Per ${unitName}</td>
+            <td>{{ MONEY }}${priceFloat.toFixed(2)}</td>
+            <td><input type="number" step="0.01" min="0" class="form-control form-control-sm rowQty" value="${quantity.toFixed(2)}" style="width:90px"></td>
+            <td class="rowTotal" data-total="${total.toFixed(2)}">{{ MONEY }}${total.toFixed(2)}</td>
+            <td><button class="btn btn-danger btn-sm removeProductBtn">Remove</button></td>
+        </tr>
+    `);
+                    clearProductError();
+                    // Reset quantity only; keep type and product selected to remember selection
+                    $('#quantity').val(1);
+
+                    // Update displayed grand total
+                    updateGrandTotal();
+                });
+
+                // Delegated handler for when a row quantity changes
+                $('#billTable').on('change', '.rowQty', function() {
+                    const input = $(this);
+                    let newQty = parseFloat(input.val()) || 0;
+                    if (newQty < 0) newQty = 0;
+                    const row = input.closest('tr');
+                    const stock = parseFloat(row.data('stock')) || 0;
+                    if (stock > 0 && newQty > stock) {
+                        showProductError(`Only ${stock} unit(s) available in stock.`);
+                        // revert to max allowed
+                        input.val(stock.toFixed(2));
+                        newQty = stock;
+                    } else {
+                        clearProductError();
+                    }
+
+                    const unitPrice = parseFloat(row.data('price')) || 0;
+                    const gstRow = parseFloat(row.data('gst')) || 0;
+                    const lineBase = unitPrice * newQty;
+                    const lineTotal = lineBase * (1 + (gstRow / 100));
+                    row.find('.rowTotal').text(`{{ MONEY }}${lineTotal.toFixed(2)}`);
+
+                    // Recompute grandTotal by summing all row totals
+                    let newGrand = 0;
+                    $('#billTable tr').each(function() {
+                        const r = $(this);
+                        const qty = parseFloat(r.find('.rowQty').val()) || 0;
+                        const p = parseFloat(r.data('price')) || 0;
+                        const g = parseFloat(r.data('gst')) || 0;
+                        const rb = p * qty;
+                        const rt = rb * (1 + (g / 100));
+                        newGrand += rt;
+                    });
+                    grandTotal = newGrand;
+                    updateGrandTotal();
+                });
+
+                $('#billTable').on('click', '.removeProductBtn', function() {
+                    const row = $(this).closest('tr');
+                    const rowTotal = parseFloat(row.find('.rowTotal').text().replace('{{ MONEY }}', '')
+                        .trim()) || 0;
+
+                    grandTotal -= rowTotal;
+                    grandTotal = Math.max(0, grandTotal); // Ensure grandTotal doesn't go below 0
+                    row.remove();
+                    updateGrandTotal();
+                });
+                $('#submitCartBtn').on('click', function() {
+                    const discount = parseFloat($('#discount').val()) || 0;
+                    const tax = parseFloat($('#tax').val()) || 0;
+                    const balancePay = parseFloat($('#netBalance').val()) || 0;
+                    const oldBalance  =parseFloat($('#payment-amount').val()) || 0;
+                    // const gstAmount = parseFloat($('#gst').val()) || 0;
+                    const customerId = $('.customer').val();
+                    const cartItems = [];
+                    $('#billTable tr').each(function() {
+                        const row = $(this);
+                        const productId = row.data('product-id');
+                        const quantity = parseFloat(row.find('.rowQty').val()) || 0;
+                        const price = parseFloat(row.data('price')) || 0;
+                        const sku = row.data('sku') || '';
+                        const name = row.find('td').eq(4).text();
+                        const unit = row.data('unit') || '';
+                        const image = row.data('image') || '';
+                        const making = parseFloat(row.data('making')) || 0;
+                        const rate = parseFloat(row.data('rate')) || 0;
+                        const gst = parseFloat(row.data('gst')) || 0;
+                        const gross = parseFloat(row.data('gross')) || 0;
+                        const net = parseFloat(row.data('net')) || 0;
+                        const purity = row.data('purity') || '';
+                        const grandTotalAmount = parseFloat($('.rowTotal').data('total')) || '';
+
+                        cartItems.push({
+                            productId,
+                            sku,
+                            name,
+                            unit,
+                            price,
+                            quantity,
+                            image,
+                            making,
+                            rate,
+                            gst,
+                            gross,
+                            net,
+                            purity,
+                            grandTotalAmount,
+                        });
+                    });
+
+                    // Calculate discounted total and apply tax
+                    const discountedTotal = grandTotal * (1 - (discount / 100));
+                    const taxAmount = discountedTotal * (tax / 100);
+                    const finalTotal = discountedTotal + taxAmount;
+
+                    const data = {
+                        cart_items: cartItems,
+                        grand_total: finalTotal,
+                        discount,
+                        discount_amount: grandTotal - discountedTotal,
+                        tax,
+                        tax_amount: taxAmount,
+                        customer_id: customerId,
+                        oldBalance:oldBalance,
+                        customer_balance: balancePay,
+                    };
+
+                    if ($('#pay-balance').is(':checked')) {
+                        data.payment = parseFloat($('#payment-amount').val()) || 0;
+
+                    }
+                    data.payment_mode = $('#payment-mode').val();
+                    data.transaction_no = $('#transaction_no').val();
+
+                    const form = $('<form>', {
+                        action: '{{ route('cart.submit') }}',
+                        method: 'POST',
+                        style: 'display: none',
+                    });
+
+                    form.append($('<input>', {
+                        type: 'hidden',
+                        name: '_token',
+                        value: '{{ csrf_token() }}',
+                    }));
+
+                    form.append($('<input>', {
+                        type: 'hidden',
+                        name: 'cart_data',
+                        value: JSON.stringify(data),
+                    }));
+
+                    $('body').append(form);
+                    form.submit();
+                    return false;
+                });
+
+            });
+        </script>
+    @stop
 </x-main-layout>

@@ -4,7 +4,7 @@
     @php
         // Dynamic model name passed from generation command
         $name = 'supplier_billings';
-         $title = Str::title(str_replace('_', ' ', $name));
+        $title = Str::title(str_replace('_', ' ', $name));
     @endphp
 
     <div class="seperator-header layout-top-spacing">
@@ -20,21 +20,24 @@
                     <div class="card-body">
                         <h6 class="card-title fw-bold">Add {{ $title }}</h6>
                         {{-- Located at: resources/views/components/backend/backend_component/supplier_billings-form.blade.php --}}
-                        <x-backend.backend_component.supplier_billings-form :isEdit="false" :$supplier :$types :$purities />
+                        <x-backend.backend_component.supplier_billings-form :isEdit="false" :$supplier :$categories :$units
+                            :$purities />
                     </div>
                 </div>
             </div>
         </div>
     </div>
-     @section('script')
+    @section('script')
         <script>
             (function() {
                 let rowIndex = 0;
 
                 function recalcRowTotals(row) {
                     const weight = parseFloat(row.querySelector('.item-weight')?.value || 0);
-                    const rate = parseFloat(row.querySelector('.item-rate')?.value || 0);
-                    const lineTotal = (weight * rate) || 0;
+
+                    // Rate removed → line total = weight
+                    const lineTotal = weight || 0;
+
                     const totalField = row.querySelector('.item-total');
                     const totalDisplay = row.querySelector('.item-total-display');
 
@@ -44,12 +47,12 @@
 
                 function recalcBillAmount() {
                     let sum = 0;
+
                     document.querySelectorAll('#supplier-items-table tbody tr').forEach(function(row) {
                         const total = parseFloat(row.querySelector('.item-total')?.value || 0);
-                        if (!isNaN(total)) {
-                            sum += total;
-                        }
+                        if (!isNaN(total)) sum += total;
                     });
+
                     const billAmountInput = document.querySelector('input[name="bill_amount"]');
                     if (billAmountInput) {
                         billAmountInput.value = sum.toFixed(2);
@@ -57,7 +60,7 @@
                 }
 
                 function attachRowEvents(row) {
-                    row.querySelectorAll('.item-weight, .item-rate').forEach(function(input) {
+                    row.querySelectorAll('.item-weight').forEach(function(input) {
                         input.addEventListener('input', function() {
                             recalcRowTotals(row);
                             recalcBillAmount();
@@ -85,7 +88,7 @@
                     const clone = template.content.cloneNode(true);
                     const row = clone.querySelector('tr');
 
-                    // Update name attributes with current index
+                    // Set correct input names
                     row.querySelectorAll('[data-name-template]').forEach(function(el) {
                         const base = el.getAttribute('data-name-template');
                         el.setAttribute('name', base.replace('__INDEX__', rowIndex));
@@ -97,15 +100,13 @@
                 }
 
                 document.addEventListener('DOMContentLoaded', function() {
-                    const addBtn = document.getElementById('add-supplier-item-row');
-                    if (addBtn) {
-                        addBtn.addEventListener('click', function(e) {
+                    document.getElementById('add-supplier-item-row')
+                        ?.addEventListener('click', function(e) {
                             e.preventDefault();
                             addNewRow();
                         });
-                    }
 
-                    // Initialize first row
+                    // Initial row
                     addNewRow();
                 });
             })();

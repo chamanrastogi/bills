@@ -22,7 +22,7 @@
 
                         {{-- Auto-generated form component --}}
                         {{-- Located at: resources/views/components/backend/backend_component/supplier_billings-form.blade.php --}}
-                        <x-backend.backend_component.supplier_billings-form  :billing="$supplier_billing" :supplier="$supplier" :types="$types" :purities="$purities" :products="$products" :isEdit="true" />
+                        <x-backend.backend_component.supplier_billings-form  :billing="$supplier_billing" :supplier="$supplier" :categories="$categories" :purities="$purities" :$units  :isEdit="true" />
                     </div>
                 </div>
             </div>

@@ -50,7 +50,7 @@ class PaymentController extends Controller
             'gst' => 0,
             'payment' => $request->payment,
             'payment_mode' => $request->payment_mode,
-            'transaction_no'=> $request->transaction_no
+            'transaction_no' => $request->transaction_no,
         ]);
         $notification = [
             'message' => 'Payment Added Successfully',

@@ -12,92 +12,148 @@ use Yajra\DataTables\Services\DataTable;
 
 class SupplierBillingDataTable extends DataTable
 {
-    /**
-     * Build the DataTable class.
-     *
-     * @param  QueryBuilder  $query  Results from query() method.
-     */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        $dataTable = new EloquentDataTable($query);
+        return (new EloquentDataTable($query))
+            ->setRowClass(fn ($row) => Str::snake(class_basename($row)).'-'.$row->id
+            )
 
-        return $dataTable
-            ->setRowClass(function ($row) {
-                return Str::snake(class_basename($row)).'-'.$row->id;
-
-            })
+            /* =========================
+               BILL IMAGE
+               ========================= */
             ->addColumn('bill_image', function ($row) {
 
-                // Always show image (real or default)
-                $image = $row->bill_image ? asset($row->bill_image) : asset('upload/no_image.jpg');
+                $hasImage = ! empty($row->bill_image);
+                $image = $hasImage
+                    ? asset($row->bill_image)
+                    : asset('upload/no_image.jpg');
 
-                // Download button only if real image exists
-                $downloadBtn = '';
-                if ($row->bill_image) {
-                    $downloadBtn = '<a href="'.$image.'" download class="action-btn btn-edit bs-tooltip me-2" data-toggle="tooltip" data-placement="top" title="Download">
-                <i data-feather="download-cloud"></i></a>';
-                }
+                $downloadBtn = $hasImage
+                    ? '<a href="'.$image.'" download class="action-btn me-2">
+                        <i data-feather="download-cloud"></i>
+                       </a>'
+                    : '';
 
-                return '<img src="'.$image.'" class="img-thumbnail img-fluid" style="max-width: 80px; max-height: 80px;">'.$downloadBtn.'';
+                return '
+                    <div class="text-center">
+                        <img src="'.$image.'" class="img-thumbnail"
+                             style="max-width:80px;max-height:80px;">
+                        '.$downloadBtn.'
+                    </div>
+                ';
             })
 
+            /* =========================
+               SUPPLIER NAME
+               ========================= */
             ->addColumn('supplier_name', function ($row) {
-                $name = $row->supplier->shop_name ?? 'IN HOUSE';
 
+                $name = $row->supplier?->shop_name ?? 'IN HOUSE';
                 $badge = $row->supplier ? 'info' : 'secondary';
 
                 return '<span class="badge badge-'.$badge.'">'.$name.'</span>';
             })
-            // Separate status column
 
+            /* =========================
+               BILL + ITEM DETAILS
+               ========================= */
             ->addColumn('details', function ($row) {
+
+                // -------- Billing status --------
+
+                $bill_amount = (float) $row->bill_amount;
+
+                $paymentMode = MODE[$row->payment_mode] ?? 'N/A';
+
+                // -------- Item details --------
+                $itemsHtml = '';
+
+                if ($row->items->count()) {
+                    foreach ($row->items as $item) {
+                        $itemsHtml .= '
+                            <li>
+                                <strong>'.$item->category?->name.'</strong>
+                                - ['.$item->purity?->name.']
+                            </li>';
+                    }
+                } else {
+                    $itemsHtml = '<li class="text-muted">No items</li>';
+                }
+
                 return '
-        <div class="product-details">
-            <strong class="text-info fw-bold">Payment Mode:</strong> '.MODE[$row->payment_mode].'<br>
-            <strong class="text-success fw-bold">Bill Amount:</strong> '.MONEY.$row->bill_amount.'<br>
-            <strong class="text-secondary fw-bold">Paid Amount:</strong> '.MONEY.$row->paid.'<br>
-            <strong class="text-warning fw-bold">Created At:</strong> '.$row->created_at->format('d-M-Y').'<br>
-            <strong class="text-danger fw-bold">Updated At:</strong> '.$row->updated_at->format('d-M-Y').'
-        </div> ';
+                    <div class="product-details">
+                        <strong class="text-info">Payment Mode:</strong> '.$paymentMode.'<br>
+
+                        <strong class="text-secondary">Bill Amount:</strong> '.MONEY.$bill_amount.'<br>
+
+                        <hr class="my-1">
+                        <strong class="text-primary">Items:</strong>
+                        <ul class="mb-0 ps-3">'.$itemsHtml.'</ul>
+                        <hr class="my-1">
+                        <small class="text-warning">Created:</small> '.$row->created_at->format('d-M-Y').' |
+                        <small class="text-danger">Updated:</small> '.$row->updated_at->format('d-M-Y').'
+                    </div>
+                ';
             })
-            // Action column (edit + delete only)
+
+              /* =========================
+               SUPPLIER SEARCH (FIX)
+               ========================= */
+            ->filterColumn('supplier_name', function ($query, $keyword) {
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('suppliers.shop_name', 'LIKE', "%{$keyword}%")
+                        ->orWhereNull('supplier_billings.supplier_id'); // IN HOUSE
+                });
+            })
+
+            /* =========================
+               ACTIONS
+               ========================= */
             ->addColumn('action', function ($row) {
+
                 $name = Str::snake(class_basename($row));
                 $edit = route('supplier_billings.edit', $row->id);
 
-                return
-                    '<a href="'.$edit.'"
-                        class="action-btn btn-edit bs-tooltip me-2"
-                        data-toggle="tooltip" data-placement="top" title="Edit"
-                        data-bs-original-title="Edit">
+                return '
+                    <a href="'.$edit.'" class="action-btn me-2">
                         <i data-feather="edit"></i>
-                    </a>'
-                    .' <a href="javascript:void(0)"
-                        onClick="deleteFunction('.$row->id.', \''.$name.'\')"
-                        class="action-btn btn-edit bs-tooltip me-2 delete'.$row->id.'"
-                        data-toggle="tooltip" data-placement="top" title="Delete"
-                        data-bs-original-title="Delete">
+                    </a>
+                    <a href="javascript:void(0)"
+                       onClick="deleteFunction('.$row->id.', \''.$name.'\')"
+                       class="action-btn">
                         <i data-feather="trash-2"></i>
-                    </a>';
+                    </a>
+                ';
             })
-            ->rawColumns(['status', 'action', 'supplier_name', 'details', 'bill_image']);
+
+            ->rawColumns([
+                'bill_image',
+                'supplier_name',
+                'details',
+                'action',
+            ]);
     }
 
     /**
-     * Get the query source of dataTable.
+     * Query source
      */
     public function query(SupplierBilling $model): QueryBuilder
     {
-        return $model->newQuery()->with('supplier:id,shop_name');
+        return $model->newQuery()
+            ->leftJoin('suppliers', 'suppliers.id', '=', 'supplier_billings.supplier_id')
+            ->select('supplier_billings.*')
+            ->with([
+                'supplier:id,shop_name',
+                'items.category:id,name',
+                'items.purity:id,name',
+                'items.unit:id,name',
+            ]);
     }
 
-    /**
-     * Optional method if you want to use the html builder.
-     */
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('product-table')
+            ->setTableId('supplier-billing-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
             ->orderBy(0)
@@ -110,10 +166,10 @@ class SupplierBillingDataTable extends DataTable
 
                 // Custom DOM layout
                 'dom' =>
-                // Top section
-                "<'dt--top-section'<'row' ".
-                    "<'col-sm-12 col-md-6 d-flex justify-content-md-start justify-content-center'lB>".
-                    "<'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-center mt-md-0 mt-3'f>".
+                    // Top section
+                    "<'dt--top-section'<'row' ".
+                        "<'col-sm-12 col-md-6 d-flex justify-content-md-start justify-content-center'lB>".
+                        "<'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-center mt-md-0 mt-3'f>".
                     '>>'.
 
                     // Table
@@ -121,8 +177,8 @@ class SupplierBillingDataTable extends DataTable
 
                     // Bottom section
                     "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center' ".
-                    "<'dt--pages-count mb-sm-0 mb-3'i>".
-                    "<'dt--pagination'p>".
+                        "<'dt--pages-count mb-sm-0 mb-3'i>".
+                        "<'dt--pagination'p>".
                     '>',
 
                 // Export Buttons
@@ -178,29 +234,26 @@ class SupplierBillingDataTable extends DataTable
             ]);
     }
 
-    /**
-     * Get the dataTable columns definition.
-     */
     public function getColumns(): array
     {
         return [
-
             Column::make('id'),
-            Column::computed('bill_image')->title('Bill Image')->searchable(false)->orderable(false)->width(100)->addClass('text-center'),
-            Column::computed('supplier_name')->title('Supplier Name'),
+            Column::computed('bill_image')
+                ->title('Bill Image')
+                ->orderable(false)
+                ->searchable(false)
+                ->addClass('text-center'),
 
-            Column::computed('details')->title('Bill Details'),
+            Column::computed('supplier_name')->title('Supplier')->searchable(true),
+            Column::computed('details')->title('Bill & Items Details'),
+
             Column::computed('action')
                 ->exportable(false)
                 ->printable(false)
-                ->width(60)
                 ->addClass('text-center'),
         ];
     }
 
-    /**
-     * Get the filename for export.
-     */
     protected function filename(): string
     {
         return 'SupplierBilling_'.date('YmdHis');

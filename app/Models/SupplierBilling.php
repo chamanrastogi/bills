@@ -13,7 +13,7 @@ class SupplierBilling extends Model
 
     protected $guarded = [];
 
-    public function supplier() :BelongsTo
+    public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
     }

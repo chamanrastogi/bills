@@ -1,5 +1,5 @@
 <x-dashboard-layout>
-    @section('title', 'Show Customer')
+    @section('title', breadcrumb())
 
     <div class="page-content">
         <div class="row">
@@ -23,7 +23,9 @@
                             <tbody>
                                 @foreach ($billings as $bill)
                                     @php
+
                                         $cart = json_decode($bill->cart);
+
                                         $customer = App\Models\Customer::Select('name', 'email', 'phone')->find(
                                             $bill->customer_id,
                                         );
@@ -36,20 +38,25 @@
 
                                         <td>{{ !empty($customer->name) ? $customer->name : '-' }}</td>
                                         <td>
-                                            @foreach ($cart as $item)
+                                            @forelse ($cart ?? [] as $item)
                                                 @php
-
-                                                    $product = App\Models\Product::with('unit')->find(
-                                                        $item->productId,
-                                                    );
+                                                    $product = App\Models\Product::with('unit')->find($item->productId);
                                                 @endphp
-                                                {{  $product->name }} {{ ($product->unit->name) ? "-Per ". $product->unit->name : '' }}<br>
-                                            @endforeach
+
+                                                @if ($product)
+                                                    {{ $product->name }}
+                                                    {{ $product->unit?->name ? '- Per ' . $product->unit->name : '' }}
+                                                    <br>
+                                                @endif
+                                            @empty
+                                                <p>Your cart is empty.</p>
+                                            @endforelse
                                         </td>
                                         <td><strong>Dis:</strong>{{ $bill->discount }} (%)<br>
                                             <strong>Tax:</strong>{{ $bill->tax }} (%)<br>
-                                        <strong>Fri_ch:</strong>{{ $bill->freight_charges }}</td>
-                                          <td>{{ $bill->created_at->format('l d M Y') }}</td>
+                                            <strong>Fri_ch:</strong>{{ $bill->gst }}
+                                        </td>
+                                        <td>{{ $bill->created_at->format('l d M Y') }}</td>
                                         <td>{{ number_format($bill->grand_total, 2) }}</td>
                                         <td class="text-center">
                                             <div class="action-btns">
@@ -75,12 +82,12 @@
                         </table>
                         @if ($billings->count() != 0)
                             <div class="ms-3">
-                               <div class="form-check form-check-primary form-check-inline">
-                                        <input class="form-check-input" type="checkbox" id="form-check-default">
-                                        <label class="form-check-label" for="form-check-default">
-                                            Checked All
-                                        </label>
-                                    </div>
+                                <div class="form-check form-check-primary form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="form-check-default">
+                                    <label class="form-check-label" for="form-check-default">
+                                        Checked All
+                                    </label>
+                                </div>
                                 <button id="deleteall" onClick="deleteAllFunction('Billing')"
                                     class="btn btn-danger mb-2 me-4">
                                     <span class="btn-text-inner">Delete Selected</span>
@@ -196,15 +203,15 @@
         </script>
     @endif
     @section('script')
-    <script>
-        $(document).ready(function() {
-            // When the "Select All" checkbox is clicked
-            $('#form-check-default').change(function() {
-                console.log('cj');
-                // Check or uncheck all checkboxes based on the "Select All" checkbox
-                $('.mixed_child').prop('checked', $(this).prop('checked'));
+        <script>
+            $(document).ready(function() {
+                // When the "Select All" checkbox is clicked
+                $('#form-check-default').change(function() {
+                    console.log('cj');
+                    // Check or uncheck all checkboxes based on the "Select All" checkbox
+                    $('.mixed_child').prop('checked', $(this).prop('checked'));
+                });
             });
-        });
-    </script>
-@stop
+        </script>
+    @stop
 </x-dashboard-layout>

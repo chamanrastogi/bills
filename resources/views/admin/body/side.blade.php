@@ -48,27 +48,18 @@
                  label="Supplier" :submenu="[
                      ['route' => 'supplier.create', 'label' => 'Add Supplier', 'permission' => 'supplier.create'],
                      ['route' => 'supplier.index', 'label' => 'Show Supplier', 'permission' => 'supplier.index'],
-                     [
-                         'route' => 'supplier_billings.create',
-                         'label' => 'Add Supplier Billing',
-                         'permission' => 'supplier.index',
-                     ],
-                     [
-                         'route' => 'supplier_billings.index',
-                         'label' => 'Show Supplier Billing',
-                         'permission' => 'supplier.index',
-                     ],
+                     [ 'route' => 'supplier_billings.create', 'label' => 'Add Supplier Billing','permission' => 'supplier.index'],
+                     ['route' => 'supplier_billings.index', 'label' => 'Show Supplier Billing','permission' => 'supplier.index'],
                  ]" :activeRoutes="['admin/supplier', 'admin/supplier_billings']" />
+
+             <x-backend.backend_component.side-menu-item permission="customers.menu" routeId="report" icon="menu"
+                 label="Reoprts" :submenu="[
+                     ['route' => 'reports.supplier-billing-items','label' => 'Show Supplier Report','permission' => 'supplier.index'],
+                 ]" :activeRoutes="['admin/reports/supplier-billing-items']" />
              <x-backend.backend_component.side-menu-item permission="customers.menu" routeId="customer" icon="menu"
                  label="Customer" :submenu="[
                      ['route' => 'customers.create', 'label' => 'Add Customer', 'permission' => 'customers.create'],
                      ['route' => 'customers.index', 'label' => 'Show Customer', 'permission' => 'customers.index'],
-
-                     [
-                         'route' => 'customer.balance',
-                         'label' => 'Show Customer Balance',
-                         'permission' => 'customer.balance',
-                     ],
                  ]" :activeRoutes="['admin/customers']" />
 
              <x-backend.backend_component.side-menu-item permission="category.menu" routeId="category" icon="menu"

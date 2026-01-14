@@ -46,7 +46,6 @@ class ProductController extends Controller
         $types = Type::where('status', 0)->pluck('name', 'id');
         $units = Unit::where('status', 0)->pluck('fname', 'id');
 
-
         return view('backend.product.add_product', compact('purities', 'categories', 'types', 'units'));
     }
 
@@ -69,18 +68,18 @@ class ProductController extends Controller
         } else {
             $save_url = '';
         }
-          if (isset($request->price)) {
-                if ($request->price > 0) {
-                    $price_value = $request->price;
-                } else {
-                    $price_value = number_format(
-                        ($request->rate_per_gram * $request->net_weight + $request->making_charge) *
-                            (1 + $request->gst_percent / 100) *
-                            $request->stock_qty,
-                        2,
-                    );
-                }
+        if (isset($request->price)) {
+            if ($request->price > 0) {
+                $price_value = $request->price;
+            } else {
+                $price_value = number_format(
+                    ($request->rate_per_gram * $request->net_weight + $request->making_charge) *
+                        (1 + $request->gst_percent / 100) *
+                        $request->stock_qty,
+                    2,
+                );
             }
+        }
         $price_value = str_replace(',', '', $price_value);
         product::insert([
             'sku' => $request->sku,
@@ -128,7 +127,7 @@ class ProductController extends Controller
         $types = Type::where('status', 0)->where('id', $product->type_id)->pluck('name', 'id');
         $units = Unit::where('status', 0)->pluck('fname', 'id');
 
-        return view('backend.product.edit_product', compact('product', 'purities', 'types', 'units','categories' ));
+        return view('backend.product.edit_product', compact('product', 'purities', 'types', 'units', 'categories'));
     }
 
     /**
@@ -147,7 +146,7 @@ class ProductController extends Controller
         if ($request->file('image') != null) {
             if (file_exists($product->image)) {
                 $img = explode('.', $product->image);
-                $small_img = $img[0] . '_' . $this->image_preset[0]->name . '.' . $img[1];
+                $small_img = $img[0].'_'.$this->image_preset[0]->name.'.'.$img[1];
                 unlink($small_img);
                 unlink($product->image);
             }
@@ -161,19 +160,18 @@ class ProductController extends Controller
             }
         }
 
-
-         if (isset($request->price)) {
-                if ($request->price > 0) {
-                    $price_value = $request->price;
-                } else {
-                    $price_value = number_format(
-                        ($request->rate_per_gram * $request->net_weight + $request->making_charge) *
-                            (1 + $request->gst_percent / 100) *
-                            $request->stock_qty,
-                        2,
-                    );
-                }
+        if (isset($request->price)) {
+            if ($request->price > 0) {
+                $price_value = $request->price;
+            } else {
+                $price_value = number_format(
+                    ($request->rate_per_gram * $request->net_weight + $request->making_charge) *
+                        (1 + $request->gst_percent / 100) *
+                        $request->stock_qty,
+                    2,
+                );
             }
+        }
         $price_value = str_replace(',', '', $price_value);
         $product->update([
             'sku' => $request->sku,
@@ -215,14 +213,14 @@ class ProductController extends Controller
             foreach ($products as $product) {
                 if (file_exists($product->image)) {
                     $img = explode('.', $product->image);
-                    $small_img = $img[0] . '_' . $this->image_preset[0]->name . '.' . $img[1];
+                    $small_img = $img[0].'_'.$this->image_preset[0]->name.'.'.$img[1];
                     unlink($small_img);
                     unlink($product->image);
                 }
 
                 if (file_exists($product->bill_image)) {
                     $bill_img = explode('.', $product->bill_image);
-                    $small_img = $bill_img[0] . '_' . $this->image_preset[0]->name . '.' . $bill_img[1];
+                    $small_img = $bill_img[0].'_'.$this->image_preset[0]->name.'.'.$bill_img[1];
                     unlink($small_img);
                     unlink($product->bill_image);
                 }
@@ -231,13 +229,13 @@ class ProductController extends Controller
             $products = Product::find($request->id);
             if (file_exists($products->image)) {
                 $img = explode('.', $products->image);
-                $small_img = $img[0] . '_' . $this->image_preset[0]->name . '.' . $img[1];
+                $small_img = $img[0].'_'.$this->image_preset[0]->name.'.'.$img[1];
                 unlink($small_img);
                 unlink($products->image);
             }
             if (file_exists($products->bill_image)) {
                 $bill_img = explode('.', $products->bill_image);
-                $small_img = $bill_img[0] . '_' . $this->image_preset[0]->name . '.' . $bill_img[1];
+                $small_img = $bill_img[0].'_'.$this->image_preset[0]->name.'.'.$bill_img[1];
                 unlink($small_img);
                 unlink($products->bill_image);
             }
@@ -260,7 +258,7 @@ class ProductController extends Controller
 
         $html = '<option value="">-Select Purity-</option>';
         foreach ($purities as $purity) {
-            $html .= '<option value="' . $purity->id . '">' . $purity->name . '</option>';
+            $html .= '<option value="'.$purity->id.'">'.$purity->name.'</option>';
         }
 
         return $html;
@@ -272,7 +270,7 @@ class ProductController extends Controller
         $products = Product::where('type_id', $type)
             ->where('status', 0)
             ->where('pstatus', 'in_stock')
-            ->where('stock_qty' ,'>',0)
+            ->where('stock_qty', '>', 0)
             ->with('unit')
             ->with('purity')
             ->get()

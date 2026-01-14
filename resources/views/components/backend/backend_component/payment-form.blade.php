@@ -42,7 +42,6 @@
                 type="text"
                 name="transaction_no"
                 :value="$billing->transaction_no ?? ''"
-
                 placeholder="Transaction No"
             />
 

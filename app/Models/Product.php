@@ -11,9 +11,11 @@ class Product extends Model
     use HasFactory;
 
     protected $guarded = [];
+
     protected $casts = [
-    'stock_qty' => 'float',
-];
+        'stock_qty' => 'float',
+    ];
+
     public function Type(): BelongsTo
     {
         return $this->belongsTo(Type::class);

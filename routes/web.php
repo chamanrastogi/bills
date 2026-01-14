@@ -4,8 +4,8 @@ use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Frontend\IndexController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,17 +33,18 @@ Route::get('/clear-cache', function () {
 
 Route::get('/append', function () {
 
-    if (!app()->isLocal()) {
+    if (! app()->isLocal()) {
         // optional safety check
         // abort(403);
     }
 
-    if (!Schema::hasColumn('billing', 'old_payment')) {
-        DB::statement("
+    if (! Schema::hasColumn('billing', 'old_payment')) {
+        DB::statement('
             ALTER TABLE billing
             ADD old_payment INT NULL
             AFTER transaction_no
-        ");
+        ');
+
         return 'Column old_payment added successfully';
     }
 

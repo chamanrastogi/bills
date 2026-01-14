@@ -21,7 +21,6 @@ class CategoryController extends Controller
         return $dataTable->render('backend.category.all_category');
     }
 
-
     /**
      * Show the form for creating a new resource.
      */
@@ -90,31 +89,30 @@ class CategoryController extends Controller
 
         return redirect()->back()->with($notification);
     }
-   public function GetType(Request $request)
-{
-    $types = Type::active(0)
-        ->where('category_id', $request->category_id)
-        ->orderBy('name', 'ASC')
-        ->withSum([
-            'products as stock_qty' => function ($q) {
-                $q->where('stock_qty', '>', 0);
+
+    public function GetType(Request $request)
+    {
+        $types = Type::active(0)
+            ->where('category_id', $request->category_id)
+            ->orderBy('name', 'ASC')
+            ->withSum([
+                'products as stock_qty' => function ($q) {
+                    $q->where('stock_qty', '>', 0);
+                },
+            ], 'stock_qty')
+            ->get();
+
+        $html = '<option value="">- Select Types -</option>';
+
+        foreach ($types as $type) {
+            $qty = round((float) ($type->stock_qty ?? 0));
+            if ($qty > 0) {
+                $html .= '<option value="'.$type->id.'">'
+                    .$type->name.' ('.$qty.')'
+                    .'</option>';
             }
-        ], 'stock_qty')
-        ->get();
-
-    $html = '<option value="">- Select Types -</option>';
-
-    foreach ($types as $type) {
-        $qty = round((float) ($type->stock_qty ?? 0));
-        if($qty>0)
-        {
-        $html .= '<option value="' . $type->id . '">'
-            . $type->name . ' (' . $qty . ')'
-            . '</option>';
         }
+
+        return response($html);
     }
-
-    return response($html);
-}
-
 }

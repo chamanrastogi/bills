@@ -24,14 +24,14 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'admin@g.com',
         //     'password' => bcrypt('12345678'),]);
         $this->call([
-            CategorySeeder::class,
-            PuritySeeder::class,
-            UnitSeeder::class,
-            ProductSeeder::class,
-            SettingSeeder::class,
-            TypeSeeder::class,
-            UserSeeder::class,
-
+            //  CategorySeeder::class,
+            // PuritySeeder::class,
+            // UnitSeeder::class,
+            // ProductSeeder::class,
+            // SettingSeeder::class,
+            // TypeSeeder::class,
+            // UserSeeder::class,
+            SupplierBillingSeeder::class,
         ]);
     }
 }

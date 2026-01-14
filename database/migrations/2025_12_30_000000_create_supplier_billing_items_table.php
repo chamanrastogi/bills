@@ -16,15 +16,17 @@ return new class extends Migration
             $table->foreignId('supplier_billing_id')
                 ->constrained('supplier_billings')
                 ->onDelete('cascade');
-            $table->foreignId('metal_type_id')
+            $table->foreignId('category_id')
                 ->nullable()
                 ->constrained('types')
                 ->nullOnDelete();
             $table->foreignId('purity_id')
                 ->constrained('purities')
                 ->cascadeOnDelete();
+            $table->foreignId(column: 'unit_id')
+                ->constrained('units')
+                ->cascadeOnDelete();
             $table->decimal('total_weight', 10, 3)->default(0);
-            $table->decimal('rate_per_gram', 10, 2)->default(0);
             $table->decimal('line_total', 12, 2)->default(0);
             $table->timestamps();
         });
@@ -38,4 +40,3 @@ return new class extends Migration
         Schema::dropIfExists('supplier_billing_items');
     }
 };
-
