@@ -196,6 +196,7 @@
                                                                                 );
                                                                                 $subtotal += $lineBase + $making;
                                                                                 $productGrandTotal = $item->grandTotal;
+                                                                                $net_weight= $item->net ?? $product->net_weight ;
                                                                             @endphp
                                                                             <tr>
                                                                                 <td>{{ $i++ }}</td>
@@ -215,7 +216,7 @@
                                                                                 </td>
                                                                                 {{-- <td>{{ isset($product->gross_weight) ? number_format($product->gross_weight, 3) : '-' }}
                                                                                 </td> --}}
-                                                                                <td>{{ isset($product->net_weight) ? number_format($product->net_weight, 3) : '-' }}
+                                                                                <td>{{ $net_weight }}
                                                                                 </td>
                                                                                 <td class="text-end">
                                                                                     {{ number_format($quantity, 3) }}

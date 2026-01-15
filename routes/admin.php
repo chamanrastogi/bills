@@ -96,6 +96,9 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::post('/supplier_billings/status', [SupplierBillingController::class, 'StatusUpdate'])->name('supplier_billings.status');
     Route::post('/supplier_billings/delete', [SupplierBillingController::class, 'Delete'])->name('supplier_billings.delete');
 
+    // Customer Sales Report
+    Route::get('/reports/customer-sales', [BillingController::class, 'customerSalesReport'])->name('reports.customer-sales');
+
     // SMTP and Site Setting  All Route
     Route::controller(SettingController::class)->group(function () {
         Route::get('/site/setting', 'SiteSetting')->name('site.setting');

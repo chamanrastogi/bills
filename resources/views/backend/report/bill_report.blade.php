@@ -1,0 +1,261 @@
+<x-dashboard-layout>
+    @section('title', breadcrumb())
+
+    @section('style')
+        <link href="{{ asset('backend/assets/src/plugins/src/select2/select2.min.css') }}" rel="stylesheet" type="text/css">
+    @stop
+
+
+    <div class="page-content">
+        <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold">Show Sales Report</h6>
+
+                        {{-- Auto-generated form component --}}
+                        {{-- Located at: resources/views/components/backend/backend_component/billing-report-form.blade.php --}}
+                        <x-backend.backend_component.billing-report-form :$customers :$categories :$types :$products :$purities
+                            :isEdit="false" />
+
+                        {{-- Report Table --}}
+                        <div class="mt-4">
+                            <h6 class="card-title fw-bold">Report Results</h6>
+                            {{ $dataTable->table() }}
+
+                            <div id="customer-summary" class="mb-3"></div>
+                            <div id="category-type-product-purity-summary" class="mb-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @section('script')
+        {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+        <script src="{{ asset('backend/assets/src/plugins/src/select2/select2.min.js') }}"></script>
+        <script>
+            $('#customers').select2({
+                placeholder: 'Select a Customer',
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#categories').select2({
+                placeholder: 'Select a Category',
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#type_id').select2({
+                placeholder: 'Select a Type',
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#product_id').select2({
+                placeholder: 'Select a Product',
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#purity_id').select2({
+                placeholder: 'Select a Purity',
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#customer-sales-report-table').on('xhr.dt', function (e, settings, json) {
+
+                if (!json.customerWiseTotal) return;
+
+                /* =========================
+                   CUSTOMER WISE SUMMARY (TABLE)
+                ========================= */
+
+                let html = `
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-light py-2">
+                        <strong class="text-primary">
+                            <i data-feather="users" class="me-1"></i>
+                            Total Sales Summary (by Customer)
+                        </strong>
+                    </div>
+                    <div class="">
+                `;
+
+                if (json.customerWiseTotal.length === 0) {
+                    html += `
+                        <div class="text-center text-muted py-3">
+                            <i data-feather="alert-circle" class="mb-1"></i><br>
+                            No data available for selected filters
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="table-responsive">
+                            <table class="table table-striped dt-table-hover dataTable">
+                                <thead class="bg-dark">
+                                    <tr>
+                                        <th class="border-0 text-white py-1"></th>
+                                        <th class="border-0 py-1  text-white text-end">Total Sales Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    json.customerWiseTotal.forEach(row => {
+                        html += `
+                            <tr>
+                                <td class="py-1">
+
+                                </td>
+                                <td class="py-1 text-end">
+                                    <strong>${parseFloat(row.total_amount).toFixed(2)}</strong>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    `;
+                }
+
+                html += `
+                    </div>
+                </div>
+                `;
+
+                $('#customer-summary').html(html);
+
+                /* =========================
+                   CATEGORY + TYPE + PRODUCT + PURITY SUMMARY
+                   (GROUPED SUMMARY)
+                ========================= */
+
+                let cpHtml = `
+                <div class="card shadow-sm border-0 mt-3">
+                    <div class="card-header bg-light py-2">
+                        <strong class="text-primary">
+                            <i data-feather="grid" class="me-1"></i>
+                            Total Sales Summary (by Category, Type, Product & Purity)
+                        </strong>
+                    </div>
+                    <div class="">
+                `;
+
+                if (!json.categoryTypeProductPurityWiseTotal || json.categoryTypeProductPurityWiseTotal.length === 0) {
+                    cpHtml += `
+                        <div class="text-center text-muted py-3">
+                            <i data-feather="alert-circle" class="mb-1"></i><br>
+                            No data available for selected filters
+                        </div>
+                    `;
+                } else {
+                    cpHtml += `
+                        <div class="table-responsive">
+                            <table class="table table-striped dt-table-hover dataTable">
+                                <thead class="bg-dark ">
+                                    <tr>
+                                        <th class="border-0 py-1 text-white">Category</th>
+                                        <th class="border-0 py-1 text-white">Type</th>
+                                        <th class="border-0 py-1 text-white">Product</th>
+                                        <th class="border-0 py-1 text-white">Purity</th>
+                                        <th class="border-0 py-1 text-white text-end">Total Sales Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    json.categoryTypeProductPurityWiseTotal.forEach(row => {
+                        cpHtml += `
+                            <tr>
+                                <td class="py-1">${row.category ?? 'N/A'}</td>
+                                <td class="py-1">${row.type ?? 'N/A'}</td>
+                                <td class="py-1">${row.product ?? 'N/A'}</td>
+                                <td class="py-1">${row.purity ?? 'N/A'}</td>
+                                <td class="py-1 text-end">
+                                    <strong>${parseFloat(row.total_amount).toFixed(2)}</strong>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    cpHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                    `;
+                }
+
+                cpHtml += `
+                    </div>
+                </div>
+                `;
+
+                $('#category-type-product-purity-summary').html('');
+
+                // Re-render icons
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+            });
+
+            $(document).ready(function() {
+
+                $('#billing-report-form').on('submit', function(e) {
+                    e.preventDefault();
+
+                    // Get form data
+                    var formData = $(this).serialize();
+
+                    // Update URL without reloading
+                    var newUrl = $(this).attr('action') + '?' + formData;
+                    window.history.pushState({}, '', newUrl);
+
+                    // Reload the DataTable
+                    $('#customer-sales-report-table').DataTable().ajax.reload();
+                });
+            });
+
+            $(document).ready(function() {
+                $('#categories').on('change', function() {
+                    var categoryId = $(this).val();
+
+                    if (categoryId) {
+                        $.ajax({
+                            url: '/admin/reports/get-types-purities/' + categoryId,
+                            type: 'GET',
+                            success: function(data) {
+                                // Clear and populate types
+                                $('#type_id').empty();
+                                $('#type_id').append('<option value="">--All Types--</option>');
+                                $.each(data.types, function(key, value) {
+                                    $('#type_id').append('<option value="' + key + '">' + value + '</option>');
+                                });
+
+                                // Clear and populate purities
+                                $('#purity_id').empty();
+                                $('#purity_id').append('<option value="">--All Purities--</option>');
+                                $.each(data.purities, function(key, value) {
+                                    $('#purity_id').append('<option value="' + key + '">' + value + '</option>');
+                                });
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error loading types and purities:', error);
+                            }
+                        });
+                    } else {
+                        // Reset to all options if no category selected
+                        location.reload();
+                    }
+                });
+            });
+        </script>
+    @stop
+
+
+</x-dashboard-layout>

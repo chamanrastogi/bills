@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\DataTables\BillingsDataTable;
+use App\DataTables\CustomerSalesReportDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Billing;
 use App\Models\Category;
@@ -44,6 +45,7 @@ class BillingController extends Controller
         }
 
         $cartItems = $cartData['cart_items'];
+
         $processedItems = [];
         $subtotal = 0.0;
         $gst_total = 0.0;
@@ -130,6 +132,8 @@ class BillingController extends Controller
                 'transaction_no' => $transaction_no ?? null,
                 'old_payment' => $oldBalance ?? null,
             ]);
+            // ✅ INSERT BILLING ITEMS (NEW – ONLY ADDITION)
+            $this->insertBillingItems($billingId, $processedItems);
             if ($oldBalance > 0) {
                 Billing::insertGetId([
                     'customer_id' => $customer_id,
@@ -172,6 +176,40 @@ class BillingController extends Controller
             'message' => 'Cart submitted successfully',
             'alert-type' => 'success',
         ]);
+    }
+
+    private function insertBillingItems(int $billingId, array $processedItems): void
+    {
+        foreach ($processedItems as $item) {
+
+            $quantity = isset($item['quantity'])
+                ? (float) $item['quantity']
+                : 1;
+
+            $price = (float) ($item['price'] ?? 0);
+            $gst = (float) ($item['gst'] ?? 0);
+
+            DB::table('billing_items')->insert([
+                'billing_id' => $billingId,
+                'product_id' => $item['productId'] ?? null,
+                'product_name' => $item['name'] ?? '',
+                'sku' => $item['sku'] ?? null,
+
+                'quantity' => $quantity,
+                'price' => $price,
+                'rate' => (float) ($item['rate'] ?? 0),
+                'making_charge' => (float) ($item['making'] ?? 0),
+                'gross_weight' => $item['gross'],
+                'net_weight' => $item['net'],
+                'gst_percent' => $gst,
+                'gst_amount' => round(($price * $quantity) * ($gst / 100), 2),
+
+                'total_amount' => (float) ($item['grandTotal'] ?? 0),
+
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     public function getCart(int $id)
@@ -446,5 +484,19 @@ class BillingController extends Controller
 
             ->rawColumns(['check', 'customer', 'cart', 'details', 'created', 'total', 'action'])
             ->make(true);
+    }
+
+    public function customerSalesReport(CustomerSalesReportDataTable $dataTable)
+    {
+        /* -------------------------
+           Load filter dropdown data
+        -------------------------- */
+        $customers = Customer::where('status', 0)->pluck('name', 'id');
+        $categories = Category::where('status', 0)->pluck('name', 'id');
+        $types = \App\Models\Type::where('status', 0)->pluck('name', 'id');
+        $products = Product::where('status', 0)->pluck('name', 'id');
+        $purities = Purity::where('status', 0)->pluck('name', 'id');
+
+        return $dataTable->render('backend.report.bill_report', compact('customers', 'categories', 'types', 'products', 'purities'));
     }
 }

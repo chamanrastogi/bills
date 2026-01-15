@@ -240,16 +240,16 @@ class SupplierBillingController extends Controller
         $purities = Purity::where('status', 0)->pluck('name', 'id');
         $units = Unit::where('status', 0)->pluck('name', 'id');
 
-        return $dataTable->render('backend.supplier_billings.supplier_report', compact('suppliers', 'categories', 'purities', 'units'));
+        return $dataTable->render('backend.report.supplier_report', compact('suppliers', 'categories', 'purities', 'units'));
     }
 
     public function getTypesPuritiesByCategory($categoryId)
     {
-
+        $types = \App\Models\Type::where('category_id', $categoryId)->where('status', 0)->pluck('name', 'id');
         $purities = Purity::where('category_id', $categoryId)->where('status', 0)->pluck('name', 'id');
 
         return response()->json([
-
+            'types' => $types,
             'purities' => $purities,
         ]);
     }

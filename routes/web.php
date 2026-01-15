@@ -63,7 +63,7 @@ Route::get('/re', function () {
     return '<h1>Billing table recreated</h1>';
 });
 
-Route::get('/', [IndexController::class, 'Home'])->middleware('debugbar.role')->name('home');
+Route::get('/', [IndexController::class, 'Home'])->name('home');
 
 Route::get('/table-structure/{table}', [SettingController::class, 'myshow']);
 

@@ -54,8 +54,9 @@
 
              <x-backend.backend_component.side-menu-item permission="customers.menu" routeId="report" icon="menu"
                  label="Reoprts" :submenu="[
-                     ['route' => 'reports.supplier-billing-items','label' => 'Show Supplier Report','permission' => 'supplier.index'],
-                 ]" :activeRoutes="['admin/reports/supplier-billing-items']" />
+                    ['route' => 'reports.supplier-billing-items','label' => 'Show Purchase Report','permission' => 'supplier.index'],
+                    ['route' => 'reports.customer-sales','label' => 'Show Sales Report','permission' => 'custommer.index'],
+                    ]" :activeRoutes="['admin/reports/supplier-billing-items','admin/reports/customer-sales']" />
              <x-backend.backend_component.side-menu-item permission="customers.menu" routeId="customer" icon="menu"
                  label="Customer" :submenu="[
                      ['route' => 'customers.create', 'label' => 'Add Customer', 'permission' => 'customers.create'],
