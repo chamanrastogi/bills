@@ -57,9 +57,9 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|unique:products|max:200',
             'type_id' => 'required',
-            'gross_weight' => 'required|numeric|min:0',
-            'net_weight' => 'required|numeric|min:0',
-            'making_charge' => 'nullable|numeric|min:0',
+            // 'gross_weight' => 'required|numeric|min:0',
+            // 'net_weight' => 'required|numeric|min:0',
+            // 'making_charge' => 'nullable|numeric|min:0',
         ]);
         $image = $request->file('image');
         if ($request->file('image') != null) {
@@ -88,11 +88,11 @@ class ProductController extends Controller
             'image' => $save_url,
             'purity_id' => $request->purity_id,
             'unit_id' => $request->unit_id,
-            'gross_weight' => $request->gross_weight,
-            'net_weight' => $request->net_weight,
-            'making_charge' => $request->making_charge ?? 0,
-            'rate_per_gram' => $request->rate_per_gram ?? 0,
-            'gst_percent' => $request->gst_percent ?? 0,
+            'gross_weight' => 0,
+            'net_weight' => 0,
+            'making_charge' => 0,
+            'rate_per_gram' => 0,
+            'gst_percent' =>  0,
             'stock_qty' => $request->stock_qty ?? 1,
             'price' => $price_value,
             'pstatus' => $request->pstatus ?? 'in_stock',

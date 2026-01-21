@@ -1,11 +1,91 @@
 <x-dashboard-layout>
     @section('title', breadcrumb())
 
+
     <!-- Include jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     @section('style')
         <link rel="stylesheet" href="{{ asset('backend/assets/src/assets/css/light/apps/invoice-preview.css') }}">
         <link rel="stylesheet" href="{{ asset('backend/assets/src/assets/css/dark/apps/invoice-preview.css') }}">
+<style>
+@media print {
+
+    /* Force LEGAL size – 1 page only */
+    @page {
+        size: legal portrait;
+        margin: 0mm;
+    }
+
+    /* Hard stop: prevent extra pages */
+    html, body {
+        height: 100%;
+        overflow: hidden !important;
+    }
+
+    body {
+        font-size: 10.5pt;     /* Reduced to fit one page */
+        line-height: 1.4;
+        color: #000;
+        background: #fff;
+    }
+
+    /* Hide non-print UI */
+    .no-print,
+    .action-print,
+    nav,
+    footer,
+    button {
+        display: none !important;
+    }
+
+    /* Main container must not exceed page */
+    .invoice-container {
+        max-height: 100%;
+        overflow: hidden;
+    }
+
+    /* Tight spacing */
+    p {
+        margin: 4px 0;
+    }
+
+    h1, h2, h3 {
+        margin: 6px 0;
+    }
+
+    /* Payment info */
+    .inv--payment-info p {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10.5pt;
+    }
+
+    .inv-subtitle {
+        min-width: 170px;
+        font-weight: 600;
+    }
+
+    /* Tables – compact */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10pt;
+    }
+
+    table th,
+    table td {
+        padding: 4px;
+        border: 1px solid #000;
+    }
+
+    /* ABSOLUTELY NO PAGE BREAKS */
+    * {
+        page-break-before: avoid !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+    }
+}
+</style>
 
 
     @stop
@@ -135,7 +215,7 @@
 
                                                         </div>
 
-                                                        <div class="inv--product-table-section">
+                                                        <div class="inv--product-table-section pt-0 pb-0">
                                                             <div class="table-responsive">
                                                                 <table class="table">
                                                                     <thead>
@@ -207,9 +287,9 @@
                                                                                     <div class="text-muted small">
                                                                                         {{ $product->sku ?? ($item->sku ?? '') }}<br>
                                                                                         <span
-                                                                                            class="fw-bold">Making</span>:{{ $item->making ?? 0 }}<br>
-                                                                                        <span
-                                                                                            class="fw-bold">GST:</span>{{ $item->gst ?? 0 }}%<br>
+                                                                                            class="fw-bold">Making</span>:{{ $item->making ?? 0 }}%<br>
+                                                                                        {{-- <span
+                                                                                            class="fw-bold">GST:</span>{{ $item->gst ?? 0 }}%<br> --}}
                                                                                     </div>
                                                                                 </td>
                                                                                 <td>{{ $product->unit->name ?? '-' }}
@@ -258,18 +338,25 @@
                                                                             </div>
                                                                          @if (floatval($billing['tax'] ?? 0) > 0)
                                                                             <div class="col-sm-8 col-7">
-                                                                                <p>CGST :({{ number_format($billing['tax'] /2 ?? 0, 1) }}%):</p>
+                                                                                <p>CGST :({{ number_format($billing['tax'] /2 ?? 0, 2) }}%):</p>
                                                                             </div>
                                                                             <div class="col-sm-4 col-5">
-                                                                                <p>-
+                                                                                <p>{{ number_format($billing['tax_amount'] /2  ?? 0, 2) }}
                                                                                 </p>
                                                                             </div>
 
                                                                                <div class="col-sm-8 col-7">
-                                                                                <p>SGST :({{ number_format($billing['tax'] /2  ?? 0, 1) }}%)</p>
+                                                                                <p>SGST :({{ number_format($billing['tax'] /2  ?? 0, 2) }}%)</p>
                                                                             </div>
                                                                             <div class="col-sm-4 col-5">
-                                                                                <p>-
+                                                                                <p>{{ number_format($billing['tax_amount'] /2  ?? 0, 2) }}
+                                                                                </p>
+                                                                            </div>
+																			<div class="col-sm-8 col-7">
+                                                                                <p>IGST :({{ number_format($billing['tax']  ?? 0, 1) }}%)</p>
+                                                                            </div>
+                                                                            <div class="col-sm-4 col-5">
+                                                                                <p>{{ $billing['tax_amount'] }}
                                                                                 </p>
                                                                             </div>
                                                                              @endif
@@ -322,7 +409,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="inv--detail-section inv--customer-detail-section">
+                                                        <div class="inv--detail-section inv--customer-detail-section pb-2">
 
                                                             <div class="row">
 
@@ -341,7 +428,7 @@
                                                                             class="inv-customer-name">Bank Name
                                                                             : </span>{{ $template->bank_name }}</p>
                                                                     <p class="inv-email-address"><span
-                                                                            class="inv-customer-name">A/c Holder Name
+                                                                            class="inv-customer-name">A/c H. N.
                                                                             : </span>{{ $template->bank_holder_name }}
                                                                     </p>
                                                                     <p class="inv-street-addr"><span
@@ -361,7 +448,7 @@
 
                                                                 <div
                                                                     class="col-xl-4 col-lg-5 col-md-6 col-sm-8 col-12 order-sm-0 order-1 text-sm-end">
-                                                                    <img class="company-logo w-50"
+                                                                    <img class="company-logo" style="width:125px"
                                                                         src="{{ asset($template->bank_qr_code) }}"
                                                                         alt="company">
                                                                 </div>

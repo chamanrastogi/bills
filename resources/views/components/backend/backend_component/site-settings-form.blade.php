@@ -132,7 +132,7 @@
     <div class="row mb-3">
         <div class="col-12">
             <x-form.input-label for="declaration" value="Declaration" />
-            <x-form.textarea name="declaration" id="editor" rows="2" placeholder="Declaration">{{ $sitesetting->declaration ?? '' }}</x-form.textarea>
+            <x-form.textarea name="declaration"  rows="2" placeholder="Declaration">{{ $sitesetting->declaration ?? '' }}</x-form.textarea>
             <x-form.input-error :messages="$errors->get('declaration')" />
         </div>
         <div class="col-12">

@@ -43,7 +43,7 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::post('/category/status', [CategoryController::class, 'StatusUpdate'])->name('category.status');
     Route::post('/category/delete', [CategoryController::class, 'Delete'])->name('category.delete');
     Route::post('/category/types', [CategoryController::class, 'GetType'])->name('category.types');
-
+	Route::post('/category/types/all', [CategoryController::class, 'GetTypeAll'])->name('category.types.all');
     // Type All Routes
     Route::resource('type', TypeController::class);
     Route::post('/type/status', [TypeController::class, 'StatusUpdate'])->name('type.status');
@@ -67,6 +67,7 @@ Route::middleware(['auth', 'roles:admin'])->prefix('admin')->group(function () {
     Route::post('/units/delete', [UnitController::class, 'Delete'])->name('unit.delete');
 
     // Customer All Routes
+	  Route::get('/customers/balance', [CustomerController::class, 'balance'])->name('customers.balance');
     Route::resource('customers', CustomerController::class);
     Route::post('/customers/status', [CustomerController::class, 'StatusUpdate'])->name('customer.status');
     Route::post('/customers/delete', [CustomerController::class, 'Delete'])->name('customer.delete');

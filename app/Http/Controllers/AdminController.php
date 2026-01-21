@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\BillingItem;
@@ -15,7 +16,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
-use Yajra\DataTables\Facades\DataTables;
 
 class AdminController extends Controller
 {
@@ -29,102 +29,130 @@ class AdminController extends Controller
 
     public function __construct()
     {
-        $this->image_preset      = ImagePresets::whereIn('id', [3, 4])->get();
+        $this->image_preset = ImagePresets::whereIn('id', [3, 4])->get();
         $this->image_preset_main = ImagePresets::find(14);
     }
 
     public function AdminDashboard()
-{
-    $template = SiteSetting::find(1);
+    {
+        $template = SiteSetting::findOrFail(1);
 
-    /*
-    |--------------------------------------------------------------------------
-    | PURCHASED WEIGHT
-    |--------------------------------------------------------------------------
-    */
-    $purchased = SupplierBillingItem::query()
-        ->select(
-            'category_id',
-            'purity_id',
-            DB::raw('SUM(total_weight) as purchased_weight')
-        )
-        ->groupBy('category_id', 'purity_id')
-        ->get()
-        ->keyBy(fn ($row) => $row->category_id.'-'.$row->purity_id);
+        /*
+        |--------------------------------------------------------------------------
+        | PURCHASED WEIGHT
+        |--------------------------------------------------------------------------
+        */
+        $purchased = SupplierBillingItem::query()
+            ->select(
+                'category_id',
+                'purity_id',
+                DB::raw('SUM(total_weight) as purchased_weight')
+            )
+            ->groupBy('category_id', 'purity_id')
+            ->get()
+            ->keyBy(fn ($row) => "{$row->category_id}-{$row->purity_id}");
 
-    /*
-    |--------------------------------------------------------------------------
-    | SOLD WEIGHT
-    |--------------------------------------------------------------------------
-    */
-    $sold = BillingItem::query()
-        ->select(
-            DB::raw('p.type_id as category_id'),
-            DB::raw('p.purity_id as purity_id'),
-            DB::raw('SUM(bi.quantity) as sold_weight')
-        )
-        ->from('billing_items as bi')
-        ->join('products as p', 'bi.product_id', '=', 'p.id')
-        ->groupBy('p.type_id', 'p.purity_id')
-        ->get()
-        ->keyBy(fn ($row) => $row->category_id.'-'.$row->purity_id);
+        /*
+        |--------------------------------------------------------------------------
+        | SOLD WEIGHT
+        |--------------------------------------------------------------------------
+        */
+        $sold = BillingItem::query()
+            ->from('billing_items as bi')
+            ->select(
+                DB::raw('p.type_id as category_id'),
+                DB::raw('p.purity_id as purity_id'),
+                DB::raw('SUM(bi.net_weight) as sold_weight')
+            )
+            ->join('products as p', 'p.id', '=', 'bi.product_id')
+            ->groupBy('p.type_id', 'p.purity_id')
+            ->get()
+            ->keyBy(fn ($row) => "{$row->category_id}-{$row->purity_id}");
 
-    /*
-    |--------------------------------------------------------------------------
-    | MAP NAMES
-    |--------------------------------------------------------------------------
-    */
-    $categoryMap = Category::pluck('name', 'id')->toArray();
-    $purityMap   = Purity::pluck('name', 'id')->toArray();
+        /*
+        |--------------------------------------------------------------------------
+        | MAPS
+        |--------------------------------------------------------------------------
+        */
+        $categoryMap = Category::pluck('name', 'id');
+        $purityMap = Purity::pluck('name', 'id');
 
-    /*
-    |--------------------------------------------------------------------------
-    | BUILD STOCK SUMMARY
-    |--------------------------------------------------------------------------
-    */
-    $stock = [];
-    $summary = [];
+        /*
+        |--------------------------------------------------------------------------
+        | BUILD STOCK + SUMMARY
+        |--------------------------------------------------------------------------
+        */
+        $stock = [];
+        $summary = [];
 
-    $keys = $purchased->keys()->merge($sold->keys())->unique();
+        $keys = $purchased->keys()->merge($sold->keys())->unique();
 
-    foreach ($keys as $key) {
-        [$categoryId, $purityId] = explode('-', $key);
+        foreach ($keys as $key) {
+            [$categoryId, $purityId] = explode('-', $key);
 
-        // Skip invalid category (fixes N/A issue)
-        if (!isset($categoryMap[$categoryId])) {
-            continue;
+            if (! $categoryMap->has($categoryId)) {
+                continue;
+            }
+
+            $purchasedWt = (float) ($purchased[$key]->purchased_weight ?? 0);
+            $soldWt = (float) ($sold[$key]->sold_weight ?? 0);
+            $balanceWt = $purchasedWt - $soldWt;
+
+            $categoryName = $categoryMap[$categoryId];
+            $purityName = $purityMap[$purityId] ?? 'N/A';
+
+            $stock[] = [
+                'category_name' => $categoryName,
+                'purity_name' => $purityName,
+                'purchased' => $purchasedWt,
+                'sold' => $soldWt,
+                'balance' => $balanceWt,
+            ];
+
+            $summary[$categoryName]['total'] =
+                ($summary[$categoryName]['total'] ?? 0) + $balanceWt;
+
+            $summary[$categoryName]['purities'][$purityName] =
+                ($summary[$categoryName]['purities'][$purityName] ?? 0) + $balanceWt;
         }
 
-        $purchase = $purchased[$key]->purchased_weight ?? 0;
-        $soldWt   = $sold[$key]->sold_weight ?? 0;
-        $balance  = $purchase - $soldWt;
+        /*
+        |--------------------------------------------------------------------------
+        | DASHBOARD TOTALS
+        |--------------------------------------------------------------------------
+        */
+        $totalPurchased = collect($stock)->sum('purchased');
+        $totalSold = collect($stock)->sum('sold');
+        $totalBalance = collect($stock)->sum('balance');
 
-        $categoryName = $categoryMap[$categoryId];
-        $purityName   = $purityMap[$purityId] ?? 'N/A';
+        /*
+        |--------------------------------------------------------------------------
+        | GOLD & SILVER TOTALS
+        |--------------------------------------------------------------------------
+        */
+        $goldSilverData = [];
+        $categories = ['Gold', 'Silver'];
+        foreach ($categories as $cat) {
+            if (isset($summary[$cat])) {
+                $goldSilverData[] = [
+                    'category' => $cat,
+                    'purchased' => collect($stock)->where('category_name', $cat)->sum('purchased'),
+                    'sold' => collect($stock)->where('category_name', $cat)->sum('sold'),
+                    'balance' => $summary[$cat]['total'],
+                ];
+            }
+        }
 
-        // Table rows
-        $stock[] = [
-            'category_name' => $categoryName,
-            'purity_name'   => $purityName,
-            'purchased'     => $purchase,
-            'sold'          => $soldWt,
-            'balance'       => $balance,
-        ];
-
-        // Summary totals
-        $summary[$categoryName]['total'] =
-            ($summary[$categoryName]['total'] ?? 0) + $balance;
-
-        $summary[$categoryName]['purities'][$purityName] =
-            ($summary[$categoryName]['purities'][$purityName] ?? 0) + $balance;
+        return view('admin.index', compact(
+            'template',
+            'stock',
+            'summary',
+            'totalPurchased',
+            'totalSold',
+            'totalBalance',
+            'goldSilverData'
+        ));
     }
-
-    return view('admin.index', compact(
-        'template',
-        'stock',
-        'summary'
-    ));
-}
 
     public function AdminLogin()
     {
@@ -140,7 +168,7 @@ class AdminController extends Controller
         $request->session()->regenerateToken();
 
         $notification = [
-            'message'    => 'Admin Logout Successfully',
+            'message' => 'Admin Logout Successfully',
             'alert-type' => 'success',
         ];
 
@@ -172,9 +200,9 @@ class AdminController extends Controller
     public function StoreAdmin(Request $request)
     {
         $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'regex:/^([a-z])+?([a-z])+$/i', 'unique:' . User::class],
-            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'regex:/^([a-z])+?([a-z])+$/i', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -184,21 +212,21 @@ class AdminController extends Controller
             $role = 'admin';
         }
         if ($request->file('image') != null) {
-            $image    = $request->file('image');
+            $image = $request->file('image');
             $save_url = $this->imageGenrator($image, $this->image_preset_main, $this->image_preset, $this->path);
         } else {
             $save_url = '';
         }
-        $user           = new User;
+        $user = new User;
         $user->username = $request->username;
-        $user->name     = $request->name;
-        $user->email    = $request->email;
-        $user->photo    = $save_url;
-        $user->phone    = $request->phone;
-        $user->about    = $request->about;
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->photo = $save_url;
+        $user->phone = $request->phone;
+        $user->about = $request->about;
         $user->password = Hash::make($request->password);
-        $user->role     = $role;
-        $user->status   = 0;
+        $user->role = $role;
+        $user->status = 0;
         $user->save();
 
         if ($request->roles) {
@@ -206,7 +234,7 @@ class AdminController extends Controller
         }
 
         $notification = [
-            'message'    => 'New User Inserted Successfully',
+            'message' => 'New User Inserted Successfully',
             'alert-type' => 'success',
         ];
 
@@ -234,12 +262,12 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
         if ($request->file('image') != null) {
             if (file_exists($user->photo)) {
-                $img       = explode('.', $user->photo);
-                $small_img = $img[0] . '_' . $this->image_preset[0]->name . '.' . $img[1];
+                $img = explode('.', $user->photo);
+                $small_img = $img[0].'_'.$this->image_preset[0]->name.'.'.$img[1];
                 unlink($small_img);
                 unlink($user->photo);
             }
-            $image    = $request->file('image');
+            $image = $request->file('image');
             $save_url = $this->imageGenrator($image, $this->image_preset_main, $this->image_preset, $this->path);
         } else {
             if ($user->photo != '') {
@@ -249,28 +277,28 @@ class AdminController extends Controller
             }
         }
         $user->username = $request->username;
-        $user->name     = $request->name;
-        $user->email    = $request->email;
-        $user->phone    = $request->phone;
-        $user->photo    = $save_url;
-        $user->about    = $request->about;
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+        $user->photo = $save_url;
+        $user->about = $request->about;
         if (! empty($request->password)) {
             $user->password = Hash::make($request->password);
         }
-        $user->top    = ($request->top == null) ? 0 : 1;
-        $user->role   = $role;
+        $user->top = ($request->top == null) ? 0 : 1;
+        $user->role = $role;
         $user->status = 0;
         $user->save();
 
         if ($user->id != 1) {
 
             $notification = [
-                'message'    => 'Admin User Updated Successfully',
+                'message' => 'Admin User Updated Successfully',
                 'alert-type' => 'success',
             ];
         } else {
             $notification = [
-                'message'    => 'You can not change superadmin role',
+                'message' => 'You can not change superadmin role',
                 'alert-type' => 'warning',
             ];
 
@@ -288,7 +316,7 @@ class AdminController extends Controller
         }
 
         $notification = [
-            'message'    => 'Staff Deleted Successfully',
+            'message' => 'Staff Deleted Successfully',
             'alert-type' => 'success',
         ];
 
@@ -302,13 +330,13 @@ class AdminController extends Controller
 
         return DataTables::of($query)
             ->setRowClass(function (User $user) {
-                return 'admin-' . $user->id;
+                return 'admin-'.$user->id;
             })
             ->addColumn('image', function (User $user) {
                 $img = ! empty($user->photo) || file_exists(asset($user->photo)) ? asset($user->photo) : url('upload/no_image.jpg');
 
                 return '<img class="wd-100 rounded-circle"
-                                                    src="' . $img . '"
+                                                    src="'.$img.'"
                                                     alt="profile">';
             })
 
@@ -323,19 +351,19 @@ class AdminController extends Controller
                 return $user->phone;
             })
             ->addColumn('role', function (User $user) {
-                return '<span class="badge badge-pill ' . rolecheck(3) . '">' . ucfirst($user->role) . '</span>';
+                return '<span class="badge badge-pill '.rolecheck(3).'">'.ucfirst($user->role).'</span>';
             })
             ->addColumn('action', function (User $user) {
 
                 $show = route('coaches.show', $user->id);
-                $x    = '<a href="' . route('edit.admin', $user->id) . '"
+                $x = '<a href="'.route('edit.admin', $user->id).'"
     class="action-btn btn-edit bs-tooltip me-2" data-toggle="tooltip"
     data-placement="top" title="Edit" data-bs-original-title="Edit">
     <i data-feather="edit"></i>
 </a>';
 
-                $x .= '<a href="javascript:void(0)" onClick="deleteFunction(' . $user->id . ')"
-    class="action-btn btn-edit bs-tooltip me-2 delete' . $user->id . '"
+                $x .= '<a href="javascript:void(0)" onClick="deleteFunction('.$user->id.')"
+    class="action-btn btn-edit bs-tooltip me-2 delete'.$user->id.'"
     data-toggle="tooltip" data-placement="top" title="Delete"
     data-bs-original-title="Delete">
     <i data-feather="trash-2"></i>

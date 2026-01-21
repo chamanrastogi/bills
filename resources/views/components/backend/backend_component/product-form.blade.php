@@ -70,17 +70,17 @@
     </div>
 
     {{-- Weight & Rate --}}
-    <div class="row mt-3">
+    <div class="row mt-3 d-none">
         <div class="col-sm-3">
             <x-form.input-label for="gross_weight" value="Gross Weight (g)" />
-            <x-form.text-input type="number" step="0.0001" name="gross_weight" :value="$product->gross_weight ?? ''" required
+            <x-form.text-input type="number" step="0.0001" name="gross_weight" :value="$product->gross_weight ?? ''"
                 placeholder="Gross Weight" />
             <x-form.input-error :messages="$errors->get('gross_weight')" />
         </div>
 
         <div class="col-sm-3">
             <x-form.input-label for="net_weight" value="Net Weight (g)" />
-            <x-form.text-input type="number" step="0.0001" name="net_weight" :value="$product->net_weight ?? ''" required
+            <x-form.text-input type="number" step="0.0001" name="net_weight" :value="$product->net_weight ?? ''"
                 placeholder="Net Weight" />
             <x-form.input-error :messages="$errors->get('net_weight')" />
         </div>
@@ -102,26 +102,26 @@
 
     {{-- Stock, Price & Status --}}
     <div class="row mt-3">
-        <div class="col-sm-3">
+        <div class="col-sm-3 d-none">
             <x-form.input-label for="gst_percent" value="Gst Percentage" />
             <x-form.text-input type="number" step="1" name="gst_percent" :value="$product->gst_percent ?? '1'"
                 placeholder="Gst Percentage" />
             <x-form.input-error :messages="$errors->get('gst_percent')" />
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-4">
             <x-form.input-label for="stock_qty" value="Stock Quantity" />
             <x-form.text-input type="number" step="1" name="stock_qty" :value="$product->stock_qty ?? '1'" required
                 placeholder="Available Stock Quantity" />
             <x-form.input-error :messages="$errors->get('stock_qty')" />
         </div>
 
-        <div class="col-sm-3">
+        <div class="col-sm-4">
             <x-form.input-label for="price" value="Price" />
             <x-form.text-input name="price" :value="$product->price ?? 0" placeholder="Total Price" />
             <x-form.input-error :messages="$errors->get('price')" />
         </div>
 
-        <div class="col-sm-3">
+        <div class="col-sm-4">
             <x-form.input-label for="pstatus" value="Product Status" />
             <x-form.select name="pstatus" :options="['in_stock' => 'In Stock', 'sold' => 'Sold', 'returned' => 'Returned']" :selected="$product->pstatus ?? 'in_stock'" placeholder="Select Product Status" />
             <x-form.input-error :messages="$errors->get('pstatus')" />

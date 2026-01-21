@@ -38,18 +38,18 @@
 
                         let category_id = $(this).val();
                         let _token = '{{ csrf_token() }}';
-
+						
                         function loadData(url, target) {
                             $.post(url, {
                                 _token,
-                                category_id
+                                category_id,								
                             }, function(result) {
                                 $(target).html(result);
                             });
                         }
 
                         loadData("{{ route('product.purity_units') }}", '#prurities_name');
-                        loadData("{{ route('category.types') }}", '#types_name');
+                        loadData("{{ route('category.types.all') }}", '#types_name');
 
                     });
 

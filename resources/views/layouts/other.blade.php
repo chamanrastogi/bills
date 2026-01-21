@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-      <title>{{ config('app.name', 'Admin') }} - @yield('title') </title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('backend/assets/layouts/src/assets/img/favicon.ico')}}"/>
+    <title>{{ config('app.name', 'Admin') }} - @yield('title') </title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('backend/assets/src/assets/img/favicon.ico')}}"/>
     <link href="{{ asset('backend/assets/layouts/vertical-light-menu/css/light/loader.css')}}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend/assets/layouts/vertical-light-menu/css/dark/loader.css')}}" rel="stylesheet" type="text/css" />
     <script src="{{ asset('backend/assets/layouts/vertical-light-menu/loader.js')}}"></script>
@@ -15,10 +15,10 @@
     <link href="{{ asset('backend/assets/src/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
 
     <link href="{{ asset('backend/assets/layouts/vertical-light-menu/css/light/plugins.css')}}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('backend/assets/src/assets/css/light/authentication/auth-cover.css')}}" rel="stylesheet" type="text/css" />
-    
+    <link href="{{ asset('backend/assets/src/assets/css/light/authentication/auth-boxed.css')}}" rel="stylesheet" type="text/css" />
+
     <link href="{{ asset('backend/assets/layouts/vertical-light-menu/css/dark/plugins.css')}}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('backend/assets/src/assets/css/dark/authentication/auth-cover.css')}}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('backend/assets/src/assets/css/dark/authentication/auth-boxed.css')}}" rel="stylesheet" type="text/css" />
     <!-- END GLOBAL MANDATORY STYLES -->
      <!-- Toastr styles -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" rel="stylesheet">
@@ -34,16 +34,16 @@
     <div class="auth-container d-flex">
 
         <div class="container mx-auto align-self-center">
-    
+
             <div class="row">
-    
+
               {{ $slot }}
             </div>
-            
+
         </div>
 
     </div>
-    
+
 
  <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
   <script src="{{ asset('backend/assets/src/plugins/src/global/vendors.min.js')}}"></script>
@@ -79,7 +79,7 @@
     $(document).ready(function () {
         $('.loginButton').on('click', function () {
             // Show loading spinner
-            
+
             $('#loginSpinner').removeClass('d-none');
 
             // You may also want to disable the button to prevent multiple clicks

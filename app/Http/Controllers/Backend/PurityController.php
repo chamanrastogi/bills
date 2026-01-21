@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\DataTables\PurityDataTable;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Purity;
 use App\Models\Type;
 use App\Traits\CommonTrait;
@@ -27,8 +28,9 @@ class PurityController extends Controller
     public function create()
     {
         $types = Type::pluck('name', 'id');
+        $categories = Category::pluck('name', 'id');
 
-        return view('backend.purity.add_purity', compact('types'));
+        return view('backend.purity.add_purity', compact('categories', 'types'));
     }
 
     /**
@@ -41,6 +43,7 @@ class PurityController extends Controller
         ]);
 
         Purity::create([
+             'category_id'=>$request->category_id,
             'name' => $request->name,
         ]);
 
@@ -58,8 +61,9 @@ class PurityController extends Controller
     public function edit(Purity $purity)
     {
         $types = Type::pluck('name', 'id');
+         $categories = Category::pluck('name', 'id');
 
-        return view('backend.purity.edit_purity', compact('purity', 'types'));
+        return view('backend.purity.edit_purity', compact('purity', 'types', 'categories'));
     }
 
     /**
@@ -68,6 +72,7 @@ class PurityController extends Controller
     public function update(Request $request, Purity $purity)
     {
         $purity->update([
+            'category_id'=>$request->category_id,
             'name' => $request->name,
         ]);
 

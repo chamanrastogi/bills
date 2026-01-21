@@ -133,6 +133,21 @@
                                                     <input type="text" id="pd_product" class="form-control"
                                                         readonly>
                                                 </div>
+                                                <div class="col-md-2 py-2">
+                                                    <label class="form-label">Purity</label>
+                                                    <input type="text" id="pd_purity" class="form-control"
+                                                        readonly>
+                                                </div>
+                                                <div class="col-md-2 py-2">
+                                                    <label class="form-label">Computed Price</label>
+                                                    <input type="text" id="pd_computed_price" class="form-control"
+                                                        readonly>
+                                                </div>
+                                                 <div class="col-md-2 py-2">
+                                                    <label class="form-label">GST %</label>
+                                                    <input type="number" id="pd_gst"  class="form-control"
+                                                        step="0.01" readonly>
+                                                </div>
                                                 <div class="col-md-3 py-2">
                                                     <label class="form-label">Gross Wt</label>
                                                     <input type="number" id="pd_gross" class="form-control"
@@ -153,22 +168,9 @@
                                                     <input type="number" id="pd_rate" class="form-control"
                                                         step="0.01">
                                                 </div>
-                                                <div class="col-md-2 py-2">
-                                                    <label class="form-label">GST %</label>
-                                                    <input type="number" id="pd_gst"  class="form-control"
-                                                        step="0.01">
-                                                </div>
 
-                                                <div class="col-md-2 py-2">
-                                                    <label class="form-label">Purity</label>
-                                                    <input type="text" id="pd_purity" class="form-control"
-                                                        readonly>
-                                                </div>
-                                                <div class="col-md-3 py-2">
-                                                    <label class="form-label">Computed Price</label>
-                                                    <input type="text" id="pd_computed_price" class="form-control"
-                                                        readonly>
-                                                </div>
+
+
                                                 <div class="col-md-2 py-2">
                                                     <label class="form-label">Preview</label>
                                                     <div id="pd_image_preview"></div>

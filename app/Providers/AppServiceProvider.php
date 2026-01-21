@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Providers;
 
 use App\Models\SiteSetting;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Request;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,16 +27,14 @@ class AppServiceProvider extends ServiceProvider
         if (app()->runningInConsole()) {
             return;
         }
-        if (! app()->environment(['production', 'staging'])) {
-            return;
-        }
-                                               // 🔒 DEFINE YOUR LICENSED DOMAIN HERE
-        $allowedDomain = 'aasthajewellers.in'; // change this
+
+        // 🔒 DEFINE YOUR LICENSED DOMAIN HERE
+        $allowedDomain = 'bills.test'; // change this
 
         $currentDomain = Request::getHost();
 
         // Normalize (remove www)
-        $normalize = fn($domain) => ltrim(strtolower($domain), 'www.');
+        $normalize = fn ($domain) => ltrim(strtolower($domain), 'www.');
 
         if ($normalize($currentDomain) !== $normalize($allowedDomain)) {
             abort(403, 'Unauthorized domain.');
