@@ -55,6 +55,7 @@ class BillingController extends Controller
 
         $customer_id = $cartData['customer_id'];
         $oldBalance = $cartData['oldBalance'];
+        $oldPayment=  $cartData['payment'];
         $payment = $cartData['customer_balance'] - (int) $oldBalance ?? 0;
         DB::beginTransaction();
         try {
@@ -111,10 +112,10 @@ class BillingController extends Controller
             }
 
             $discount_percent = floatval($cartData['discount'] ?? 0);
-            $discount_amount = round($subtotal * $discount_percent / 100, 2);
+            $discount_amount = $cartData['discount_amount'] ?? 0;
 
             $tax_percent = floatval($cartData['tax'] ?? 0);
-            $tax_amount = round(($subtotal - $discount_amount) * $tax_percent / 100, 2);
+            $tax_amount = $cartData['tax_amount'] ?? 0;
 
             // $grandTotal = round($subtotal + $gst_total - $discount_amount + $tax_amount, 2);
 
@@ -130,11 +131,11 @@ class BillingController extends Controller
                 'payment' => $payment ?? 0,
                 'payment_mode' => $payment_mode ?? 0,
                 'transaction_no' => $transaction_no ?? null,
-                'old_payment' => $oldBalance ?? null,
+                'old_payment' => 0,
             ]);
             // ✅ INSERT BILLING ITEMS (NEW – ONLY ADDITION)
             $this->insertBillingItems($billingId, $processedItems);
-            if ($oldBalance > 0) {
+            if ($oldPayment > 0) {
                 Billing::insertGetId([
                     'customer_id' => $customer_id,
                     'cart' => '',
@@ -144,7 +145,7 @@ class BillingController extends Controller
                     'tax_amount' => 0,
                     'grand_total' => 0,
                     'gst' => 0,
-                    'payment' => $oldBalance,
+                    'payment' => $oldPayment ?? 0,
                     'payment_mode' => $payment_mode,
                     'transaction_no' => $transaction_no ?? null,
                 ]);

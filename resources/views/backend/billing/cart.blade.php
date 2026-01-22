@@ -90,7 +90,6 @@
 
     @stop
 
-
     @php
 
         $cart = json_decode($billing['cart']);
@@ -274,7 +273,7 @@
                                                                                     $lineBase + $gstAmount + $making,
                                                                                     2,
                                                                                 );
-                                                                                $subtotal += $lineBase + $making;
+                                                                                $subtotal += $item->grandTotal;
                                                                                 $productGrandTotal = $item->grandTotal;
                                                                                 $net_weight= $item->net ?? $product->net_weight ;
                                                                             @endphp
@@ -333,7 +332,7 @@
                                                                                 <p>Sub Total :</p>
                                                                             </div>
                                                                             <div class="col-sm-4 col-5">
-                                                                                <p>{{ MONEY }}{{ number_format($billing['grand_total'], 2) }}
+                                                                                <p>{{ MONEY }}{{ number_format($subtotal, 2) }}
                                                                                 </p>
                                                                             </div>
                                                                          @if (floatval($billing['tax'] ?? 0) > 0)

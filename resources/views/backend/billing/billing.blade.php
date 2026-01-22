@@ -214,7 +214,7 @@
                                                     <label for="discount">Discount (%):</label>
                                                     <input type="number" id="discount" class="form-control"
                                                         min="0" max="100" value="0">
-                                                    <small id="discountAmount" class="form-text text-muted">Discount
+                                                    <small id="discountAmountHelper" class="form-text text-muted">Discount
                                                         Amount: {{ MONEY }}0</small>
                                                 </div>
                                             </div>
@@ -243,18 +243,18 @@
                                             </div>
                                             <div class="row mb-2 align-items-center">
                                                 <div class="col-6">
-                                                    <strong>Discount (%):</strong>
+                                                    <strong>Discount (<span id="discountPercent">0</span>):</strong>
                                                 </div>
                                                 <div class="col-6 text-end">
-                                                    <span id="discountPercent">0%</span>
+                                                    <span id="discountAmount">{{ MONEY }}0</span>
                                                 </div>
                                             </div>
                                             <div class="row mb-2 align-items-center">
                                                 <div class="col-6">
-                                                    <strong>GST Tax (%):</strong>
+                                                    <strong>GST Tax (<span id="gstPercent">0</span>):</strong>
                                                 </div>
                                                 <div class="col-6 text-end">
-                                                    <span id="gstPercent">0%</span>
+                                                    <span id="gstPercentAmount">{{ MONEY }}0</span>
                                                 </div>
                                             </div>
                                             <div class="row mb-2 align-items-center">
@@ -372,7 +372,8 @@
         const tax = parseFloat($('#tax').val()) || 0;
         const gstAmount = parseFloat($('#gst').val()) || 0;
 
-        const discountedTotal = grandTotal * (1 - (discount / 100));
+        const discountAmount = grandTotal * (discount / 100);
+        const discountedTotal = grandTotal - discountAmount;
         const taxAmount = discountedTotal * (tax / 100);
         const productTotal = discountedTotal + taxAmount + gstAmount;
         const includeOldBalance = $('#pay-balance').is(':checked');
@@ -382,12 +383,14 @@
         $('#productTotal').text(`${currencySymbol}${productTotal.toFixed(2)}`);
         $('#discountPercent').text(`${discount}%`);
         $('#gstPercent').text(`${tax}%`);
+        $('#gstPercentAmount').text(`${currencySymbol}${taxAmount.toFixed(2)}`);
+
         $('#oldBalanceDisplay').text(`${currencySymbol}${oldBalance.toFixed(2)}`);
         $('#totalDue').text(`${currencySymbol}${totalDue.toFixed(2)}`);
         $('#paymentDisplay').text(`${currencySymbol}${paymentAmount.toFixed(2)}`);
         $('#netBalance').val(netBalance.toFixed(2));
         $('#netBalance').attr('max', totalDue.toFixed(2));
-        $('#discountAmount').text(`Discount Amount: ${currencySymbol}${(grandTotal - discountedTotal).toFixed(2)}`);
+        $('#discountAmount').text(`${currencySymbol}${discountAmount.toFixed(2)}`);
         $('#taxAmount').text(`Gst Tax Amount: ${currencySymbol}${taxAmount.toFixed(2)}`);
 
         // Enable/disable submit button
