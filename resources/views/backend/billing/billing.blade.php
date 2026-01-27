@@ -159,9 +159,9 @@
                                                         step="0.0001" >
                                                 </div>
                                                 <div class="col-md-2 py-2">
-                                                    <label class="form-label">Making</label>
+                                                    <label class="form-label">Making(%)</label>
                                                     <input type="number" id="pd_making" class="form-control"
-                                                        step="0.01">
+                                                        step="0.01" min="0" max="100">
                                                 </div>
                                                 <div class="col-md-2 py-2">
                                                     <label class="form-label">Rate/gram</label>
@@ -408,12 +408,11 @@
         const rate = parseFloat($('#pd_rate').val()) || 0;
         const making = parseFloat($('#pd_making').val()) || 0;
 
-        // Logic: (Rate * Net Weight) + Making Charge
-        // If Rate is 0, it falls back to the product base price logic later,
-        // but usually for jewelry: Price = (Rate * Net) + Making
+        // Logic: (Rate * Net Weight) + Making Charge as percentage
+        // Price = (Rate * Net) * (1 + Making/100)
         let computed = 0;
         if (rate > 0 || making > 0) {
-            computed = (rate * net) + making;
+            computed = (rate * net) * (1 + making / 100);
         } else {
              // Fallback if rate/making are 0, usually just base price from select
              // We handle this in the 'Add Product' click if computed is 0
@@ -593,7 +592,7 @@
             let computedPrice = parseFloat(selectedOption.data('price')) || 0;
             // If Rate and Net exist, use the formula
             if (pd_rate > 0 || pd_making > 0) {
-                computedPrice = (pd_rate * pd_net) + pd_making;
+                computedPrice = (pd_rate * pd_net) * (1 + pd_making / 100);
             }
             const priceFloat = computedPrice;
 
@@ -737,6 +736,11 @@
                 const row = $(this);
 
                 // Read values from data attributes (which contain our custom inputs)
+                const makingPercent = parseFloat(row.data('making')) || 0;
+                const rate = parseFloat(row.data('rate')) || 0;
+                const net = parseFloat(row.data('net')) || 0;
+                const makingAmount = (rate * net) * (makingPercent / 100);
+
                 cartItems.push({
                     productId: row.data('product-id'),
                     sku: row.data('sku'),
@@ -745,11 +749,12 @@
                     price: parseFloat(row.data('price')) || 0,
                     quantity: parseFloat(row.find('.rowQty').val()) || 0,
                     image: row.data('image'),
-                    making: parseFloat(row.data('making')) || 0,
-                    rate: parseFloat(row.data('rate')) || 0,
+                    making: makingPercent,
+                    making_amount: makingAmount,
+                    rate: rate,
                     gst: parseFloat(row.data('gst')) || 0,
                     gross: parseFloat(row.data('gross')) || 0, // Gets the custom Gross Wt
-                    net: parseFloat(row.data('net')) || 0,     // Gets the custom Net Wt
+                    net: net,     // Gets the custom Net Wt
                     purity: row.data('purity'),
                     grandTotalAmount: parseFloat(row.find('.rowTotal').data('total')) || 0,
                 });

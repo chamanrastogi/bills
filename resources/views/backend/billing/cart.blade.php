@@ -5,87 +5,91 @@
     <!-- Include jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     @section('style')
-        <link rel="stylesheet" href="{{ asset('backend/assets/src/assets/css/light/apps/invoice-preview.css') }}">
-        <link rel="stylesheet" href="{{ asset('backend/assets/src/assets/css/dark/apps/invoice-preview.css') }}">
-<style>
-@media print {
+    <link rel="stylesheet" href="{{ asset('backend/assets/src/assets/css/light/apps/invoice-preview.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/assets/src/assets/css/dark/apps/invoice-preview.css') }}">
+    <style>
+        @media print {
 
-    /* Force LEGAL size – 1 page only */
-    @page {
-        size: legal portrait;
-        margin: 0mm;
-    }
+            /* Force LEGAL size – 1 page only */
+            @page {
+                size: legal portrait;
+                margin: 0mm;
+            }
 
-    /* Hard stop: prevent extra pages */
-    html, body {
-        height: 100%;
-        overflow: hidden !important;
-    }
+            /* Hard stop: prevent extra pages */
+            html,
+            body {
+                height: 100%;
+                overflow: hidden !important;
+            }
 
-    body {
-        font-size: 10.5pt;     /* Reduced to fit one page */
-        line-height: 1.4;
-        color: #000;
-        background: #fff;
-    }
+            body {
+                font-size: 10.5pt;
+                /* Reduced to fit one page */
+                line-height: 1.4;
+                color: #000;
+                background: #fff;
+            }
 
-    /* Hide non-print UI */
-    .no-print,
-    .action-print,
-    nav,
-    footer,
-    button {
-        display: none !important;
-    }
+            /* Hide non-print UI */
+            .no-print,
+            .action-print,
+            nav,
+            footer,
+            button {
+                display: none !important;
+            }
 
-    /* Main container must not exceed page */
-    .invoice-container {
-        max-height: 100%;
-        overflow: hidden;
-    }
+            /* Main container must not exceed page */
+            .invoice-container {
+                max-height: 100%;
+                overflow: hidden;
+            }
 
-    /* Tight spacing */
-    p {
-        margin: 4px 0;
-    }
+            /* Tight spacing */
+            p {
+                margin: 4px 0;
+            }
 
-    h1, h2, h3 {
-        margin: 6px 0;
-    }
+            h1,
+            h2,
+            h3 {
+                margin: 6px 0;
+            }
 
-    /* Payment info */
-    .inv--payment-info p {
-        display: flex;
-        justify-content: space-between;
-        font-size: 10.5pt;
-    }
+            /* Payment info */
+            .inv--payment-info p {
+                display: flex;
+                justify-content: space-between;
+                font-size: 10.5pt;
+            }
 
-    .inv-subtitle {
-        min-width: 170px;
-        font-weight: 600;
-    }
+            .inv-subtitle {
+                min-width: 170px;
+                font-weight: 600;
+            }
 
-    /* Tables – compact */
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 10pt;
-    }
+            /* Tables – compact */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 10pt;
+            }
 
-    table th,
-    table td {
-        padding: 4px;
-        border: 1px solid #000;
-    }
+            table th,
+            table td {
+                padding: 4px;
+                border: 1px solid #000;
+            }
 
-    /* ABSOLUTELY NO PAGE BREAKS */
-    * {
-        page-break-before: avoid !important;
-        page-break-after: avoid !important;
-        page-break-inside: avoid !important;
-    }
-}
-</style>
+            /* ABSOLUTELY NO PAGE BREAKS */
+            * {
+                page-break-before: avoid !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
 
 
     @stop
@@ -145,11 +149,13 @@
                                                         <div class="inv--head-section inv--detail-section">
 
                                                             <div class="invoice-header text-center">
-                                                                <img class="pb-3"
-                                                                    src="{{ asset($template->logo) }}" alt="company">
+                                                                <img class="pb-3" src="{{ asset($template->logo) }}"
+                                                                    alt="company">
 
                                                                 <div class="h5"> {{ $template->address }}</div>
-                                                                  <div class="h4 text-dark btn bg-white border border-">{{ $template->site_title }}</div>
+                                                                <div class="h4 text-dark btn bg-white border border-">
+                                                                    {{ $template->site_title }}
+                                                                </div>
                                                             </div>
 
 
@@ -164,7 +170,7 @@
                                                                     <p class="inv-to">Pro. Vimal Soni (Imiliya Wale)</p>
                                                                 </div>
 
-                                                                 <div
+                                                                <div
                                                                     class="col-xl-4 col-lg-5 col-md-6 col-sm-8 align-self-center order-sm-0 order-1 text-sm-end mt-sm-0 mt-5">
                                                                     <h6 class=" inv-title">Customer Details</h6>
                                                                 </div>
@@ -174,13 +180,13 @@
                                                                         <span class="text-info">GSTIN No :</span>
                                                                         {{ $template->gst }}
                                                                     </p>
-                                                                     <p class="inv-email-address">
+                                                                    <p class="inv-email-address">
                                                                         <span class="text-info">Pan No :</span>
                                                                         {{ $template->pan_no }}
                                                                     </p>
                                                                     <p class="inv-email-address">
                                                                         <span class="text-info">Invoice No :</span>
-                                                                        {{ $id }}
+                                                                        00000{{ $id }}
                                                                     </p>
 
                                                                     <p class="inv-email-address">
@@ -246,17 +252,22 @@
                                                                                     'unit',
                                                                                     'type',
                                                                                 )->find(
-                                                                                    $item->productId ??
+                                                                                        $item->productId ??
                                                                                         ($item->product_id ?? null),
-                                                                                );
+                                                                                    );
                                                                                 $productPrice = floatval(
                                                                                     $item->price ??
-                                                                                        ($product->price ?? 0),
+                                                                                    ($product->price ?? 0),
                                                                                 );
                                                                                 $quantity = floatval(
                                                                                     $item->quantity ??
-                                                                                        ($item->qty ?? 1),
+                                                                                    ($item->qty ?? 1),
                                                                                 );
+                                                                                $rate = floatval(
+                                                                                    $item->rate ??
+                                                                                    ($product->rate ?? 0),
+                                                                                );
+
                                                                                 $gstPercent = floatval(
                                                                                     $item->gst ?? ($product->gst ?? 0),
                                                                                 );
@@ -267,7 +278,7 @@
                                                                                 );
                                                                                 $making = floatval(
                                                                                     $item->making ??
-                                                                                        ($product->making_charge ?? 0),
+                                                                                    ($product->making_charge ?? 0),
                                                                                 );
                                                                                 $lineTotal = round(
                                                                                     $lineBase + $gstAmount + $making,
@@ -275,25 +286,31 @@
                                                                                 );
                                                                                 $subtotal += $item->grandTotal;
                                                                                 $productGrandTotal = $item->grandTotal;
-                                                                                $net_weight= $item->net ?? $product->net_weight ;
+                                                                                $net_weight =
+                                                                                    $item->net ?? $product->net_weight;
                                                                             @endphp
                                                                             <tr>
                                                                                 <td>{{ $i++ }}</td>
-                                                                                {{-- <td>{{ $product->category->name ?? '-' }} --}}
+                                                                                {{-- <td>{{ $product->category->name ?? '-'
+                                                                                    }} --}}
                                                                                 </td>
                                                                                 <td>
                                                                                     <strong>{{ $product->name ?? ($item->name ?? '-') }}</strong>
                                                                                     <div class="text-muted small">
-                                                                                        {{ $product->sku ?? ($item->sku ?? '') }}<br>
+                                                                                        <span
+                                                                                            class="fw-bold">SKU:</span>{{ $product->sku ?? ($item->sku ?? '') }}<br>
                                                                                         <span
                                                                                             class="fw-bold">Making</span>:{{ $item->making ?? 0 }}%<br>
                                                                                         {{-- <span
-                                                                                            class="fw-bold">GST:</span>{{ $item->gst ?? 0 }}%<br> --}}
+                                                                                            class="fw-bold">GST:</span>{{
+                                                                                        $item->gst ?? 0 }}%<br> --}}
                                                                                     </div>
                                                                                 </td>
                                                                                 <td>{{ $product->unit->name ?? '-' }}
                                                                                 </td>
-                                                                                {{-- <td>{{ isset($product->gross_weight) ? number_format($product->gross_weight, 3) : '-' }}
+                                                                                {{-- <td>{{ isset($product->gross_weight) ?
+                                                                                    number_format($product->gross_weight, 3)
+                                                                                    : '-' }}
                                                                                 </td> --}}
                                                                                 <td>{{ $net_weight }}
                                                                                 </td>
@@ -301,7 +318,7 @@
                                                                                     {{ number_format($quantity, 3) }}
                                                                                 </td>
                                                                                 <td class="text-end">
-                                                                                    {{ number_format($productPrice, 2) }}
+                                                                                    {{ number_format($rate, 2) }}
                                                                                 </td>
                                                                                 {{-- <td class="text-end">
                                                                                     {{ number_format($gstPercent, 2) }}
@@ -335,80 +352,121 @@
                                                                                 <p>{{ MONEY }}{{ number_format($subtotal, 2) }}
                                                                                 </p>
                                                                             </div>
-                                                                         @if (floatval($billing['tax'] ?? 0) > 0)
-                                                                            <div class="col-sm-8 col-7">
-                                                                                <p>CGST :({{ number_format($billing['tax'] /2 ?? 0, 2) }}%):</p>
-                                                                            </div>
-                                                                            <div class="col-sm-4 col-5">
-                                                                                <p>{{ number_format($billing['tax_amount'] /2  ?? 0, 2) }}
-                                                                                </p>
-                                                                            </div>
-
-                                                                               <div class="col-sm-8 col-7">
-                                                                                <p>SGST :({{ number_format($billing['tax'] /2  ?? 0, 2) }}%)</p>
-                                                                            </div>
-                                                                            <div class="col-sm-4 col-5">
-                                                                                <p>{{ number_format($billing['tax_amount'] /2  ?? 0, 2) }}
-                                                                                </p>
-                                                                            </div>
-																			<div class="col-sm-8 col-7">
-                                                                                <p>IGST :({{ number_format($billing['tax']  ?? 0, 1) }}%)</p>
-                                                                            </div>
-                                                                            <div class="col-sm-4 col-5">
-                                                                                <p>{{ $billing['tax_amount'] }}
-                                                                                </p>
-                                                                            </div>
-                                                                             @endif
-                                                                            <!-- Discount Calculation -->
-                                                                            <div class="col-sm-8 col-7">
-                                                                                <p>Discount
-                                                                                    ({{ $billing['discount'] ?? 0 }}%)
-                                                                                    :
-                                                                                </p>
-                                                                            </div>
-                                                                            <div class="col-sm-4 col-5">
-                                                                                <p>{{ MONEY }}{{ number_format($billing['discount_amount'] ?? 0, 2) }}
-                                                                                </p>
-                                                                            </div>
-
-
-
-                                                                            {{-- @if (floatval($billing['freight_charges'] ?? 0) > 0)
+                                                                            @if (floatval($billing['tax'] ?? 0) > 0)
                                                                                 <div class="col-sm-8 col-7">
-                                                                                    <p>Freight Charges :</p>
-                                                                                </div>
-                                                                                <div class="col-sm-4 col-5">
-                                                                                    <p>{{ MONEY }}{{ number_format($billing['freight_charges'] ?? 0, 2) }}
+                                                                                    <p>CGST
+                                                                                        ({{ number_format($billing['tax'] / 2 ?? 0, 2) }}%):
                                                                                     </p>
                                                                                 </div>
-                                                                            @endif --}}
+                                                                                <div class="col-sm-4 col-5">
+                                                                                    <p>{{ MONEY }}{{ number_format($billing['tax_amount'] / 2 ?? 0, 2) }}
+                                                                                    </p>
+                                                                                </div>
 
-                                                                            @if ($billing['payment'] != $billing['grand_total'])
                                                                                 <div class="col-sm-8 col-7">
-                                                                                    <p>Old Payment :</p>
+                                                                                    <p>SGST
+                                                                                        ({{ number_format($billing['tax'] / 2 ?? 0, 2) }}%):
+                                                                                    </p>
                                                                                 </div>
                                                                                 <div class="col-sm-4 col-5">
-                                                                                    <p>{{ MONEY }}{{ number_format($billing['payment'] - $billing['grand_total'] ?? 0, 2) }}
+                                                                                    <p>{{ MONEY }}{{ number_format($billing['tax_amount'] / 2 ?? 0, 2) }}
+                                                                                    </p>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-7 d-none">
+                                                                                    <p>IGST
+                                                                                        ({{ number_format($billing['tax'] ?? 0, 1) }}%)
+                                                                                    </p>
+                                                                                </div>
+                                                                                <div class="col-sm-4 col-5 d-none">
+                                                                                    <p>{{ MONEY }}{{ $billing['tax_amount'] }}
+                                                                                    </p>
+                                                                                </div>
+                                                                            @endif
+                                                                            @if($billing['discount'] > 0)
+                                                                                <!-- Discount Calculation -->
+                                                                                <div class="col-sm-8 col-7">
+                                                                                    <p>Discount
+                                                                                        ({{ $billing['discount'] ?? 0 }}%)
+                                                                                        :
+                                                                                    </p>
+                                                                                </div>
+                                                                                <div class="col-sm-4 col-5">
+                                                                                    <p>{{ MONEY }}{{ number_format($billing['discount_amount'] ?? 0, 2) }}
                                                                                     </p>
                                                                                 </div>
                                                                             @endif
 
+
+                                                                            {{-- @if
+                                                                            (floatval($billing['freight_charges'] ?? 0)
+                                                                            > 0)
+                                                                            <div class="col-sm-8 col-7">
+                                                                                <p>Freight Charges :</p>
+                                                                            </div>
+                                                                            <div class="col-sm-4 col-5">
+                                                                                <p>{{ MONEY }}{{
+                                                                                    number_format($billing['freight_charges']
+                                                                                    ?? 0, 2) }}
+                                                                                </p>
+                                                                            </div>
+                                                                            @endif --}}
+
+                                                                            @if ($billing['old_payment'] != 0)
+                                                                                <div class="col-sm-8 col-7">
+                                                                                    <p>Old Payment :</p>
+                                                                                </div>
+                                                                                <div class="col-sm-4 col-5">
+                                                                                    <p>{{ MONEY }}{{ number_format($billing['old_payment'] ?? 0, 2) }}
+                                                                                    </p>
+                                                                                </div>
+                                                                            @endif
                                                                             <div
                                                                                 class="col-sm-8 col-7 grand-total-title">
                                                                                 <p class="fw-bold">Grand Total :</p>
                                                                             </div>
                                                                             <div
                                                                                 class="col-sm-4 col-5 grand-total-amount">
-                                                                                <p>{{ MONEY }}{{ number_format($billing['payment'] ?? 0, 2) }}
-                                                                                </p>
+                                                                                @if ($billing['grand_total'] != 0)
+                                                                                    <p>{{ MONEY }}{{ number_format($billing['grand_total'] ?? 0, 2) }}
+                                                                                @else
+                                                                                        <p>{{ MONEY }}{{ number_format($billing['grand_total'] ?? 0, 2) }}
+                                                                                    @endif
+
                                                                             </div>
+                                                                            <div
+                                                                                class="col-sm-8 col-7 grand-total-title">
+                                                                                <p class="fw-bold">Pay Amount :</p>
+                                                                            </div>
+                                                                            <div
+                                                                                class="col-sm-4 col-5 grand-total-amount">
+                                                                                @if ($billing['payment'] != 0)
+                                                                                    <p>{{ MONEY }}{{ number_format($billing['payment'] ?? 0, 2) }}
+                                                                                @else
+                                                                                        <p>{{ MONEY }}{{ number_format($billing['payment'] ?? 0, 2) }}
+                                                                                    @endif
+
+                                                                            </div>
+                                                                            @if($billing['payment'] < $billing['grand_total'])
+                                                                                <div
+                                                                                    class="col-sm-8 col-7 grand-total-title">
+                                                                                    <p class="fw-bold">Due Balance :</p>
+                                                                                </div>
+                                                                                <div
+                                                                                    class="col-sm-4 col-5 grand-total-amount">
+
+                                                                                    <p>{{ MONEY }}{{ round($billing['grand_total'] - $billing['payment'] ?? 0) }}
+
+
+                                                                                </div>
+                                                                            @endif
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
 
-                                                        <div class="inv--detail-section inv--customer-detail-section pb-2">
+                                                        <div
+                                                            class="inv--detail-section inv--customer-detail-section pb-2">
 
                                                             <div class="row">
 
@@ -510,11 +568,11 @@
 
 
     @section('script')
-        <script>
-            document.querySelector('.action-print').addEventListener('click', function(event) {
-                event.preventDefault();
-                window.print();
-            });
-        </script>
+    <script>
+        document.querySelector('.action-print').addEventListener('click', function (event) {
+            event.preventDefault();
+            window.print();
+        });
+    </script>
     @stop
 </x-dashboard-layout>

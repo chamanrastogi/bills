@@ -54,9 +54,9 @@ class BillingController extends Controller
         $grandTotal = $cartData['grand_total'];
 
         $customer_id = $cartData['customer_id'];
-        $oldBalance = $cartData['oldBalance'];
-        $oldPayment=  $cartData['payment'];
-        $payment = $cartData['customer_balance'] - (int) $oldBalance ?? 0;
+        // $oldBalance = $cartData['oldBalance'];
+        $oldPayment = $cartData['payment'] ?? 0;
+        $payment = $cartData['customer_balance'] ?? 0;
         DB::beginTransaction();
         try {
             foreach ($cartItems as $item) {
@@ -102,6 +102,7 @@ class BillingController extends Controller
                     'gross' => $item['gross'],
                     'net' => $item['net'],
                     'making' => $item['making'],
+                    'making_amount' => $item['making_amount'],
                     'gst' => $gst,
                     'grandTotal' => $item['grandTotalAmount'],
                 ];
@@ -131,25 +132,25 @@ class BillingController extends Controller
                 'payment' => $payment ?? 0,
                 'payment_mode' => $payment_mode ?? 0,
                 'transaction_no' => $transaction_no ?? null,
-                'old_payment' => 0,
+                'old_payment' => $oldPayment ?? null,
             ]);
             // ✅ INSERT BILLING ITEMS (NEW – ONLY ADDITION)
             $this->insertBillingItems($billingId, $processedItems);
-            if ($oldPayment > 0) {
-                Billing::insertGetId([
-                    'customer_id' => $customer_id,
-                    'cart' => '',
-                    'discount' => 0,
-                    'discount_amount' => 0,
-                    'tax' => 0,
-                    'tax_amount' => 0,
-                    'grand_total' => 0,
-                    'gst' => 0,
-                    'payment' => $oldPayment ?? 0,
-                    'payment_mode' => $payment_mode,
-                    'transaction_no' => $transaction_no ?? null,
-                ]);
-            }
+            // if ($oldPayment > 0) {
+            //     Billing::insertGetId([
+            //         'customer_id' => $customer_id,
+            //         'cart' => '',
+            //         'discount' => 0,
+            //         'discount_amount' => 0,
+            //         'tax' => 0,
+            //         'tax_amount' => 0,
+            //         'grand_total' => 0,
+            //         'gst' => 0,
+            //         'payment' => $oldPayment ?? 0,
+            //         'payment_mode' => $payment_mode,
+            //         'transaction_no' => $transaction_no ?? null,
+            //     ]);
+            // }
 
             DB::commit();
         } catch (\Exception $e) {
@@ -200,6 +201,7 @@ class BillingController extends Controller
                 'price' => $price,
                 'rate' => (float) ($item['rate'] ?? 0),
                 'making_charge' => (float) ($item['making'] ?? 0),
+                'making_amount' => (float) ($item['making_amount'] ?? 0),
                 'gross_weight' => $item['gross'],
                 'net_weight' => $item['net'],
                 'gst_percent' => $gst,
@@ -372,8 +374,11 @@ class BillingController extends Controller
                 if ($customer) {
                     $customer_details = $customer->name.'<br>Ph:'.$customer->phone;
                 }
+                 $get = route('get.cart', $billing->id);
 
-                return $customer_details;
+                return $customer_details.'<a href="'.$get.'"class="action-btn btn-edit bs-tooltip me-2" data-toggle="tooltip"
+                              data-placement="top" title="View" data-bs-original-title="View">
+                              <i data-feather="eye"></i></a>';
             })
             ->addColumn('cart', function (Billing $billing) {
                 $cart = json_decode($billing->cart, true);

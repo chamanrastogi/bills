@@ -61,46 +61,17 @@
 
                                                             <div class="row">
 
-                                                                <div class="col-sm-6 col-12 mr-auto">
-                                                                    <div class="d-flex">
 
-                                                                        <img class="w-50"
-                                                                            src="{{ asset($template->logo) }}"
-                                                                            alt="company">
+                                                            <div class="invoice-header text-center">
+                                                                <img class="pb-3" src="{{ asset($template->logo) }}"
+                                                                    alt="company">
 
-                                                                    </div>
-                                                                    <p class="inv-street-addr mt-3">
-                                                                        <span class="text-info">Add:</span>
-                                                                        {{ $template->address }}
-                                                                    </p>
-                                                                    <p class="inv-email-address">
-                                                                        <span class="text-info">E:</span>
-                                                                        {{ $template->email }}
-                                                                    </p>
-                                                                    <p class="inv-email-address">
-                                                                        <span class="text-info">Mob:</span>
-                                                                        {{ $template->support_phone }}
-                                                                    </p>
-
+                                                                <div class="h5"> {{ $template->address }}</div>
+                                                                <div class="h4 text-dark btn bg-white border border-">
+                                                                    {{ $template->site_title }}
                                                                 </div>
+                                                            </div>
 
-                                                                <div class="col-sm-6 text-sm-end">
-                                                                    <p class="inv-list-number mt-sm-3 pb-sm-2 mt-4">
-                                                                        <span class="inv-title">Invoice : </span> <span
-                                                                            class="inv-number"></span>
-                                                                    </p>
-                                                                    <p class="inv-created-date mt-sm-5 mt-3"><span
-                                                                            class="inv-title text-info">Invoice Date :
-                                                                        </span>
-                                                                        <span
-                                                                            class="inv-date">{{ date('d M Y') }}</span>
-                                                                    </p>
-                                                                    <p class="inv-due-date"><span
-                                                                            class="inv-title"><span
-                                                                                class="text-info">GST No:</span>
-                                                                            {{ $template->gst }}</span>
-                                                                    </p>
-                                                                </div>
                                                             </div>
 
                                                         </div>
@@ -111,35 +82,49 @@
 
                                                                 <div
                                                                     class="col-xl-8 col-lg-7 col-md-6 col-sm-4 align-self-center">
-                                                                    <p class="inv-to">Invoice To</p>
+                                                                    <p class="inv-to">Pro. Vimal Soni (Imiliya Wale)</p>
                                                                 </div>
 
                                                                 <div
                                                                     class="col-xl-4 col-lg-5 col-md-6 col-sm-8 align-self-center order-sm-0 order-1 text-sm-end mt-sm-0 mt-5">
-                                                                    <h6 class=" inv-title">Invoice From</h6>
+                                                                    <h6 class=" inv-title">Customer Details</h6>
                                                                 </div>
-
                                                                 <div class="col-xl-8 col-lg-7 col-md-6 col-sm-4">
-                                                                    <p class="inv-customer-name">{{ $customer->name }}
+
+                                                                    <p class="inv-email-address">
+                                                                        <span class="text-info">GSTIN No :</span>
+                                                                        {{ $template->gst }}
                                                                     </p>
-                                                                    <p class="inv-street-addr">{{ $customer->address }}
+                                                                    <p class="inv-email-address">
+                                                                        <span class="text-info">Pan No :</span>
+                                                                        {{ $template->pan_no }}
                                                                     </p>
-                                                                    <p class="inv-email-address">{{ $customer->email }}
+
+
+                                                                    <p class="inv-email-address">
+                                                                        <span class="text-info">Invoice Date :</span>
+                                                                        {{ date('d-M-Y') }}
                                                                     </p>
-                                                                    <p class="inv-email-address">{{ $customer->phone }}
+                                                                    <p class="inv-email-address">
+                                                                        <span class="text-info">Contact No :</span>
+                                                                        {{ $template->support_phone }}
                                                                     </p>
+
+
                                                                 </div>
 
                                                                 <div
                                                                     class="col-xl-4 col-lg-5 col-md-6 col-sm-8 col-12 order-sm-0 order-1 text-sm-end">
-                                                                    <p class="inv-customer-name">{{ $customer->name }}
+                                                                    <p class="inv-customer-name">{{ $customer?->name }}
                                                                     </p>
                                                                     <p class="inv-street-addr">
-                                                                        {{ $customer->billing_address ? $customer->billing_address : $customer->address }}
+                                                                        {{ $customer?->billing_address ? $customer?->billing_address : $customer?->address }}
                                                                     </p>
-                                                                    <p class="inv-email-address">{{ $customer->email }}
+                                                                    <p class="inv-email-address">
+                                                                        {{ $customer?->email }}
                                                                     </p>
-                                                                    <p class="inv-email-address">{{ $customer->phone }}
+                                                                    <p class="inv-email-address">
+                                                                        {{ $customer?->phone }}
                                                                     </p>
                                                                 </div>
 
@@ -155,6 +140,7 @@
                                                                             <th scope="col">Date</th>
                                                                             <th scope="col">Particular</th>
                                                                             <th scope="col">Type</th>
+                                                                            <th scope="col">Bill Amount</th>
                                                                             <th scope="col">Debit</th>
                                                                             <th scope="col">Credit</th>
 
@@ -167,10 +153,18 @@
                                                                                 </td>
                                                                                 <td>{{ ($result['grand_total']>0)? 'Sales' : $modes[$result['payment_mode']] }}</td>
                                                                                 <td>{{ ($result['grand_total']>0)? 'Sales' : 'Recipt' }}</td>
-                                                                                <td>
+                                                                                 <td>
                                                                                     @if ($result['debit_credit'] == 'Dr')
                                                                                         {{ MONEY }}
                                                                                         {{ number_format($result['grand_total'], 2) }}
+                                                                                    @else
+                                                                                        -
+                                                                                    @endif
+                                                                                </td>
+                                                                                <td>
+                                                                                    @if ($result['payment'] != 0)
+                                                                                        {{ MONEY }}
+                                                                                        {{ number_format($result['payment'], 2) }}
                                                                                     @else
                                                                                         -
                                                                                     @endif
@@ -237,7 +231,9 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="inv--detail-section inv--customer-detail-section">
+
+                                                        <div
+                                                            class="inv--detail-section inv--customer-detail-section pb-2">
 
                                                             <div class="row">
 
@@ -256,7 +252,7 @@
                                                                             class="inv-customer-name">Bank Name
                                                                             : </span>{{ $template->bank_name }}</p>
                                                                     <p class="inv-email-address"><span
-                                                                            class="inv-customer-name">A/c Holder Name
+                                                                            class="inv-customer-name">A/c H. N.
                                                                             : </span>{{ $template->bank_holder_name }}
                                                                     </p>
                                                                     <p class="inv-street-addr"><span
@@ -276,11 +272,35 @@
 
                                                                 <div
                                                                     class="col-xl-4 col-lg-5 col-md-6 col-sm-8 col-12 order-sm-0 order-1 text-sm-end">
-                                                                    <img class="company-logo w-50"
+                                                                    <img class="company-logo" style="width:125px"
                                                                         src="{{ asset($template->bank_qr_code) }}"
                                                                         alt="company">
                                                                 </div>
 
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="inv--note">
+
+                                                            <hr>
+                                                            <div class="row mt-4">
+                                                                <div class="col-6 ">
+                                                                    <div style="height:40px;"></div>
+                                                                    <div>Goods Received By<br>Customer's Signature</div>
+                                                                </div>
+
+                                                                <div class="col-6 text-end">
+                                                                    <div>Authorised / Certified Seal and Signature<br>
+                                                                        <em>Authorised Signatory</em>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mt-4">
+                                                                <div
+                                                                    class="col-sm-12 col-12 order-sm-0 order-1 text-center">
+                                                                    <p>{{ $template->message }}</p>
+                                                                </div>
                                                             </div>
 
                                                         </div>
